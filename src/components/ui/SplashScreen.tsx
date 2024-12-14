@@ -14,10 +14,6 @@ const SplashScreen = () => {
 
     const timer2 = setTimeout(() => {
       setStage(2);
-
-      // setTimeout(() => {
-      //   window.location.href = "/product";
-      // }, 5000);
     }, 5000);
 
     return () => {
