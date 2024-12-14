@@ -10,11 +10,11 @@ const SplashScreen = () => {
   useEffect(() => {
     const timer1 = setTimeout(() => {
       setStage(1);
-    }, 1000);
+    }, 3000);
 
     const timer2 = setTimeout(() => {
       setStage(2);
-    }, 5000);
+    }, 7000);
 
     return () => {
       clearTimeout(timer1);
@@ -59,14 +59,32 @@ const SplashScreen = () => {
             transition={{ duration: 2, ease: "easeInOut" }}
             className="relative h-screen text-primaryTextColor dark:text-white flex justify-center items-center overflow-hidden"
           >
-            <div className="absolute w-[700px] h-[700px] bg-gradient-to-bl from-white opacity-20 rounded-full bottom-[-380px] left-[-380px]" />
-            <div className="absolute w-[700px] h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-380px] right-[-380px]" />
+            <motion.div
+              className="absolute w-[700px] h-[700px] bg-gradient-to-bl from-white opacity-20 rounded-full bottom-[-380px] left-[-380px]"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute w-[700px] h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-380px] right-[-380px]"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+            />
             <div className="text-center text-white dark:text-white z-10">
-              <div className="pb-6 text-5xl font-bold">Selamat Datang</div>
-              <div className="pt-6 text-4xl">
-                Sistem Point Of Sale <br />
-                Waroeng Aceh Garuda
-              </div>
+              <motion.div
+                className=""
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+              >
+                <div className="pb-6 text-lg md:text-5xl font-bold">Selamat Datang</div>
+                <div className="pt-6 text-sm md:text-4xl">
+                  Sistem Point Of Sale <br />
+                  Waroeng Aceh Garuda
+                </div>
+              </motion.div>
+
             </div>
           </motion.div>
         )}

@@ -11,7 +11,7 @@ export default function MainPage() {
   useEffect(() => {
     const splashTimeout = setTimeout(() => {
       setShowSplash(false);
-    }, 9000);
+    }, 10000);
 
     return () => clearTimeout(splashTimeout);
   }, []);
@@ -23,9 +23,9 @@ export default function MainPage() {
           <motion.div
             key="splash"
             initial={{ opacity: 1, scale: 1 }}
-            // animate={{ opacity: 1, scale: 1.2 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 2 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 2 }}
           >
             <SplashScreen />
           </motion.div>
