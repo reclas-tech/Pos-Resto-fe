@@ -47,7 +47,7 @@ const SplashScreen = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-primaryColor dark:bg-secondaryColor">
+    <div className="flex h-screen overflow-hidden">
       <AnimatePresence>
         {stage < 2 && (
           <motion.div
@@ -57,7 +57,7 @@ const SplashScreen = () => {
             exit="exit"
             variants={leftSideVariants}
             transition={{ duration: 2, ease: "easeInOut" }}
-            className="relative h-screen text-primaryTextColor dark:text-white flex justify-center items-center overflow-hidden"
+            className="relative h-screen bg-primaryColor dark:bg-secondaryColor text-primaryTextColor dark:text-white flex justify-center items-center overflow-hidden"
           >
             <motion.div
               className="absolute w-[700px] h-[700px] bg-gradient-to-bl from-white opacity-20 rounded-full bottom-[-380px] left-[-380px]"
@@ -97,7 +97,7 @@ const SplashScreen = () => {
             exit="exit"
             variants={rightSideVariants}
             transition={{ duration: 2, ease: "easeInOut" }}
-            className="relative h-screen bg-splashScreenBg bg-cover bg-center dark:bg-secondaryColor text-primaryTextColor dark:text-white flex justify-center items-center overflow-hidden"
+            className="relative h-screen bg-splashScreenBg bg-cover bg-center text-primaryTextColor dark:text-white flex justify-center items-center overflow-hidden"
           >
             <div className="absolute w-[700px] h-[700px] bg-gradient-to-bl from-white opacity-20 rounded-full bottom-[-380px] left-[-380px]" />
             <div className="absolute w-[700px] h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-380px] right-[-380px]" />

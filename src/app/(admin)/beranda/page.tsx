@@ -1,7 +1,7 @@
 import React from "react";
 
 function BerandaAdminPage() {
-  return <></>;
+  return <>Beranda Page</>;
 }
 
 export default BerandaAdminPage;
