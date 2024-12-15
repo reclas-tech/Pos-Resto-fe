@@ -78,13 +78,14 @@ const SplashScreen = () => {
                 animate={{ scale: 1 }}
                 transition={{ duration: 1.5, ease: "easeInOut" }}
               >
-                <div className="pb-6 text-lg md:text-5xl font-bold">Selamat Datang</div>
+                <div className="pb-6 text-lg md:text-5xl font-bold">
+                  Selamat Datang
+                </div>
                 <div className="pt-6 text-sm md:text-4xl">
                   Sistem Point Of Sale <br />
                   Waroeng Aceh Garuda
                 </div>
               </motion.div>
-
             </div>
           </motion.div>
         )}
@@ -107,6 +108,8 @@ const SplashScreen = () => {
                 height={300}
                 src="/assets/images/splashScreen.png"
                 alt="Waroeng Aceh Garuda"
+                priority
+                className="w-[120px] h-[180px] md:w-[350px] md:h-[420px]"
               />
             </div>
           </motion.div>
