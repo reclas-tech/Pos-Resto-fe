@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { CloseModalSVG, DeleteModalSVG } from "@/constants/svgIcons";
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   onClose,
   onDelete,
   title = "Konfirmasi Hapus",
-  description = "Apakah Anda yakin ingin menghapus item ini?",
+  description = "Anda yakin ingin menghapus item ini ?",
   deleteButtonText = "Hapus",
   cancelButtonText = "Batal",
 }) => {
@@ -36,23 +36,24 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader className="relative">
-          {/* <button
-            onClick={onClose}
-            className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded-full"
-          >
-            <X className="h-5 w-5 text-gray-500" />
-          </button> */}
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+      <DialogContent className="sm:max-w-[470px]">
+        <DialogHeader className="relative p-4 rounded-lg border-b">
+          <Button className="" variant="closeModal" onClick={onClose}>
+            <CloseModalSVG />
+          </Button>
+          <DialogTitle className="text-black dark:text-white">{title}</DialogTitle>
         </DialogHeader>
-
-        <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={onClose}>
+        <DialogDescription className="justify-center m-auto mb-4">
+          <DeleteModalSVG />
+        </DialogDescription>
+        <DialogDescription className="justify-center m-auto">
+          {description}
+        </DialogDescription>
+        <DialogFooter className="w-full p-4 flex gap-2">
+          <Button className="w-full dark:text-white" variant="outline" onClick={onClose}>
             {cancelButtonText}
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>
+          <Button className="w-full" variant="destructive" onClick={handleDelete}>
             {deleteButtonText}
           </Button>
         </DialogFooter>

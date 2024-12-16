@@ -348,3 +348,28 @@ export function KeluarIcon({ size = 24, color = "currentColor" }) {
 }
 
 // Akhir Admin Page
+
+// Awal Delete Coponents
+export function DeleteModalSVG() {
+  return (
+    <>
+      <svg className="h-20 w-20 flex-shrink-0" width="126" height="125" viewBox="0 0 126 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M69.25 93.75H56.75V81.25H69.25V93.75ZM69.25 68.75H56.75L56.75 31.25L69.25 31.25L69.25 68.75ZM63 125C97.5 125 125.5 97 125.5 62.5C125.5 28 97.5 0 63 0C28.5 0 0.5 28 0.5 62.5C0.5 97 28.5 125 63 125ZM63 12.5C90.5625 12.5 113 34.9375 113 62.5C113 90.0625 90.5625 112.5 63 112.5C35.4375 112.5 13 90.0625 13 62.5C13 34.9375 35.4375 12.5 63 12.5Z" fill="#EE1616" />
+      </svg>
+
+    </>
+  );
+}
+// Akhir Delete Components
+
+// Awal Delete Close Coponents
+export function CloseModalSVG() {
+  return (
+    <>
+      <svg className="h-5 w-5 flex-shrink-0 text-gray-500" width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 5.5L19 19.5M19 5.5L5 19.5" stroke="#282930" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    </>
+  );
+}
+// Akhir Delete Close Components
