@@ -16,9 +16,12 @@ export default {
         thirdColor: "var(--thirdColor)",
         background: "var(--background)",
         foreground: "var(--foreground)",
+        grayColor: "var(--grayColor)",
+        grayDark: "var(--grayDark)",
+        danger: "var(--danger)",
       },
       backgroundImage: {
-        "splashScreenBg": "url('/assets/images/bg-second.png')",
+        splashScreenBg: "url('/assets/images/bg-second.png')",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -8,10 +8,13 @@ body {
 
 @layer base {
   :root {
-    --primaryColor: #FEA026;
+    --primaryColor: #fea026;
     --primaryTextColor: #ffffff;
-    --secondaryColor: #114F44;
-    --thirdColor: #FFDD4F;
+    --secondaryColor: #114f44;
+    --thirdColor: #ffdd4f;
+    --grayColor: #f5f5f5;
+    --grayDark: #717171;
+    --danger: #ff0000;
     --radius: 0.5rem;
   }
 }
