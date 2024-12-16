@@ -3,20 +3,17 @@
 import { useState } from "react";
 import LockIcon from "../icon/LockIcon";
 import VisibleIcon from "../icon/VisibleIcon";
-import { FieldError } from "react-hook-form";
+import InvisibleIcon from "../icon/InvisibleIcon";
 
 type InputPasswordProps = {
   placeholder: string;
-
-  error: any;
 };
 
 const InputPassword: React.FC<InputPasswordProps> = ({
   placeholder,
-
-  error,
+  ...props
 }) => {
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const toggleVisibility = () => {
     setIsVisible((prev) => !prev);
@@ -31,14 +28,15 @@ const InputPassword: React.FC<InputPasswordProps> = ({
         placeholder={placeholder}
         type={isVisible ? "text" : "password"}
         className="border border-grayDark focus:outline-grayDark placeholder:text-grayDark rounded-md pl-8 py-2 w-full"
+        {...props}
       />
-      {error && <span className="text-danger text-sm">{error.message}</span>}
+
       <button
         type="button"
         onClick={toggleVisibility}
         className="w-6 h-6 absolute bottom-2 right-2"
       >
-        <VisibleIcon />
+        {isVisible ? <VisibleIcon /> : <InvisibleIcon />}
       </button>
     </div>
   );
