@@ -1,0 +1,20 @@
+1. Desktop
+Judul besar (Heading 1): 32px - 48px
+Subjudul (Heading 2): 24px - 32px
+Heading kecil (Heading 3, 4, dst.): 18px - 24px
+Teks paragraf (Body): 16px - 18px
+Teks kecil (Caption): 12px - 14px
+
+2. Tablet
+Judul besar (Heading 1): 28px - 40px
+Subjudul (Heading 2): 20px - 28px
+Heading kecil: 16px - 20px
+Teks paragraf: 14px - 16px
+Teks kecil: 12px - 14px
+
+3. Handphone (Mobile)
+Judul besar (Heading 1): 20px - 32px
+Subjudul (Heading 2): 18px - 24px
+Heading kecil: 16px - 20px
+Teks paragraf: 14px - 16px
+Teks kecil: 12px
