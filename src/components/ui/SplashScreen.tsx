@@ -10,11 +10,11 @@ const SplashScreen = () => {
   useEffect(() => {
     const timer1 = setTimeout(() => {
       setStage(1);
-    }, 3000);
+    }, 1000);
 
     const timer2 = setTimeout(() => {
       setStage(2);
-    }, 7000);
+    }, 3000);
 
     return () => {
       clearTimeout(timer1);
