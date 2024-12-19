@@ -15,7 +15,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -38,7 +37,7 @@ import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
-import DeleteModal from "@/components/ui/Modal/delete";
+import DeleteModal from "@/components/ui/modal/delete";
 
 const products = [
   {

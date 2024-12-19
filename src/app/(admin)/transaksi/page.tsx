@@ -16,7 +16,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  // SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -37,11 +36,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-// import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
-import DeleteModal from "@/components/ui/Modal/delete";
-// import CreateModal from "@/components/ui/Modal/create";
-import EditModal from "@/components/ui/Modal/edit";
+import DeleteModal from "@/components/ui/modal/delete";
+import EditModal from "@/components/ui/modal/edit";
 
 const products = [
   {
@@ -62,10 +59,6 @@ function TransactionPage() {
   // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const handleCreate = () => {
-    console.log("Data ditambahkan");
-  };
 
   const handleEdit = () => {
     console.log("Data diedit");

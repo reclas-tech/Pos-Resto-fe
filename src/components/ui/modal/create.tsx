@@ -13,6 +13,7 @@ import { CloseModalSVG } from "@/constants/svgIcons";
 interface CreateModalProps {
   isOpen: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onCreate: (data: any) => void;
   title?: string;
   addButtonText?: string;

@@ -39,9 +39,9 @@ import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
-import DeleteModal from "@/components/ui/Modal/delete";
-import CreateModal from "@/components/ui/Modal/create";
-import EditModal from "@/components/ui/Modal/edit";
+import DeleteModal from "@/components/ui/modal/delete";
+import CreateModal from "@/components/ui/modal/create";
+import EditModal from "@/components/ui/modal/edit";
 
 const products = [
   {
