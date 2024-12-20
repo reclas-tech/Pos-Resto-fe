@@ -1,11 +1,23 @@
 "use client";
 
 import React from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
-function NotFound() {
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
     <>
       <motion.div
@@ -38,7 +50,13 @@ function NotFound() {
               src={"/assets/images/notFound.png"}
               alt="Waroeng Aceh Garuda"
             />
-            <div className="font-bold text-sm md:text-lg">Halaman Tidak Ditemukan</div>
+            <Button
+              className="w-full bg-secondaryColor hover:bg-secondaryColor/10 dark:bg-primaryColor dark:hover:bg-primaryColor/50"
+              variant="destructive"
+              onClick={() => reset()}
+            >
+              Error Coba Lagi...
+            </Button>
           </motion.div>
         </div>
       </motion.div>
@@ -46,5 +64,3 @@ function NotFound() {
     </>
   );
 }
-
-export default NotFound;
