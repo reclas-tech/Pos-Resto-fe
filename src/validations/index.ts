@@ -34,3 +34,20 @@ export const schemaForgotPassword = z.object({
     .min(6, { message: "Ulangi Kata sandi minimal 6 karakter" })
     .max(32, { message: "Ulangi Kata sandi maksimal 32 karakter" }),
 });
+
+// Validation Emloyee Management
+export const employeeSchema = z.object({
+  name: z.string().min(1, { message: "Nama karyawan harus diisi" }),
+  role: z.enum(["Kasir", "Admin"], {
+    required_error: "Peran harus dipilih",
+  }),
+  pin: z
+    .string()
+    .min(6, { message: "PIN minimal 6 karakter" })
+    .max(6, { message: "PIN maksimal 6 karakter" }),
+  no_hp: z
+    .string()
+    .min(10, { message: "Nomor telepon minimal 10 digit" })
+    .max(13, { message: "Nomor telepon maksimal 13 digit" }),
+  address: z.string().min(1, { message: "Alamat harus diisi" }),
+});
