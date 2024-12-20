@@ -35,7 +35,12 @@ export const schemaForgotPassword = z.object({
     .max(32, { message: "Ulangi Kata sandi maksimal 32 karakter" }),
 });
 
-// Validation Emloyee Management
+// Validation Kitchen Management
+export const kitchenSchema = z.object({
+  name: z.string().min(1, { message: "Nama dapur tidak boleh kosong!" }),
+});
+
+// Validation Employee Management
 export const employeeSchema = z.object({
   name: z.string().min(1, { message: "Nama karyawan harus diisi" }),
   role: z.enum(["Kasir", "Admin"], {
