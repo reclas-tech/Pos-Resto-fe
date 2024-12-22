@@ -39,28 +39,37 @@ import { Button } from "@/components/ui/button";
 import { ActionSVG } from "@/constants/svgIcons";
 import DeleteModal from "@/components/ui/modal/delete";
 import EditModal from "@/components/ui/modal/edit";
+import DetailModal from "@/components/ui/modal/detail";
 
-const products = [
+const transaction = [
   {
     no: "1",
-    nameCategory: "Kategori 1",
+    idTransaction: "INV0001",
+    dateTime: "15/12/2024 15:34",
+    status: "Berhasil",
+    totalPrice: "Rp. 45.000",
   },
   {
     no: "2",
-    nameCategory: "Kategori 2",
+    idTransaction: "INV0002",
+    dateTime: "15/12/2024 15:52",
+    status: "Gagal",
+    totalPrice: "Rp. 105.000",
   },
   {
     no: "3",
-    nameCategory: "Kategori 3",
+    idTransaction: "INV0003",
+    dateTime: "15/12/2024 19:50",
+    status: "Tertunda",
+    totalPrice: "Rp. 80.000",
   },
 ];
 
 function TransactionPage() {
-  // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsSwtailModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleEdit = () => {
+  const handleDetail = () => {
     console.log("Data diedit");
   };
 
@@ -97,21 +106,33 @@ function TransactionPage() {
           <TableHeader className="bg-primaryColor">
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
-              <TableHead className="w-[260px]">Nama Kategori</TableHead>
-              <TableHead className="w-[160px]">Aksi</TableHead>
+              <TableHead className="w-[196px]">ID Transaksi/Invoice</TableHead>
+              <TableHead className="">Tanggal dan Waktu</TableHead>
+              <TableHead className="">Status</TableHead>
+              <TableHead className="">Total Harga</TableHead>
+              <TableHead className="w-[196px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((categoryView) => (
+            {transaction.map((transactionHistory) => (
               <TableRow
                 className="text-sm text-[#141414] dark:text-white"
-                key={categoryView.no}
+                key={transactionHistory.no}
               >
                 <TableCell className="font-medium text-center">
-                  {categoryView.no}
+                  {transactionHistory.no}
                 </TableCell>
-                <TableCell className="text-left">
-                  {categoryView.nameCategory}
+                <TableCell className="text-center">
+                  {transactionHistory.idTransaction}
+                </TableCell>
+                <TableCell className="text-center">
+                  {transactionHistory.dateTime}
+                </TableCell>
+                <TableCell className="text-center">
+                  {transactionHistory.status}
+                </TableCell>
+                <TableCell className="text-center">
+                  {transactionHistory.totalPrice}
                 </TableCell>
                 <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                   <DropdownMenu>
@@ -128,42 +149,108 @@ function TransactionPage() {
                         <div className="w-full">
                           <button
                             className="text-black dark:text-white w-full text-left"
-                            onClick={() => setIsEditModalOpen(true)}
+                            onClick={() => setIsSwtailModalOpen(true)}
                           >
-                            Edit
+                            Lihat Rincian
                           </button>
-                          <EditModal
+                          <DetailModal
                             isOpen={isEditModalOpen}
-                            onClose={() => setIsEditModalOpen(false)}
-                            onEdit={handleEdit}
-                            title="Edit Kategori"
+                            onClose={() => setIsSwtailModalOpen(false)}
+                            onDetail={handleDetail}
+                            title="Detail Riwayat Transaksi"
+                            showCancelButton={true}
+                            showPrintButton={true}
                           >
-                            <div className="flex flex-col w-full">
-                              <Label htmlFor="nameCategory">
-                                Nama Kategori
-                              </Label>
-                              <Input
-                                type="text"
-                                id="nameCategory"
-                                placeholder="Edit Kategori"
-                                className="w-full"
-                              />
+                            <div className="flex mb-4 gap-4">
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="idTransaction">
+                                  ID Transaksi/Invoice
+                                </Label>
+                                <Input
+                                  type="text"
+                                  id="idTransaction"
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="noTable">Nomor Meja</Label>
+                                <Input
+                                  type="text"
+                                  id="noTable"
+                                  className="w-full"
+                                />
+                              </div>
                             </div>
-                          </EditModal>
+                            <div className="flex mb-4 gap-4">
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="dateTimeTransaction">
+                                  Tanggal dan Waktu Transaksi
+                                </Label>
+                                <Input
+                                  type="text"
+                                  id="dateTimeTransaction"
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="totalPrice">Total Harga</Label>
+                                <Input
+                                  type="text"
+                                  id="totalPrice"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex mb-4 gap-4">
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="name">Nama Kasir</Label>
+                                <Input
+                                  type="text"
+                                  id="name"
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="paymentMethod">
+                                  Metode Pembayaran
+                                </Label>
+                                <Input
+                                  type="text"
+                                  id="paymentMethod"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex gap-4">
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="purchaseHistory">
+                                  Rincian Pembelian
+                                </Label>
+                                <Input
+                                  type="text"
+                                  id="purchaseHistory"
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="flex flex-col w-full">
+                                <Label htmlFor="statusPurchase">
+                                  Status Pembayaran
+                                </Label>
+                                <Input
+                                  type="text"
+                                  id="statusPurchase"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                          </DetailModal>
                         </div>
                         <button
                           className="text-black dark:text-white w-full text-left"
-                          onClick={() => setIsDeleteModalOpen(true)}
+                          onClick={() => setIsSwtailModalOpen(true)}
                         >
-                          Hapus
+                          Print
                         </button>
-                        <DeleteModal
-                          isOpen={isDeleteModalOpen}
-                          onClose={() => setIsDeleteModalOpen(false)}
-                          onDelete={handleDelete}
-                          title="Hapus"
-                          description="Anda yakin ingin menghapus item ini ?"
-                        />
                       </div>
                     </DropdownMenuContent>
                   </DropdownMenu>
