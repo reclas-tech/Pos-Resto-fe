@@ -15,7 +15,7 @@ interface SelectItem {
   id: string;
   name: string;
 }
-
+/* eslint-disable */
 interface InputProps {
   disabled?: boolean;
   typeInput?: string;

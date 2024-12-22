@@ -43,28 +43,40 @@ const transaction = [
   {
     no: "1",
     idTransaction: "INV0001",
+    noTable: "A1",
     dateTime: "15/12/2024 15:34",
-    status: "Berhasil",
     totalPrice: "Rp. 45.000",
+    name: "Jhon Doe",
+    metodePembayaran: "Cash",
+    rincianPembayaran: `1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`,
+    status: "Berhasil",
   },
   {
     no: "2",
     idTransaction: "INV0002",
+    noTable: "A2",
     dateTime: "15/12/2024 15:52",
-    status: "Gagal",
     totalPrice: "Rp. 105.000",
+    name: "Jhon Doe 2",
+    metodePembayaran: "Cash",
+    rincianPembayaran: `1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`,
+    status: "Gagal",
   },
   {
     no: "3",
     idTransaction: "INV0003",
+    noTable: "A3",
     dateTime: "15/12/2024 19:50",
-    status: "Tertunda",
     totalPrice: "Rp. 80.000",
+    name: "Jhon Doe3",
+    metodePembayaran: "Cash",
+    rincianPembayaran: `1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`,
+    status: "Tertunda",
   },
 ];
 
 function TransactionPage() {
-  const [isEditModalOpen, setIsSwtailModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const handleDetail = () => {
     console.log("Data diedit");
@@ -122,8 +134,18 @@ function TransactionPage() {
                 <TableCell className="text-center">
                   {transactionHistory.dateTime}
                 </TableCell>
-                <TableCell className="text-center">
-                  {transactionHistory.status}
+                <TableCell className="text-center flex justify-center">
+                  <div
+                    className={`${
+                      transactionHistory.status === "Berhasil"
+                        ? "bg-secondaryColor"
+                        : transactionHistory.status === "Gagal"
+                        ? "bg-[#EE1616]"
+                        : "bg-[#FEA026]"
+                    } rounded-lg text-xs p-2 w-fit text-white`}
+                  >
+                    {transactionHistory.status}
+                  </div>
                 </TableCell>
                 <TableCell className="text-center">
                   {transactionHistory.totalPrice}
@@ -143,76 +165,64 @@ function TransactionPage() {
                         <div className="w-full">
                           <button
                             className="text-black dark:text-white w-full text-left"
-                            onClick={() => setIsSwtailModalOpen(true)}
+                            onClick={() => setIsDetailModalOpen(true)}
                           >
                             Lihat Rincian
                           </button>
                           <DetailModal
-                            isOpen={isEditModalOpen}
-                            onClose={() => setIsSwtailModalOpen(false)}
+                            isOpen={isDetailModalOpen}
+                            onClose={() => setIsDetailModalOpen(false)}
                             onDetail={handleDetail}
                             title="Detail Riwayat Transaksi"
                             showCancelButton={true}
                             showPrintButton={true}
                           >
-                            <div className="flex mb-4 gap-4">
+                            <div className="flex mb-4 gap-4 dark:text-white">
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="idTransaction">
                                   ID Transaksi/Invoice
                                 </Label>
-                                <Input
-                                  type="text"
-                                  id="idTransaction"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.idTransaction}
+                                </div>
                               </div>
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="noTable">Nomor Meja</Label>
-                                <Input
-                                  type="text"
-                                  id="noTable"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.noTable}
+                                </div>
                               </div>
                             </div>
-                            <div className="flex mb-4 gap-4">
+                            <div className="flex mb-4 gap-4 dark:text-white">
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="dateTimeTransaction">
                                   Tanggal dan Waktu Transaksi
                                 </Label>
-                                <Input
-                                  type="text"
-                                  id="dateTimeTransaction"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.dateTime}
+                                </div>
                               </div>
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="totalPrice">Total Harga</Label>
-                                <Input
-                                  type="text"
-                                  id="totalPrice"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.totalPrice}
+                                </div>
                               </div>
                             </div>
-                            <div className="flex mb-4 gap-4">
+                            <div className="flex mb-4 gap-4 dark:text-white">
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="name">Nama Kasir</Label>
-                                <Input
-                                  type="text"
-                                  id="name"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.name}
+                                </div>
                               </div>
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="paymentMethod">
                                   Metode Pembayaran
                                 </Label>
-                                <Input
-                                  type="text"
-                                  id="paymentMethod"
-                                  className="w-full"
-                                />
+                                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                  {transactionHistory.metodePembayaran}
+                                </div>
                               </div>
                             </div>
                             <div className="flex gap-4">
@@ -220,28 +230,35 @@ function TransactionPage() {
                                 <Label htmlFor="purchaseHistory">
                                   Rincian Pembelian
                                 </Label>
-                                <Input
-                                  type="text"
+                                <textarea
                                   id="purchaseHistory"
-                                  className="w-full"
+                                  className="w-full h-20 p-2 text-sm border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                                  defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
+                                  disabled
                                 />
                               </div>
                               <div className="flex flex-col w-full">
                                 <Label htmlFor="statusPurchase">
                                   Status Pembayaran
                                 </Label>
-                                <Input
-                                  type="text"
-                                  id="statusPurchase"
-                                  className="w-full"
-                                />
+                                <div
+                                  className={`${
+                                    transactionHistory.status === "Berhasil"
+                                      ? "bg-secondaryColor"
+                                      : transactionHistory.status === "Gagal"
+                                      ? "bg-[#EE1616]"
+                                      : "bg-[#FEA026]"
+                                  } rounded-lg text-xs p-2 w-fit text-white`}
+                                >
+                                  {transactionHistory.status}
+                                </div>
                               </div>
                             </div>
                           </DetailModal>
                         </div>
                         <button
                           className="text-black dark:text-white w-full text-left"
-                          onClick={() => setIsSwtailModalOpen(true)}
+                          onClick={() => setIsDetailModalOpen(true)}
                         >
                           Print
                         </button>

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CloseModalSVG } from "@/constants/svgIcons";
+import LoadingForm from "../LoadingForm";
 
 interface EditModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface EditModalProps {
   editButtonText?: string;
   cancelButtonText?: string;
   children: React.ReactNode;
+  loading?: boolean;
 }
 
 const EditModal: React.FC<EditModalProps> = ({
@@ -28,6 +30,7 @@ const EditModal: React.FC<EditModalProps> = ({
   editButtonText = "Ubah",
   cancelButtonText = "Batal",
   children,
+  loading = false,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -51,14 +54,14 @@ const EditModal: React.FC<EditModalProps> = ({
           <DialogFooter className="w-full p-4 pt-3 flex gap-2">
             <Button
               type="button"
-              className="w-full dark:text-white"
+              className="w-full dark:text-white border-secondaryColor"
               variant="outline"
               onClick={onClose}
             >
               {cancelButtonText}
             </Button>
             <Button type="submit" className="w-full" variant="default">
-              {editButtonText}
+              {loading ? <LoadingForm /> : editButtonText}
             </Button>
           </DialogFooter>
         </form>

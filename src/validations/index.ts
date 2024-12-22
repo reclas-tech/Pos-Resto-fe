@@ -57,7 +57,8 @@ export const employeeSchema = z.object({
   address: z.string().min(1, { message: "Alamat harus diisi" }),
 });
 
-// Validation Employee Management
+// Validation Product
+export type FormValuesProduct = z.infer<typeof productSchema>;
 export const productSchema = z.object({
   name: z.string().min(1, { message: "Nama Produk harus diisi" }),
   price: z.string().min(1, { message: "Harga harus diisi" }),
@@ -70,4 +71,10 @@ export const productSchema = z.object({
     required_error: "Dapur harus dipilih",
   }),
   image: z.string().nonempty("Foto produk wajib diunggah."),
+});
+
+// Validation Category
+export type FormValuesCategory = z.infer<typeof categorySchema>;
+export const categorySchema = z.object({
+  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
 });
