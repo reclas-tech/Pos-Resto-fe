@@ -136,7 +136,7 @@ function ProductPage() {
                         Pilih Aksi
                       </DropdownMenuLabel>
                       <div className="p-2 text-sm space-y-1">
-                        <Link href={"/produk/edit/1"}>
+                        <Link href={`/produk/edit/${productsView.no}`}>
                           <div className="w-full">Edit</div>
                         </Link>
                         <button

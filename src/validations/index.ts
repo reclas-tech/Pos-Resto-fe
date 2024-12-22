@@ -56,3 +56,18 @@ export const employeeSchema = z.object({
     .max(13, { message: "Nomor telepon maksimal 13 digit" }),
   address: z.string().min(1, { message: "Alamat harus diisi" }),
 });
+
+// Validation Employee Management
+export const productSchema = z.object({
+  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  price: z.string().min(1, { message: "Harga harus diisi" }),
+  stock: z.string().min(1, { message: "Stok harus diisi" }),
+  category: z.enum(["Kategori 1", "Kategori 2"], {
+    required_error: "Kategori harus dipilih",
+  }),
+  hpp: z.string().min(1, { message: "HPP harus diisi" }),
+  kitchen: z.enum(["Dapur 1", "Dapur 2"], {
+    required_error: "Dapur harus dipilih",
+  }),
+  image: z.string().nonempty("Foto produk wajib diunggah."),
+});
