@@ -37,8 +37,6 @@ import {
 import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ActionSVG } from "@/constants/svgIcons";
-import DeleteModal from "@/components/ui/modal/delete";
-import EditModal from "@/components/ui/modal/edit";
 import DetailModal from "@/components/ui/modal/detail";
 
 const transaction = [
@@ -67,15 +65,11 @@ const transaction = [
 
 function TransactionPage() {
   const [isEditModalOpen, setIsSwtailModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleDetail = () => {
     console.log("Data diedit");
   };
 
-  const handleDelete = () => {
-    console.log("Data dihapus");
-  };
   return (
     <>
       <div className="flex items-center gap-2 text-secondaryColor dark:text-primaryColor font-bold text-3xl mb-5">
