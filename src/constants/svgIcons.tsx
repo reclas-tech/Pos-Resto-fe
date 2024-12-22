@@ -422,8 +422,8 @@ export function BackSVG() {
   return (
     <>
       <svg
-        className="h-2 w-2 flex-shrink-0"
-        width="10"
+        className=" flex-shrink-0"
+        width="11"
         height="18"
         viewBox="0 0 10 18"
         fill="none"

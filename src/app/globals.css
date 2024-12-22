@@ -15,6 +15,10 @@ body {
     --primaryTextColor: #ffffff;
     --secondaryColor: #114f44;
     --thirdColor: #ffdd4f;
+    --grayColor: #f5f5f5;
+    --grayDark: #717171;
+    --danger: #ff0000;
+    --secondaryColor: #114f44;
     --radius: 0.5rem;
   }
 }
