@@ -40,6 +40,15 @@ export const kitchenSchema = z.object({
   name: z.string().min(1, { message: "Nama dapur tidak boleh kosong!" }),
 });
 
+// Validation Table Management
+export const tableSchema = z.object({
+  name: z.string().min(1, { message: "Nama meja tidak boleh kosong!" }),
+  capacity: z.number().min(1, { message: "Kapasitas tidak boleh 0" }),
+  location: z.enum(["Indoor", "Outdoor"], {
+    required_error: "Lokasi meja harus dipilih",
+  }),
+});
+
 // Validation Employee Management
 export const employeeSchema = z.object({
   name: z.string().min(1, { message: "Nama karyawan harus diisi" }),
