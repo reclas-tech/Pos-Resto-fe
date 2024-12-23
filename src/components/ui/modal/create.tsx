@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CloseModalSVG } from "@/constants/svgIcons";
+import LoadingForm from "../LoadingForm";
 
 interface CreateModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface CreateModalProps {
   addButtonText?: string;
   cancelButtonText?: string;
   children: React.ReactNode;
+  loading?: boolean;
 }
 
 const CreateModal: React.FC<CreateModalProps> = ({
@@ -28,17 +30,14 @@ const CreateModal: React.FC<CreateModalProps> = ({
   addButtonText = "Tambah",
   cancelButtonText = "Batal",
   children,
+  loading = false,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[470px]">
         <form onSubmit={onSubmit} className="space-y-5">
           <DialogHeader className="relative p-4  rounded-lg border-b">
-            <Button
-              type="button"
-              variant="closeModal"
-              onClick={onClose}
-            >
+            <Button type="button" variant="closeModal" onClick={onClose}>
               <CloseModalSVG />
             </Button>
             <DialogTitle className="font-semibold  text-black  dark:text-white">
@@ -50,14 +49,14 @@ const CreateModal: React.FC<CreateModalProps> = ({
           <DialogFooter className="w-full p-4 pt-3 flex gap-2">
             <Button
               type="button"
-              className="w-full dark:text-white"
+              className="w-full dark:text-white border-secondaryColor"
               variant="outline"
               onClick={onClose}
             >
               {cancelButtonText}
             </Button>
             <Button type="submit" className="w-full" variant="default">
-              {addButtonText}
+              {loading ? <LoadingForm /> : addButtonText}
             </Button>
           </DialogFooter>
         </form>
