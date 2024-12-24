@@ -25,7 +25,7 @@ const EditModal: React.FC<EditModalProps> = ({
   onClose,
   onSubmit,
   title = "Edit Data",
-  editButtonText = "Ubah",
+  editButtonText = "Simpan",
   cancelButtonText = "Batal",
   children,
 }) => {

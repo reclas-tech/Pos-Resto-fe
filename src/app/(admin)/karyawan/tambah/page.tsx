@@ -11,12 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { employeeSchema } from "@/validations";
 
-type Role = "Kasir" | "Admin";
+// type Role = "Kasir" | "Admin";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
@@ -25,7 +25,7 @@ const CreateEmployeePage: React.FC = () => {
     register,
     handleSubmit,
     reset,
-    setValue,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(employeeSchema),
@@ -43,9 +43,6 @@ const CreateEmployeePage: React.FC = () => {
     reset();
   };
 
-  const handleRoleChange = (value: Role) => {
-    setValue("role", value);
-  };
   return (
     <>
       <form className="" onSubmit={handleSubmit(onSubmit)}>
@@ -66,15 +63,21 @@ const CreateEmployeePage: React.FC = () => {
           </div>
           <div className="flex flex-col w-full">
             <Label htmlFor="role">Peran</Label>
-            <Select onValueChange={handleRoleChange}>
-              <SelectTrigger className="w-full text-neutral-500">
-                <SelectValue placeholder="Pilih Peran" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Kasir">Kasir</SelectItem>
-                <SelectItem value="Admin">Admin</SelectItem>
-              </SelectContent>
-            </Select>
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full text-neutral-500">
+                    <SelectValue placeholder="Peran" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Kasir">Kasir</SelectItem>
+                    <SelectItem value="Pelayan">Pelayan</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.role && (
               <span className="text-sm text-red-500">
                 {errors.role.message}

@@ -52,7 +52,7 @@ export const tableSchema = z.object({
 // Validation Employee Management
 export const employeeSchema = z.object({
   name: z.string().min(1, { message: "Nama karyawan harus diisi" }),
-  role: z.enum(["Kasir", "Admin"], {
+  role: z.enum(["Kasir", "Pelayan"], {
     required_error: "Peran harus dipilih",
   }),
   pin: z
