@@ -42,7 +42,8 @@ function EditProductPage() {
       hpp: "Rp. 3.000",
       stock: "23",
       kitchen: "Dapur 1",
-      image: "",
+      image:
+        "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
   });
 
@@ -120,24 +121,25 @@ function EditProductPage() {
   // const { value: price, onChange: handlePriceChange } = useRupiah();
   // const { value: hpp, onChange: handleHppChange } = useRupiah();
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
+  );
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          setImagePreview(reader.result);
-          setValue("image", reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      setValue("image", file);
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
   return (
     <>
-      <form className="" onSubmit={handleSubmit(onEditSubmit)}>
+      <form
+        className="text-black dark:text-white"
+        onSubmit={handleSubmit(onEditSubmit)}
+      >
         <div className="flex gap-4 justify-between mb-4">
           <div className="flex flex-col w-full">
             <Label htmlFor="nameProducts">Nama Produk</Label>
@@ -160,7 +162,7 @@ function EditProductPage() {
               {...register("category")}
               defaultValue="Kategori 1"
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -239,7 +241,7 @@ function EditProductPage() {
               defaultValue="Dapur 1"
               {...register("kitchen")}
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Dapur" />
               </SelectTrigger>
               <SelectContent>
@@ -257,7 +259,7 @@ function EditProductPage() {
 
         <div className="w-full mb-5">
           <label
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium"
             htmlFor="productsCapture"
           >
             Foto Produk

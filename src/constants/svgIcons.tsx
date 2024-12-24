@@ -2,7 +2,7 @@
 
 import React from "react";
 
-// Awal Admin Page
+// First Admin Page
 export function BerandaIcon({ size = 24, color = "currentColor" }) {
   return (
     <>
@@ -347,9 +347,9 @@ export function KeluarIcon({ size = 24, color = "currentColor" }) {
   );
 }
 
-// Akhir Admin Page
+// End Admin Page
 
-// Awal Delete Coponents
+// First Delete Coponents
 export function DeleteModalSVG() {
   return (
     <>
@@ -369,9 +369,9 @@ export function DeleteModalSVG() {
     </>
   );
 }
-// Akhir Delete Components
+// End Delete Components
 
-// Awal Delete Close Coponents
+// First Delete Close Coponents
 export function CloseModalSVG() {
   return (
     <>
@@ -393,9 +393,9 @@ export function CloseModalSVG() {
     </>
   );
 }
-// Akhir Delete Close Components
+// End Delete Close Components
 
-// Awal svg icon action
+// First svg icon action
 export function ActionSVG({ color = "currentColor" }) {
   return (
     <>
@@ -415,9 +415,9 @@ export function ActionSVG({ color = "currentColor" }) {
     </>
   );
 }
-// Akhir svg icon action
+// End svg icon action
 
-// Awal svg back
+// First svg back
 export function BackSVG() {
   return (
     <>
@@ -439,4 +439,43 @@ export function BackSVG() {
     </>
   );
 }
-// Akhir svg back
+// End svg back
+
+// First Filter Table
+export function FilterTableSVG() {
+  return (
+    <>
+      <svg
+        className=" flex-shrink-0"
+        width="19"
+        height="19"
+        viewBox="0 0 19 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.49902 5.11084H15.999"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M5.49902 9.61084H12.999"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M7.74902 14.1108H10.749"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Filter Table

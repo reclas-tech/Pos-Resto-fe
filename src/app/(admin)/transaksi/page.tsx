@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
-// import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,7 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ActionSVG } from "@/constants/svgIcons";
+import { ActionSVG, FilterTableSVG } from "@/constants/svgIcons";
 import DetailModal from "@/components/ui/modal/detail";
 
 const transaction = [
@@ -113,9 +112,30 @@ function TransactionPage() {
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
               <TableHead className="w-[196px]">ID Transaksi/Invoice</TableHead>
-              <TableHead className="">Tanggal dan Waktu</TableHead>
-              <TableHead className="">Status</TableHead>
-              <TableHead className="">Total Harga</TableHead>
+              <TableHead className="">
+                <div className="flex items-center gap-4 justify-center">
+                  <span>Tanggal dan Waktu</span>
+                  <button>
+                    <FilterTableSVG />
+                  </button>
+                </div>
+              </TableHead>
+              <TableHead className="">
+                <div className="flex items-center gap-4 justify-center">
+                  <span>Status</span>
+                  <button>
+                    <FilterTableSVG />
+                  </button>
+                </div>
+              </TableHead>
+              <TableHead className="">
+                <div className="flex items-center gap-4 justify-center">
+                  <span>Total Harga</span>
+                  <button>
+                    <FilterTableSVG />
+                  </button>
+                </div>
+              </TableHead>
               <TableHead className="w-[196px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>

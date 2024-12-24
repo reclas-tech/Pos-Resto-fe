@@ -70,7 +70,38 @@ export const productSchema = z.object({
   kitchen: z.enum(["Dapur 1", "Dapur 2"], {
     required_error: "Dapur harus dipilih",
   }),
-  image: z.string().nonempty("Foto produk wajib diunggah."),
+  // image: z.string().nonempty("Foto produk wajib diunggah."),
+  image: z
+    .union([z.instanceof(File), z.string()])
+    .refine((val) => val instanceof File || val.length > 0, {
+      message: "Foto produk wajib diunggah.",
+    }),
+  // image: z.instanceof(File).refine((file) => file.size > 0, {
+  //   message: "Foto produk wajib diunggah.",
+  // }),
+  // image: z
+  //   .union([
+  //     z.instanceof(File), // untuk file upload
+  //     z.string().url().optional(), // untuk URL
+  //   ])
+  //   .optional()
+  //   .refine(
+  //     (fileOrUrl) => {
+  //       if (fileOrUrl instanceof File) {
+  //         return fileOrUrl.size > 0;
+  //       }
+  //       return true;
+  //     },
+  //     {
+  //       message: "Foto produk wajib diunggah.",
+  //     }
+  //   ),
+  // image: z
+  //   .instanceof(File)
+  //   .optional()
+  //   .refine((file) => !file || file.size > 0, {
+  //     message: "Image is required if provided",
+  //   }),
 });
 
 // Validation Category
