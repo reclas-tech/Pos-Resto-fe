@@ -17,7 +17,7 @@ const LoginPage = () => {
     handleSubmit,
     reset,
     formState,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
       email: "",

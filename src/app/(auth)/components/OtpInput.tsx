@@ -1,9 +1,9 @@
-import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
+import { useRef, useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Control, Controller } from "react-hook-form";
 
 interface OtpInputProps {
   length?: number;
-  control: Control<any>;
+  control: Control;
   name: string;
   disabled?: boolean;
 }
@@ -15,7 +15,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
   disabled = false,
 }) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(""));
-  const inputRefs = React.useRef<(HTMLInputElement | null)[]>(
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(
     Array(length).fill(null)
   );
 
@@ -74,7 +74,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
           key={index}
           name={name}
           control={control}
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange } }) => (
             <input
               type="text"
               inputMode="numeric"
