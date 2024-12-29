@@ -4,19 +4,40 @@ import Image from "next/image";
 import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
 import clear from "@assets/clearIcon.png";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useRupiah } from "@/hooks/useRupiah";
+import { Label } from "@/components/ui/label";
+import { UserIcon } from "@/components/ui/icons/UserIcon";
 
 const otpSchema = z.object({
   otp: z.string().length(6, "PIN harus 6 digit"),
 });
 
+const cashSchema = z.object({
+  cash: z.string().min(1, "Cash On Hand Tidak Boleh Kosong"),
+});
+
 type OtpFormData = z.infer<typeof otpSchema>;
+type CashFormData = z.infer<typeof cashSchema>;
 
 const LoginKasirPage = () => {
   const [otpValue, setOtpValue] = useState<string>("");
+  const [isModal, setIsModal] = useState<boolean>(false);
+  const rupiahInput = useRupiah();
 
   const {
     handleSubmit,
@@ -29,6 +50,15 @@ const LoginKasirPage = () => {
     defaultValues: {
       otp: "",
     },
+  });
+
+  const {
+    control,
+    handleSubmit: handleCashOnHandSubmit,
+    formState: { errors: errorCashOnHand },
+    reset: resetCashOnHand,
+  } = useForm<CashFormData>({
+    resolver: zodResolver(cashSchema),
   });
 
   const handleButtonClick = (num: number) => {
@@ -51,6 +81,13 @@ const LoginKasirPage = () => {
     console.log("Form submitted:", data);
     setOtpValue("");
     reset();
+    setIsModal(true);
+  };
+
+  const onCashSubmit = (data: CashFormData) => {
+    console.log("Form Submitted: ", data);
+    resetCashOnHand();
+    setIsModal(false);
   };
 
   return (
@@ -68,9 +105,9 @@ const LoginKasirPage = () => {
               <p className="text-center text-[#334155] text-xl font-semibold">
                 Kode Pin
               </p>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* OTP Display */}
-                <div className="flex justify-center space-x-2">
+                <div className="flex justify-center space-x-2 relative">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div
                       key={index}
@@ -79,13 +116,12 @@ const LoginKasirPage = () => {
                       {otpValue[index] ? "•" : ""}
                     </div>
                   ))}
+                  {errors.otp && (
+                    <p className="text-red-500 text-sm text-center absolute top-[105%] left--4">
+                      {errors.otp.message}
+                    </p>
+                  )}
                 </div>
-
-                {errors.otp && (
-                  <p className="text-red-500 text-sm text-center">
-                    {errors.otp.message}
-                  </p>
-                )}
 
                 {/* Numpad Container */}
                 <div className="space-y-6">
@@ -156,6 +192,73 @@ const LoginKasirPage = () => {
           />
         </div>
       </div>
+
+      {/* Cash On Hand Modal */}
+
+      <Dialog open={isModal} onOpenChange={() => setIsModal(false)}>
+        <DialogContent className="sm:max-w-[470px]">
+          <form
+            onSubmit={handleCashOnHandSubmit(onCashSubmit)}
+            className="space-y-5"
+          >
+            <DialogHeader className="relative p-4  rounded-lg border-b">
+              <DialogTitle className="font-semibold  text-black  dark:text-white">
+                Kas di Tangan
+              </DialogTitle>
+            </DialogHeader>
+            <div className="w-full flex flex-col items-center px-4 space-y-4">
+              <div className="flex space-x-4 items-center">
+                <div
+                  id="user"
+                  className="bg-[#D9D9D9] w-20 h-20 rounded-full flex items-center justify-center"
+                >
+                  <span className="text-black w-14 h-14">
+                    <UserIcon />
+                  </span>
+                </div>
+
+                <div className="space-y-0">
+                  <p className="text-2xl font-medium">John Doe</p>
+                  <p className="text-lg font-light">Cashier</p>
+                </div>
+              </div>
+              <div className="space-y-1 w-full">
+                <Label htmlFor="cash"> Masukkan Uang Tunai di Tangan</Label>
+                <Controller
+                  name="cash"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <Input
+                      id="cash"
+                      type="text"
+                      placeholder="Rp.0"
+                      className="w-full"
+                      value={rupiahInput.value}
+                      onChange={(e) => {
+                        rupiahInput.onChange(e);
+                        field.onChange(e);
+                      }}
+                    />
+                  )}
+                />
+                {errorCashOnHand.cash && (
+                  <span className="text-sm text-red-500">
+                    {errorCashOnHand.cash.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <DialogDescription className="hidden"></DialogDescription>
+            <DialogFooter className="w-full p-4 pt-3 flex gap-2">
+              <Button type="submit" className="w-full" variant="default">
+                Ok
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <DarkModeComponents />
     </div>
   );
 };

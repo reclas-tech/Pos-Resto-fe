@@ -3,11 +3,12 @@
 import Image from "next/image";
 import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
-import clear from "@assets/clearIcon.png"
+import clear from "@assets/clearIcon.png";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DarkModeComponents } from "@/components/ui/darkModeButton";
 
 const otpSchema = z.object({
   otp: z.string().length(6, "PIN harus 6 digit"),
@@ -17,6 +18,7 @@ type OtpFormData = z.infer<typeof otpSchema>;
 
 const LoginWaitersPage = () => {
   const [otpValue, setOtpValue] = useState<string>("");
+  
 
   const {
     handleSubmit,
@@ -55,6 +57,7 @@ const LoginWaitersPage = () => {
 
   return (
     <div className="w-full h-screen flex">
+          <DarkModeComponents />
       <div className="w-1/2 h-full">
         <div className="w-full h-full bg-primaryColor relative flex justify-center items-center overflow-hidden">
           <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-300px] right-[-300px] z-0" />
@@ -68,9 +71,9 @@ const LoginWaitersPage = () => {
               <p className="text-center text-[#334155] text-xl font-semibold">
                 Kode Pin
               </p>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* OTP Display */}
-                <div className="flex justify-center space-x-2">
+                <div className="flex justify-center space-x-2 relative">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div
                       key={index}
@@ -79,13 +82,12 @@ const LoginWaitersPage = () => {
                       {otpValue[index] ? "•" : ""}
                     </div>
                   ))}
+                  {errors.otp && (
+                    <p className="text-red-500 text-sm text-center absolute top-[105%] left--4">
+                      {errors.otp.message}
+                    </p>
+                  )}
                 </div>
-
-                {errors.otp && (
-                  <p className="text-red-500 text-sm text-center">
-                    {errors.otp.message}
-                  </p>
-                )}
 
                 {/* Numpad Container */}
                 <div className="space-y-6">
@@ -111,7 +113,12 @@ const LoginWaitersPage = () => {
                       className="w-full h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-base"
                     >
                       {/* <Delete className="w-6 h-6" /> */}
-                      <Image src={clear} alt="clear" className="w-6" unoptimized/>
+                      <Image
+                        src={clear}
+                        alt="clear"
+                        className="w-6"
+                        unoptimized
+                      />
                     </button>
                     <button
                       type="button"
