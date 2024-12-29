@@ -3,7 +3,7 @@
 import Image from "next/image";
 import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
-import clear from "@assets/clearIcon.png";
+import clear from "@assets/clearIcon.png"
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +15,7 @@ const otpSchema = z.object({
 
 type OtpFormData = z.infer<typeof otpSchema>;
 
-const LoginKasirPage = () => {
+const LoginWaitersPage = () => {
   const [otpValue, setOtpValue] = useState<string>("");
 
   const {
@@ -61,7 +61,7 @@ const LoginKasirPage = () => {
           <div className="absolute w-[700px] h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full bottom-[-250px] left-[-350px] z-0" />
           <div className="space-y-14 z-10">
             <div className="space-y-6 text-center text-white">
-              <p className="text-4xl font-bold leading-10">Login Kasir</p>
+              <p className="text-4xl font-bold leading-10">Login Waiters</p>
               <p className="text-2xl leading-8">Waroeng Aceh Garuda</p>
             </div>
             <div className="bg-white rounded-lg w-[320px] h-[430px] p-6 space-y-4">
@@ -74,7 +74,7 @@ const LoginKasirPage = () => {
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div
                       key={index}
-                      className="w-6 h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center justify-center"
+                      className="w-6 h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center text-[#334155] justify-center"
                     >
                       {otpValue[index] ? "•" : ""}
                     </div>
@@ -111,12 +111,7 @@ const LoginKasirPage = () => {
                       className="w-full h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-base"
                     >
                       {/* <Delete className="w-6 h-6" /> */}
-                      <Image
-                        src={clear}
-                        alt="clear"
-                        className="w-6"
-                        unoptimized
-                      />
+                      <Image src={clear} alt="clear" className="w-6" unoptimized/>
                     </button>
                     <button
                       type="button"
@@ -160,4 +155,4 @@ const LoginKasirPage = () => {
   );
 };
 
-export default LoginKasirPage;
+export default LoginWaitersPage;

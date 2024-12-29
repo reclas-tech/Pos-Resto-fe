@@ -1,9 +1,12 @@
 import { useRef, useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Control, Controller } from "react-hook-form";
 
+
+
 interface OtpInputProps {
   length?: number;
-  control: Control;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: Control<any>;
   name: string;
   disabled?: boolean;
 }
