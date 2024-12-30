@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import InputPassword from "../components/InputPassword";
 import InputEmail from "../components/InputEmail";
 import Link from "next/link";
@@ -8,16 +8,26 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { loginSchema } from "../validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { axiosInstance } from "@/utils/axios";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { useRouter } from "next/navigation";
+import { LoadingSVG } from "@/constants/svgIcons";
+import Cookies from "js-cookie";
+
+// Tipe data form values loginSchema
+type FormValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
-  type FormValues = z.infer<typeof loginSchema>;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
+  // Hook form dengan react-hook-form
   const {
     register,
     handleSubmit,
     reset,
     formState,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
       email: "",
@@ -26,8 +36,53 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Data yang diterima:", data);
+  // cek berdasarkan cookies
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+    if (accessToken) {
+      router.push("/beranda");
+    } else {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      router.push("/login");
+    }
+  }, [router]);
+
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.post("/auth/admin/login", {
+        email: data.email,
+        password: data.password,
+      });
+      const result = response.data;
+      if (result.status === 200) {
+        showAlert2("success", "Berhasil Login.");
+        Cookies.set("accessToken", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refreshToken", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/beranda");
+          showAlert2("success", "Berhasil Login.");
+        }, 10);
+        reset();
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      showAlert2("error", errorMessage);
+      console.error("Failed to login:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   React.useEffect(() => {
@@ -57,7 +112,7 @@ const LoginPage = () => {
           )}
         </div>
 
-        <Link href="/auth/lupa-password" className="inline-block text-sm">
+        <Link href="/lupa-password" className="inline-block text-sm">
           Lupa Password?
         </Link>
       </div>
@@ -65,8 +120,9 @@ const LoginPage = () => {
         <button
           type="submit"
           className="w-full bg-primaryColor rounded-md py-2 text-white"
+          disabled={loading}
         >
-          Masuk
+          {loading ? <LoadingSVG /> : "Masuk"}{" "}
         </button>
         {errors.email || errors.password ? (
           <p className="text-danger">

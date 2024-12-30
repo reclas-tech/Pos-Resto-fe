@@ -1,12 +1,20 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import InputEmail from "../components/InputEmail";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { forgotPasswordSchema } from "../validation";
 import { z } from "zod";
+import { axiosInstance } from "@/utils/axios";
+import Cookies from "js-cookie";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { useRouter } from "next/navigation";
+import { LoadingSVG } from "@/constants/svgIcons";
 
 function ForgetPasswordPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
   type FormValues = z.infer<typeof forgotPasswordSchema>;
 
   const {
@@ -14,7 +22,7 @@ function ForgetPasswordPage() {
     handleSubmit,
     reset,
     formState,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
       email: "",
@@ -22,8 +30,38 @@ function ForgetPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Data yang diterima:", data);
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.post("/auth/admin/forget-password", {
+        email: data.email,
+      });
+      const result = response.data;
+      if (result.status === 200) {
+        Cookies.set("token", result?.data?.token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("exp", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/input-kode-otp");
+          showAlert2("success", "Berhasil Cek OTP Di Email.");
+        }, 10);
+        reset();
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   React.useEffect(() => {
@@ -41,10 +79,7 @@ function ForgetPasswordPage() {
           </div>
 
           <div className="space-y-1">
-            <InputEmail
-              {...register("email")}
-              placeholder="Email"
-            />
+            <InputEmail {...register("email")} placeholder="Email" />
             {errors.email && (
               <span className="text-danger">{errors.email.message}</span>
             )}
@@ -53,9 +88,10 @@ function ForgetPasswordPage() {
           <div className="space-y-2 text-center">
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-primaryColor rounded-md py-2 "
             >
-              Masuk
+              {loading ? <LoadingSVG /> : "Masuk"}
             </button>
 
             <p className="text-danger">{errors.email?.message}</p>

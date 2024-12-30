@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { axiosInstance } from "@/app/utils/axios";
+import { axiosInstance } from "@/utils/axios";
 import useLocalStorage from "./useLocalStorage";
 
 export const useRefreshToken = () => {

@@ -4,7 +4,7 @@ import useLocalStorage from "./useLocalStorage";
 import { useRefreshToken } from "./useRefreshToken";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { axiosPrivateInstance } from "@/app/utils/axios";
+import { axiosPrivateInstance } from "@/utils/axios";
 
 export const useAxiosPrivate = () => {
   const refresh = useRefreshToken();

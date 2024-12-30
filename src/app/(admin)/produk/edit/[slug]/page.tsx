@@ -70,7 +70,6 @@ function EditProductPage() {
 
   const [loading, setLoading] = useState(false);
   const navigate = useRouter();
-  // const [accessToken] = useLocalStorage("accessToken", "");
   const axiosPrivate = useAxiosPrivate();
 
   // Update
