@@ -122,7 +122,7 @@ const LoginPage = () => {
           className="w-full bg-primaryColor rounded-md py-2 text-white"
           disabled={loading}
         >
-          {loading ? <LoadingSVG /> : "Masuk"}{" "}
+          {loading ? <LoadingSVG /> : "Masuk"}
         </button>
         {errors.email || errors.password ? (
           <p className="text-danger">

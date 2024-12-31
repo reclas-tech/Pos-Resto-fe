@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -44,11 +44,10 @@ import EditModal from "@/components/ui/modal/edit";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { categorySchema, FormValuesCategory } from "@/validations";
-import { useParams, useRouter } from "next/navigation";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { AxiosError } from "axios";
-import { useGetCategorySlug } from "@/sevices/api";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 
 const products = [
   {
@@ -66,11 +65,17 @@ const products = [
 ];
 
 function CategoryPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<FormValuesCategory>({
     resolver: zodResolver(categorySchema),
@@ -92,22 +97,18 @@ function CategoryPage() {
   });
 
   // Read One
-  const { slug } = useParams();
-  const { data: dataUser } = useGetCategorySlug(slug as string);
-  console.log("Get data : ", dataUser);
-  useEffect(() => {
-    if (dataUser?.data) {
-      const timer = setTimeout(() => {
-        setValue("name", dataUser?.data?.name ?? "Category 1");
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [dataUser, setValue]);
+  // const { slug } = useParams();
+  // const { data: dataUser } = useGetCategorySlug(slug as string);
+  // console.log("Get data : ", dataUser);
+  // useEffect(() => {
+  //   if (dataUser?.data) {
+  //     const timer = setTimeout(() => {
+  //       setValue("name", dataUser?.data?.name ?? "Category 1");
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [dataUser, setValue]);
   // Read One
-
-  const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  const axiosPrivate = useAxiosPrivate();
 
   // Create
   const onAddSubmit: SubmitHandler<FormValuesCategory> = async (data) => {
@@ -116,11 +117,7 @@ function CategoryPage() {
     const formData = new FormData();
     formData.append("name", data.name);
     try {
-      await axiosPrivate.post("/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axiosPrivate.post("/category", formData);
       showAlert2("success", "Berhasil menambahkan data.");
       navigate.push("/category");
     } catch (error) {
@@ -129,14 +126,13 @@ function CategoryPage() {
           error.response?.data?.data?.[0]?.message || "Gagal menambahkan data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
-      reset();
       setIsCreateModalOpen(false);
+      reset();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Create
 
@@ -146,12 +142,9 @@ function CategoryPage() {
     setLoading(true);
     const formData = new FormData();
     formData.append("name", data.name);
+
     try {
-      await axiosPrivate.put(`/${slug}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axiosPrivate.put(`/`, formData);
       showAlert2("success", "Berhasil menyimpan data.");
       navigate.push("/category");
     } catch (error) {
@@ -160,20 +153,15 @@ function CategoryPage() {
           error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
-      reset2();
       setIsCreateModalOpen(false);
+      reset2();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Update
-
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleDelete = () => {
     console.log("Data dihapus");

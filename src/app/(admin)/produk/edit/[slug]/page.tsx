@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -16,17 +16,21 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormValuesProduct, productSchema } from "@/validations";
-import { useParams, useRouter } from "next/navigation";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
-import LoadingForm from "@/components/ui/LoadingForm";
 import { AxiosError } from "axios";
-import { useGetProductSlug } from "@/sevices/api";
+import Cookies from "js-cookie";
+import { axiosInstance } from "@/utils/axios";
+import { LoadingSVG } from "@/constants/svgIcons";
+// import { useRupiah } from "@/hooks/useRupiah";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function EditProductPage() {
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -47,30 +51,40 @@ function EditProductPage() {
     },
   });
 
-  // Read One
-  const { slug } = useParams();
-  const { data: dataUser } = useGetProductSlug(slug as string);
+  // Get token akses from cookies
+  const accessToken = Cookies.get("accessToken");
   useEffect(() => {
-    if (dataUser?.data) {
-      const timer = setTimeout(() => {
-        setValue("name", dataUser?.data?.name ?? "Produk 1");
-        setValue("category", dataUser?.data?.category ?? "Kategori 1");
-        setValue("price", dataUser?.data?.price ?? "45000");
-        setValue("hpp", dataUser?.data?.hpp ?? "3000");
-        setValue("kitchen", dataUser?.data?.kitchen ?? "23");
-        setValue("stock", dataUser?.data?.stock ?? "Dapur 1");
-        if (dataUser?.data?.image) {
-          setImagePreview(dataUser?.data?.image);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
+    if (!accessToken) {
+      showAlert2("error", "Anda harus login terlebih dahulu!");
+      navigate.push("/login");
     }
-  }, [dataUser, setValue]);
-  // Read One
+  }, [accessToken, navigate]);
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  const axiosPrivate = useAxiosPrivate();
+  if (!accessToken) {
+    return null;
+  }
+  // Get token akses from cookies
+
+  // Read One
+  // const { slug } = useParams();
+  // const { data: dataUser } = useGetProductSlug(slug as string);
+  // useEffect(() => {
+  //   if (dataUser?.data) {
+  //     const timer = setTimeout(() => {
+  //       setValue("name", dataUser?.data?.name ?? "Produk 1");
+  //       setValue("category", dataUser?.data?.category ?? "Kategori 1");
+  //       setValue("price", dataUser?.data?.price ?? "45000");
+  //       setValue("hpp", dataUser?.data?.hpp ?? "3000");
+  //       setValue("kitchen", dataUser?.data?.kitchen ?? "23");
+  //       setValue("stock", dataUser?.data?.stock ?? "Dapur 1");
+  //       if (dataUser?.data?.image) {
+  //         setImagePreview(dataUser?.data?.image);
+  //       }
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [dataUser, setValue]);
+  // Read One
 
   // Update
   const onEditSubmit: SubmitHandler<FormValuesProduct> = async (data) => {
@@ -85,10 +99,12 @@ function EditProductPage() {
     if (data.image) {
       formData.append("image", data.image);
     }
+
     try {
-      await axiosPrivate.put(`/${slug}`, formData, {
+      await axiosInstance.put(`/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`, // Send token
         },
       });
       showAlert2("success", "Berhasil menyimpan data.");
@@ -99,13 +115,12 @@ function EditProductPage() {
           error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
       reset();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Update
 
@@ -117,12 +132,6 @@ function EditProductPage() {
     setValue("kitchen", value);
   };
 
-  // const { value: price, onChange: handlePriceChange } = useRupiah();
-  // const { value: hpp, onChange: handleHppChange } = useRupiah();
-
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
-  );
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -132,6 +141,13 @@ function EditProductPage() {
       return () => URL.revokeObjectURL(objectUrl);
     }
   };
+
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
+  );
+
+  // const { value: price, onChange: handlePriceChange } = useRupiah();
+  // const { value: hpp, onChange: handleHppChange } = useRupiah();
 
   return (
     <>
@@ -184,7 +200,12 @@ function EditProductPage() {
               type="text"
               id="price"
               placeholder="Rp."
+              // value={price}
               {...register("price")}
+              onChange={(e) => {
+                // handlePriceChange(e);
+                setValue("price", e.target.value.replace(/\D/g, ""));
+              }}
             />
             {errors.price && (
               <span className="text-sm text-red-500">
@@ -194,22 +215,16 @@ function EditProductPage() {
           </div>
           <div className="flex flex-col w-full">
             <Label htmlFor="hpp">HPP</Label>
-            {/* <Input
-              type="text"
-              id="hpp"
-              placeholder="Rp."
-              value={hpp}
-              {...register("hpp")}
-              onChange={(e) => {
-                handleHppChange(e);
-                setValue("hpp", e.target.value.replace(/\D/g, ""));
-              }}
-            /> */}
             <Input
               type="text"
               id="hpp"
               placeholder="Rp."
+              // value={hpp}
               {...register("hpp")}
+              onChange={(e) => {
+                // handleHppChange(e);
+                setValue("hpp", e.target.value.replace(/\D/g, ""));
+              }}
             />
             {errors.hpp && (
               <span className="text-sm text-red-500">{errors.hpp.message}</span>
@@ -299,7 +314,7 @@ function EditProductPage() {
             </Button>
           </Link>
           <Button variant={"default"}>
-            {loading ? <LoadingForm /> : "Simpan"}
+            {loading ? <LoadingSVG /> : "Simpan"}
           </Button>
         </div>
       </form>

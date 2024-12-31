@@ -18,15 +18,28 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormValuesProduct, productSchema } from "@/validations";
 import { useRouter } from "next/navigation";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { showAlert2 } from "@/lib/sweetalert2";
-import LoadingForm from "@/components/ui/LoadingForm";
 import { AxiosError } from "axios";
+import Cookies from "js-cookie";
+import { axiosInstance } from "@/utils/axios";
+import { LoadingSVG } from "@/constants/svgIcons";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function CreateProductPage() {
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  // Get token akses from cookies
+  const accessToken = Cookies.get("accessToken");
+  if (!accessToken) {
+    showAlert2("error", "Anda harus login terlebih dahulu!");
+    navigate.push("/login");
+    return;
+  }
+  // Get token akses from cookies
+
   const {
     register,
     handleSubmit,
@@ -46,10 +59,6 @@ function CreateProductPage() {
     },
   });
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  const axiosPrivate = useAxiosPrivate();
-
   // Create
   const onAddSubmit: SubmitHandler<FormValuesProduct> = async (data) => {
     console.log("Form data:", data);
@@ -61,10 +70,12 @@ function CreateProductPage() {
     formData.append("hpp", data.hpp);
     formData.append("stock", data.stock);
     formData.append("image", data.image);
+
     try {
-      await axiosPrivate.post("/", formData, {
+      await axiosInstance.post("/produk", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${accessToken}`, // Send token
         },
       });
       showAlert2("success", "Berhasil menambahkan data.");
@@ -75,13 +86,12 @@ function CreateProductPage() {
           error.response?.data?.data?.[0]?.message || "Gagal menambahkan data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
       reset();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Create
 
@@ -266,8 +276,8 @@ function CreateProductPage() {
               Batal
             </Button>
           </Link>
-          <Button variant={"default"}>
-            {loading ? <LoadingForm /> : "Tambah"}
+          <Button variant={"default"} disabled={loading}>
+            {loading ? <LoadingSVG /> : "Tambah"}
           </Button>
         </div>
       </form>
