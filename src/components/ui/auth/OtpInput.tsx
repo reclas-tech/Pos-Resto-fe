@@ -1,11 +1,10 @@
-import { useRef, useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
+  /* eslint-disable */
+
+import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Control, Controller } from "react-hook-form";
-
-
 
 interface OtpInputProps {
   length?: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>;
   name: string;
   disabled?: boolean;
@@ -18,7 +17,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
   disabled = false,
 }) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(""));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>(
+  const inputRefs = React.useRef<(HTMLInputElement | null)[]>(
     Array(length).fill(null)
   );
 
@@ -77,7 +76,7 @@ const OtpInput: React.FC<OtpInputProps> = ({
           key={index}
           name={name}
           control={control}
-          render={({ field: { onChange } }) => (
+          render={({ field: { onChange, value } }) => (
             <input
               type="text"
               inputMode="numeric"

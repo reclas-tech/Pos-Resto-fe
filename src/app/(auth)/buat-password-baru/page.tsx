@@ -1,21 +1,28 @@
 "use client";
-import React from "react";
-import InputPassword from "../components/InputPassword";
+
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { newPasswordSchema } from "../validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { NewPasswordValues, newPasswordSchema } from "@/validations";
+import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/utils/axios";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { LoadingSVG } from "@/constants/svgIcons";
+import InputPassword from "@/components/ui/auth/InputPassword";
 
 function CreateNewPasswordPage() {
-  type FormValues = z.infer<typeof newPasswordSchema>;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const {
     register,
     handleSubmit,
     reset,
-    formState,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm<FormValues>({
+    watch,
+    formState: { errors },
+  } = useForm<NewPasswordValues>({
     defaultValues: {
       newPassword: "",
       confirmNewPassword: "",
@@ -23,15 +30,53 @@ function CreateNewPasswordPage() {
     resolver: zodResolver(newPasswordSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Data yang diterima:", data);
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<NewPasswordValues> = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await axiosInstance.post("/auth/admin/new-password", {
+        newPassword: data.newPassword,
+        confirmNewPassword: data.confirmNewPassword,
+      });
+      const result = response.data;
+      if (result.status === 200) {
+        showAlert2("success", "Berhasil.");
+        Cookies.set("accessToken", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refreshToken", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/login");
+          showAlert2("success", "Berhasil.");
+        }, 10);
+        reset();
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Gagal. Silakan coba lagi!";
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ newPassword: "", confirmNewPassword: "" });
+  // set error messege
+  const newPassword = watch("newPassword");
+  const confirmNewPassword = watch("confirmNewPassword");
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
     }
-  }, [formState, reset]);
+  }, [newPassword, confirmNewPassword]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-[388px]">
       <div className="space-y-4">
@@ -65,16 +110,11 @@ function CreateNewPasswordPage() {
           <button
             type="submit"
             className="w-full bg-primaryColor rounded-md py-2 "
+            disabled={loading}
           >
-            Masuk
+            {loading ? <LoadingSVG /> : "Masuk"}
           </button>
-
-          {errors.newPassword || errors.confirmNewPassword ? (
-            <p className="text-danger">
-              {errors.newPassword?.message ||
-                errors.confirmNewPassword?.message}
-            </p>
-          ) : null}
+          {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
         </div>
       </div>
     </form>

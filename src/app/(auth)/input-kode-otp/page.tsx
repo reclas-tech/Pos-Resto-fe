@@ -1,42 +1,85 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import OtpInput from "../components/OtpInput";
+import { LoadingSVG } from "@/constants/svgIcons";
+import { OtpValues, otpSchema } from "@/validations";
+import { axiosInstance } from "@/utils/axios";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { useRouter } from "next/navigation";
+import OtpInput from "@/components/ui/auth/OtpInput";
 
 function OtpInputPage() {
+  const router = useRouter();
   const [submittedOtp, setSubmittedOtp] = useState<string | null>(null);
-
-  const otpInputSchema = z.object({
-    otp: z.string().length(6, { message: "OTP harus 6 digit" }),
-  });
-
-  type OtpFormData = z.infer<typeof otpInputSchema>;
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
     reset,
-  } = useForm<OtpFormData>({
-    resolver: zodResolver(otpInputSchema),
+    watch,
+    formState: { errors },
+  } = useForm<OtpValues>({
+    resolver: zodResolver(otpSchema),
     defaultValues: {
       otp: "",
     },
   });
 
-  const onSubmit = (data: OtpFormData) => {
-    // Simpan OTP yang disubmit
-    setSubmittedOtp(data.otp);
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<OtpValues> = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
 
-    // Lakukan verifikasi OTP
-    console.log("OTP Submitted:", data.otp);
-
-    // Reset form
-    reset({ otp: "" });
+    try {
+      const response = await axiosInstance.post(
+        "/auth/admin/otp-verification",
+        {
+          otp: data.otp,
+        }
+      );
+      const result = response.data;
+      if (result.status === 200) {
+        setSubmittedOtp(data.otp);
+        showAlert2("success", "Berhasil.");
+        console.log(result.otp);
+        Cookies.set("accessToken", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refreshToken", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/buat-password-baru");
+          showAlert2("success", "Berhasil.");
+        }, 10);
+        reset();
+      }
+    } catch (error: any) {
+      console.log(data.otp);
+      const errorMessage =
+        error.response?.data?.message || "Otp gagal. Silakan coba lagi!";
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // set error messege
+  const otp = watch("otp");
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
+    }
+  }, [otp]);
 
   return (
     <div>
@@ -50,7 +93,7 @@ function OtpInputPage() {
             <OtpInput
               control={control}
               name="otp"
-              key={submittedOtp ? "reset" : "active"} // Force reset
+              key={submittedOtp ? "reset" : "active"}
             />
             {errors.otp && <p className="text-danger">{errors.otp.message}</p>}
           </div>
@@ -58,10 +101,11 @@ function OtpInputPage() {
             <button
               type="submit"
               className="w-full bg-primaryColor rounded-md py-2"
+              disabled={loading}
             >
-              Masuk
+              {loading ? <LoadingSVG /> : "Masuk"}
             </button>
-            <p className="text-danger">{errors.otp?.message}</p>
+            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
           </div>
         </div>
       </form>

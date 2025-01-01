@@ -1,6 +1,6 @@
 "use client";
 
-import UserIcon from "../icon/UserIcon";
+import { UserIcon } from "@/constants/svgIcons";
 
 type InputEmailProps = {
   placeholder: string;

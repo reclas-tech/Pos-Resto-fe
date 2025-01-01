@@ -41,34 +41,127 @@ import { ActionSVG } from "@/constants/svgIcons";
 import DeleteModal from "@/components/ui/modal/delete";
 import CreateModal from "@/components/ui/modal/create";
 import EditModal from "@/components/ui/modal/edit";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CategoryValues, categorySchema } from "@/validations";
+import { useRouter } from "next/navigation";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { AxiosError } from "axios";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 
 const products = [
   {
     no: "1",
-    nameCategory: "Kategori 1",
+    name: "Kategori 1",
   },
   {
     no: "2",
-    nameCategory: "Kategori 2",
+    name: "Kategori 2",
   },
   {
     no: "3",
-    nameCategory: "Kategori 3",
+    name: "Kategori 3",
   },
 ];
 
 function CategoryPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleCreate = () => {
-    console.log("Data ditambahkan");
-  };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CategoryValues>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-  const handleEdit = () => {
-    console.log("Data diedit");
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    reset: reset2,
+    formState: { errors: errors2 },
+  } = useForm<CategoryValues>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "Category 1",
+    },
+  });
+
+  // Read One
+  // const { slug } = useParams();
+  // const { data: dataUser } = useGetCategorySlug(slug as string);
+  // console.log("Get data : ", dataUser);
+  // useEffect(() => {
+  //   if (dataUser?.data) {
+  //     const timer = setTimeout(() => {
+  //       setValue("name", dataUser?.data?.name ?? "Category 1");
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [dataUser, setValue]);
+  // Read One
+
+  // Create
+  const onAddSubmit: SubmitHandler<CategoryValues> = async (data) => {
+    console.log("Form data:", data);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    try {
+      await axiosPrivate.post("/category", formData);
+      showAlert2("success", "Berhasil menambahkan data.");
+      navigate.push("/category");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorMessage =
+          error.response?.data?.data?.[0]?.message || "Gagal menambahkan data.";
+        showAlert2("error", errorMessage);
+      } else {
+        showAlert2("error", "Terjadi kesalahan!");
+      }
+    } finally {
+      setLoading(false);
+      setIsCreateModalOpen(false);
+      reset();
+    }
   };
+  // Create
+
+  // Update
+  const onEditSubmit: SubmitHandler<CategoryValues> = async (data) => {
+    console.log("Form data:", data);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("name", data.name);
+
+    try {
+      await axiosPrivate.put(`/`, formData);
+      showAlert2("success", "Berhasil menyimpan data.");
+      navigate.push("/category");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const errorMessage =
+          error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
+        showAlert2("error", errorMessage);
+      } else {
+        showAlert2("error", "Terjadi kesalahan!");
+      }
+    } finally {
+      setLoading(false);
+      setIsCreateModalOpen(false);
+      reset2();
+    }
+  };
+  // Update
 
   const handleDelete = () => {
     console.log("Data dihapus");
@@ -108,17 +201,24 @@ function CategoryPage() {
           <CreateModal
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
-            onCreate={handleCreate}
+            onSubmit={handleSubmit(onAddSubmit)}
             title="Tambah Kategori"
+            loading={loading}
           >
             <div className="flex flex-col w-full">
-              <Label htmlFor="nameCategory">Nama Kategori</Label>
+              <Label htmlFor="name">Nama Kategori</Label>
               <Input
                 type="text"
-                id="nameCategory"
+                id="name"
                 placeholder="Nama Kategori"
                 className="w-full"
+                {...register("name")}
               />
+              {errors.name && (
+                <span className="text-sm text-red-500">
+                  {errors.name.message}
+                </span>
+              )}
             </div>
           </CreateModal>
         </div>
@@ -141,9 +241,7 @@ function CategoryPage() {
                 <TableCell className="font-medium text-center">
                   {categoryView.no}
                 </TableCell>
-                <TableCell className="text-left">
-                  {categoryView.nameCategory}
-                </TableCell>
+                <TableCell className="text-left">{categoryView.name}</TableCell>
                 <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -166,19 +264,24 @@ function CategoryPage() {
                           <EditModal
                             isOpen={isEditModalOpen}
                             onClose={() => setIsEditModalOpen(false)}
-                            onEdit={handleEdit}
+                            onSubmit={handleSubmit2(onEditSubmit)}
                             title="Edit Kategori"
+                            loading={loading}
                           >
                             <div className="flex flex-col w-full">
-                              <Label htmlFor="nameCategory">
-                                Nama Kategori
-                              </Label>
+                              <Label htmlFor="name">Nama Kategori</Label>
                               <Input
                                 type="text"
-                                id="nameCategory"
+                                id="name"
                                 placeholder="Edit Kategori"
                                 className="w-full"
+                                {...register2("name")}
                               />
+                              {errors2.name && (
+                                <span className="text-sm text-red-500">
+                                  {errors2.name.message}
+                                </span>
+                              )}
                             </div>
                           </EditModal>
                         </div>
