@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -19,15 +19,15 @@ import { FormValuesProduct, productSchema } from "@/validations";
 import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { AxiosError } from "axios";
-import Cookies from "js-cookie";
-import { axiosInstance } from "@/utils/axios";
 import { LoadingSVG } from "@/constants/svgIcons";
-// import { useRupiah } from "@/hooks/useRupiah";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import { useRupiah } from "@/hooks/useRupiah";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function EditProductPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -50,20 +50,6 @@ function EditProductPage() {
         "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
   });
-
-  // Get token akses from cookies
-  const accessToken = Cookies.get("accessToken");
-  useEffect(() => {
-    if (!accessToken) {
-      showAlert2("error", "Anda harus login terlebih dahulu!");
-      navigate.push("/login");
-    }
-  }, [accessToken, navigate]);
-
-  if (!accessToken) {
-    return null;
-  }
-  // Get token akses from cookies
 
   // Read One
   // const { slug } = useParams();
@@ -101,12 +87,7 @@ function EditProductPage() {
     }
 
     try {
-      await axiosInstance.put(`/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`, // Send token
-        },
-      });
+      await axiosPrivate.put(`/`, formData);
       showAlert2("success", "Berhasil menyimpan data.");
       navigate.push("/produk");
     } catch (error) {
@@ -146,8 +127,8 @@ function EditProductPage() {
     "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
   );
 
-  // const { value: price, onChange: handlePriceChange } = useRupiah();
-  // const { value: hpp, onChange: handleHppChange } = useRupiah();
+  const { value: price, onChange: handlePriceChange } = useRupiah();
+  const { value: hpp, onChange: handleHppChange } = useRupiah();
 
   return (
     <>
@@ -200,10 +181,10 @@ function EditProductPage() {
               type="text"
               id="price"
               placeholder="Rp."
-              // value={price}
+              value={price}
               {...register("price")}
               onChange={(e) => {
-                // handlePriceChange(e);
+                handlePriceChange(e);
                 setValue("price", e.target.value.replace(/\D/g, ""));
               }}
             />
@@ -219,10 +200,10 @@ function EditProductPage() {
               type="text"
               id="hpp"
               placeholder="Rp."
-              // value={hpp}
+              value={hpp}
               {...register("hpp")}
               onChange={(e) => {
-                // handleHppChange(e);
+                handleHppChange(e);
                 setValue("hpp", e.target.value.replace(/\D/g, ""));
               }}
             />

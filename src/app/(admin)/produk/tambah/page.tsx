@@ -20,25 +20,16 @@ import { FormValuesProduct, productSchema } from "@/validations";
 import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { AxiosError } from "axios";
-import Cookies from "js-cookie";
-import { axiosInstance } from "@/utils/axios";
 import { LoadingSVG } from "@/constants/svgIcons";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function CreateProductPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
-
-  // Get token akses from cookies
-  const accessToken = Cookies.get("accessToken");
-  if (!accessToken) {
-    showAlert2("error", "Anda harus login terlebih dahulu!");
-    navigate.push("/login");
-    return;
-  }
-  // Get token akses from cookies
 
   const {
     register,
@@ -72,12 +63,7 @@ function CreateProductPage() {
     formData.append("image", data.image);
 
     try {
-      await axiosInstance.post("/produk", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`, // Send token
-        },
-      });
+      await axiosPrivate.post("/produk", formData);
       showAlert2("success", "Berhasil menambahkan data.");
       navigate.push("/produk");
     } catch (error) {
