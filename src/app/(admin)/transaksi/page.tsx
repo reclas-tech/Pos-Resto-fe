@@ -36,7 +36,7 @@ import {
 import { SearchInput } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ActionSVG, FilterTableSVG } from "@/constants/svgIcons";
-import DetailModal from "@/components/ui/modal/detail";
+import DetailModal from "@/components/ui/modal/detailtransaksi";
 
 const transaction = [
   {
