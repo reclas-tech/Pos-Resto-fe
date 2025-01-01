@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -15,25 +15,29 @@ import {
 } from "@/components/ui/select";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormValuesProduct, productSchema } from "@/validations";
-import { useParams, useRouter } from "next/navigation";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import { ProductValues, productSchema } from "@/validations";
+import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
-import LoadingForm from "@/components/ui/LoadingForm";
 import { AxiosError } from "axios";
-import { useGetProductSlug } from "@/sevices/api";
+import { LoadingSVG } from "@/constants/svgIcons";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import { useRupiah } from "@/hooks/useRupiah";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function EditProductPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesProduct>({
+  } = useForm<ProductValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "Produk 1",
@@ -42,38 +46,34 @@ function EditProductPage() {
       hpp: "Rp. 3.000",
       stock: "23",
       kitchen: "Dapur 1",
-      image: "",
+      image:
+        "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
   });
 
   // Read One
-  const { slug } = useParams();
-  const { data: dataUser } = useGetProductSlug(slug as string);
-  useEffect(() => {
-    if (dataUser?.data) {
-      const timer = setTimeout(() => {
-        setValue("name", dataUser?.data?.name ?? "Produk 1");
-        setValue("category", dataUser?.data?.category ?? "Kategori 1");
-        setValue("price", dataUser?.data?.price ?? "45000");
-        setValue("hpp", dataUser?.data?.hpp ?? "3000");
-        setValue("kitchen", dataUser?.data?.kitchen ?? "23");
-        setValue("stock", dataUser?.data?.stock ?? "Dapur 1");
-        if (dataUser?.data?.image) {
-          setImagePreview(dataUser?.data?.image);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [dataUser, setValue]);
+  // const { slug } = useParams();
+  // const { data: dataUser } = useGetProductSlug(slug as string);
+  // useEffect(() => {
+  //   if (dataUser?.data) {
+  //     const timer = setTimeout(() => {
+  //       setValue("name", dataUser?.data?.name ?? "Produk 1");
+  //       setValue("category", dataUser?.data?.category ?? "Kategori 1");
+  //       setValue("price", dataUser?.data?.price ?? "45000");
+  //       setValue("hpp", dataUser?.data?.hpp ?? "3000");
+  //       setValue("kitchen", dataUser?.data?.kitchen ?? "23");
+  //       setValue("stock", dataUser?.data?.stock ?? "Dapur 1");
+  //       if (dataUser?.data?.image) {
+  //         setImagePreview(dataUser?.data?.image);
+  //       }
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [dataUser, setValue]);
   // Read One
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  // const [accessToken] = useLocalStorage("accessToken", "");
-  const axiosPrivate = useAxiosPrivate();
-
   // Update
-  const onEditSubmit: SubmitHandler<FormValuesProduct> = async (data) => {
+  const onEditSubmit: SubmitHandler<ProductValues> = async (data) => {
     console.log("Form data:", data);
     setLoading(true);
     const formData = new FormData();
@@ -85,12 +85,9 @@ function EditProductPage() {
     if (data.image) {
       formData.append("image", data.image);
     }
+
     try {
-      await axiosPrivate.put(`/${slug}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axiosPrivate.put(`/`, formData);
       showAlert2("success", "Berhasil menyimpan data.");
       navigate.push("/produk");
     } catch (error) {
@@ -99,13 +96,12 @@ function EditProductPage() {
           error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
       reset();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Update
 
@@ -117,27 +113,29 @@ function EditProductPage() {
     setValue("kitchen", value);
   };
 
-  // const { value: price, onChange: handlePriceChange } = useRupiah();
-  // const { value: hpp, onChange: handleHppChange } = useRupiah();
-
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          setImagePreview(reader.result);
-          setValue("image", reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      setValue("image", file);
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
+  );
+
+  const { value: price, onChange: handlePriceChange } = useRupiah();
+  const { value: hpp, onChange: handleHppChange } = useRupiah();
+
   return (
     <>
-      <form className="" onSubmit={handleSubmit(onEditSubmit)}>
+      <form
+        className="text-black dark:text-white"
+        onSubmit={handleSubmit(onEditSubmit)}
+      >
         <div className="flex gap-4 justify-between mb-4">
           <div className="flex flex-col w-full">
             <Label htmlFor="nameProducts">Nama Produk</Label>
@@ -160,7 +158,7 @@ function EditProductPage() {
               {...register("category")}
               defaultValue="Kategori 1"
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -183,7 +181,12 @@ function EditProductPage() {
               type="text"
               id="price"
               placeholder="Rp."
+              value={price}
               {...register("price")}
+              onChange={(e) => {
+                handlePriceChange(e);
+                setValue("price", e.target.value.replace(/\D/g, ""));
+              }}
             />
             {errors.price && (
               <span className="text-sm text-red-500">
@@ -193,7 +196,7 @@ function EditProductPage() {
           </div>
           <div className="flex flex-col w-full">
             <Label htmlFor="hpp">HPP</Label>
-            {/* <Input
+            <Input
               type="text"
               id="hpp"
               placeholder="Rp."
@@ -203,12 +206,6 @@ function EditProductPage() {
                 handleHppChange(e);
                 setValue("hpp", e.target.value.replace(/\D/g, ""));
               }}
-            /> */}
-            <Input
-              type="text"
-              id="hpp"
-              placeholder="Rp."
-              {...register("hpp")}
             />
             {errors.hpp && (
               <span className="text-sm text-red-500">{errors.hpp.message}</span>
@@ -239,7 +236,7 @@ function EditProductPage() {
               defaultValue="Dapur 1"
               {...register("kitchen")}
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Dapur" />
               </SelectTrigger>
               <SelectContent>
@@ -257,7 +254,7 @@ function EditProductPage() {
 
         <div className="w-full mb-5">
           <label
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium"
             htmlFor="productsCapture"
           >
             Foto Produk
@@ -298,7 +295,7 @@ function EditProductPage() {
             </Button>
           </Link>
           <Button variant={"default"}>
-            {loading ? <LoadingForm /> : "Simpan"}
+            {loading ? <LoadingSVG /> : "Simpan"}
           </Button>
         </div>
       </form>

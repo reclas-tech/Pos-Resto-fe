@@ -16,24 +16,28 @@ import {
 } from "@/components/ui/select";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormValuesProduct, productSchema } from "@/validations";
+import { ProductValues, productSchema } from "@/validations";
 import { useRouter } from "next/navigation";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { showAlert2 } from "@/lib/sweetalert2";
-import LoadingForm from "@/components/ui/LoadingForm";
 import { AxiosError } from "axios";
+import { LoadingSVG } from "@/constants/svgIcons";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 
 type Category = "Kategori 1" | "Kategori 2";
 type Kitchen = "Dapur 1" | "Dapur 2";
 
 function CreateProductPage() {
+  const axiosPrivate = useAxiosPrivateInstance();
+  const navigate = useRouter();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesProduct>({
+  } = useForm<ProductValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
@@ -46,13 +50,8 @@ function CreateProductPage() {
     },
   });
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  // const [accessToken] = useLocalStorage("accessToken", "");
-  const axiosPrivate = useAxiosPrivate();
-
   // Create
-  const onAddSubmit: SubmitHandler<FormValuesProduct> = async (data) => {
+  const onAddSubmit: SubmitHandler<ProductValues> = async (data) => {
     console.log("Form data:", data);
     setLoading(true);
     const formData = new FormData();
@@ -62,12 +61,9 @@ function CreateProductPage() {
     formData.append("hpp", data.hpp);
     formData.append("stock", data.stock);
     formData.append("image", data.image);
+
     try {
-      await axiosPrivate.post("/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axiosPrivate.post("/produk", formData);
       showAlert2("success", "Berhasil menambahkan data.");
       navigate.push("/produk");
     } catch (error) {
@@ -76,13 +72,12 @@ function CreateProductPage() {
           error.response?.data?.data?.[0]?.message || "Gagal menambahkan data.";
         showAlert2("error", errorMessage);
       } else {
-        showAlert2("error", "Terjadi kesalahan yang tidak terduga!");
+        showAlert2("error", "Terjadi kesalahan!");
       }
     } finally {
       setLoading(false);
       reset();
     }
-    // mutate(`produk/get?page=1`);
   };
   // Create
 
@@ -98,23 +93,22 @@ function CreateProductPage() {
   const { value: hpp, onChange: handleHppChange } = useRupiah();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          setImagePreview(reader.result);
-          setValue("image", reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      setValue("image", file);
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
     }
   };
 
   return (
     <>
-      <form className="" onSubmit={handleSubmit(onAddSubmit)}>
+      <form
+        className="text-black dark:text-white"
+        onSubmit={handleSubmit(onAddSubmit)}
+      >
         <div className="flex gap-4 justify-between mb-4">
           <div className="flex flex-col w-full">
             <Label htmlFor="nameProducts">Nama Produk</Label>
@@ -136,7 +130,7 @@ function CreateProductPage() {
               onValueChange={handleCategoryChange}
               {...register("category")}
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -210,7 +204,7 @@ function CreateProductPage() {
               onValueChange={handleKitchenChange}
               {...register("kitchen")}
             >
-              <SelectTrigger className="w-full text-neutral-500">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Dapur" />
               </SelectTrigger>
               <SelectContent>
@@ -228,7 +222,7 @@ function CreateProductPage() {
 
         <div className="w-full mb-5">
           <label
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium"
             htmlFor="productsCapture"
           >
             Foto Produk
@@ -268,8 +262,8 @@ function CreateProductPage() {
               Batal
             </Button>
           </Link>
-          <Button variant={"default"}>
-            {loading ? <LoadingForm /> : "Tambah"}
+          <Button variant={"default"} disabled={loading}>
+            {loading ? <LoadingSVG /> : "Tambah"}
           </Button>
         </div>
       </form>

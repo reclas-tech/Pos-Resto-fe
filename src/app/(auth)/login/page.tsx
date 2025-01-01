@@ -1,24 +1,31 @@
 "use client";
 
-import React from "react";
-import InputPassword from "../components/InputPassword";
-import InputEmail from "../components/InputEmail";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import Link from "next/link";
+import { LoginValues, loginSchema } from "@/validations";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { loginSchema } from "../validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { axiosInstance } from "@/utils/axios";
+import { useRouter } from "next/navigation";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { LoadingSVG } from "@/constants/svgIcons";
+import InputEmail from "@/components/ui/auth/InputEmail";
+import InputPassword from "@/components/ui/auth/InputPassword";
 
 const LoginPage = () => {
-  type FormValues = z.infer<typeof loginSchema>;
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // Hook form dengan react-hook-form
   const {
     register,
     handleSubmit,
     reset,
-    formState,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm<FormValues>({
+    watch,
+    formState: { errors },
+  } = useForm<LoginValues>({
     defaultValues: {
       email: "",
       password: "",
@@ -26,15 +33,64 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log("Data yang diterima:", data);
+  // cek berdasarkan cookies
+  useEffect(() => {
+    const accessToken = Cookies.get("accessToken");
+    if (accessToken) {
+      router.push("/beranda");
+    } else {
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      router.push("/login");
+    }
+  }, [router]);
+
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<LoginValues> = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await axiosInstance.post("/auth/admin/login", {
+        email: data.email,
+        password: data.password,
+      });
+      const result = response.data;
+      if (result.status === 200) {
+        showAlert2("success", "Berhasil Login.");
+        Cookies.set("accessToken", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refreshToken", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/beranda");
+          showAlert2("success", "Berhasil Login.");
+        }, 10);
+        reset();
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ email: "", password: "" });
+  // set error messege
+  const email = watch("email");
+  const password = watch("password");
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
     }
-  }, [formState, reset]);
+  }, [email, password]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-[388px] space-y-4">
@@ -57,7 +113,7 @@ const LoginPage = () => {
           )}
         </div>
 
-        <Link href="/auth/lupa-password" className="inline-block text-sm">
+        <Link href="/lupa-password" className="inline-block text-sm">
           Lupa Password?
         </Link>
       </div>
@@ -65,14 +121,11 @@ const LoginPage = () => {
         <button
           type="submit"
           className="w-full bg-primaryColor rounded-md py-2 text-white"
+          disabled={loading}
         >
-          Masuk
+          {loading ? <LoadingSVG /> : "Masuk"}
         </button>
-        {errors.email || errors.password ? (
-          <p className="text-danger">
-            {errors.email?.message || errors.password?.message}
-          </p>
-        ) : null}
+        {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
       </div>
     </form>
   );

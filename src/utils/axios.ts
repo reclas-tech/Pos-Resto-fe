@@ -2,6 +2,9 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   baseURL: "/api-backend",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 export const axiosPrivateInstance = axios.create({
@@ -9,5 +12,5 @@ export const axiosPrivateInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // Send HttpOnly cookie
 });
