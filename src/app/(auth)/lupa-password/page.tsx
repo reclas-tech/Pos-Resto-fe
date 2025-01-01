@@ -1,29 +1,28 @@
 "use client";
-import React, { useState } from "react";
-import InputEmail from "../components/InputEmail";
+
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { forgotPasswordSchema } from "../validation";
-import { z } from "zod";
 import { axiosInstance } from "@/utils/axios";
-import Cookies from "js-cookie";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { useRouter } from "next/navigation";
 import { LoadingSVG } from "@/constants/svgIcons";
+import { ForgotPasswordValues, forgotPasswordSchema } from "@/validations";
+import InputEmail from "@/components/ui/auth/InputEmail";
 
 function ForgetPasswordPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
-  type FormValues = z.infer<typeof forgotPasswordSchema>;
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const {
     register,
     handleSubmit,
     reset,
-    formState,
+    watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<ForgotPasswordValues>({
     defaultValues: {
       email: "",
     },
@@ -31,8 +30,10 @@ function ForgetPasswordPage() {
   });
 
   /* eslint-disable */
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<ForgotPasswordValues> = async (data) => {
     setLoading(true);
+    setErrorMessage("");
+
     try {
       const response = await axiosInstance.post("/auth/admin/forget-password", {
         email: data.email,
@@ -58,17 +59,20 @@ function ForgetPasswordPage() {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Login gagal. Silakan coba lagi!";
-      showAlert2("error", errorMessage);
+      setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ email: "" });
+  // set error messege
+  const email = watch("email");
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
     }
-  }, [formState, reset]);
+  }, [email]);
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="w-[388px]">
@@ -93,8 +97,7 @@ function ForgetPasswordPage() {
             >
               {loading ? <LoadingSVG /> : "Masuk"}
             </button>
-
-            <p className="text-danger">{errors.email?.message}</p>
+            {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
           </div>
         </div>
       </form>

@@ -43,7 +43,7 @@ import CreateModal from "@/components/ui/modal/create";
 import EditModal from "@/components/ui/modal/edit";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { categorySchema, FormValuesCategory } from "@/validations";
+import { CategoryValues, categorySchema } from "@/validations";
 import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { AxiosError } from "axios";
@@ -77,7 +77,7 @@ function CategoryPage() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValuesCategory>({
+  } = useForm<CategoryValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
@@ -89,7 +89,7 @@ function CategoryPage() {
     handleSubmit: handleSubmit2,
     reset: reset2,
     formState: { errors: errors2 },
-  } = useForm<FormValuesCategory>({
+  } = useForm<CategoryValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "Category 1",
@@ -111,7 +111,7 @@ function CategoryPage() {
   // Read One
 
   // Create
-  const onAddSubmit: SubmitHandler<FormValuesCategory> = async (data) => {
+  const onAddSubmit: SubmitHandler<CategoryValues> = async (data) => {
     console.log("Form data:", data);
     setLoading(true);
     const formData = new FormData();
@@ -137,7 +137,7 @@ function CategoryPage() {
   // Create
 
   // Update
-  const onEditSubmit: SubmitHandler<FormValuesCategory> = async (data) => {
+  const onEditSubmit: SubmitHandler<CategoryValues> = async (data) => {
     console.log("Form data:", data);
     setLoading(true);
     const formData = new FormData();

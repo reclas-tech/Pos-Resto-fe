@@ -2,6 +2,120 @@
 
 import React from "react";
 
+// Auth SVG
+export function InvisibleIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5.8793 16.7065L1.29289 21.2929L2.70711 22.7071L7.31908 18.0951C9.98947 20.6438 14.048 20.6349 16.7087 18.0685L23 12L18.1207 7.29353L22.7071 2.70712L21.2929 1.29291L16.6809 5.90488C14.0105 3.3562 9.95199 3.36509 7.29129 5.93155L1 12L5.8793 16.7065ZM8.73383 16.6804L9.24261 16.1716C10.033 16.6951 10.9809 17 12 17C14.7614 17 17 14.7614 17 12C17 10.9809 16.6951 10.0331 16.1716 9.24263L16.7063 8.70797L20.1192 12L15.3202 16.629C13.443 18.4397 10.6288 18.4569 8.73383 16.6804ZM7.8284 14.7574L7.29375 15.2921L3.88082 12L8.67978 7.37103C10.557 5.56031 13.3712 5.54317 15.2662 7.31963L14.7574 7.82841C13.967 7.30489 13.0191 7.00001 12 7.00001C9.23858 7.00001 7 9.23859 7 12C7 13.0191 7.30488 13.967 7.8284 14.7574ZM10.7066 14.7076L14.7076 10.7066C14.895 11.0982 15 11.5369 15 12C15 13.6569 13.6569 15 12 15C11.5369 15 11.0982 14.8951 10.7066 14.7076ZM13.2934 9.29239L9.29237 13.2934C9.10495 12.9018 9 12.4632 9 12C9 10.3432 10.3431 9.00001 12 9.00001C12.4631 9.00001 12.9018 9.10497 13.2934 9.29239Z"
+          fill="black"
+        />
+      </svg>
+    </>
+  );
+}
+export function LockIcon() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect width="24" height="24" fill="url(#pattern0_24_93)" />
+        <defs>
+          <pattern
+            id="pattern0_24_93"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_24_93" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_24_93"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,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"
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+export function UserIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect y="0.5" width="24" height="24" fill="url(#pattern0_44_71)" />
+        <defs>
+          <pattern
+            id="pattern0_44_71"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_44_71" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_44_71"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAENklEQVR4nO2cy69PVxTHP8jV1O9Ggrg6EgPELTFRSaU1aROdI0zKQGm9+QfIjUkb0SiimEgHBswMTTwSbcXAo5o0HnWFgQSJAeW6N6kjO9YvLeHufZ77/M7v+0lW8sv5nbPOXmu/1977gBBCCCGEEEIIIYQQ9aMXWAkcAS4CD4ERk4d27TCwAmjFTmyT6AMOAE+BJFDcvfvtWZGR8cDOlI5/W54AO0yXSMEU4GwOx78tvwLTlANh9AN3CnR+WwZNt/CU/L9LcH5bXMZOVQ68m56Cm533yXn1Ce9mZwXOb8su1YI3mWYjlhDnXQY2W3veMum3a1cCdbwAZigT/uNAgNOGgDXAGN7PWGCt3evT9/MoerpuhvvU46znwGcpdH4ekAmuxmnGzOvwgq+0upKflnUBepdn0Ns4jgS0+a5pSYt75qpH96ES7Ok4LnqctCmH7q0e3b8XaEfH8sjjpDk5dH/s0f2gQDs6lmGPk1wnnZXegOFo1zNcYgZMVAbkb4L6c2SAmqACOuEtOTJguzphP4c9TrqSYxj6h2bDflYETJhceCEt3wboXZZBb+NoBYQihiy8EMriwFDEhBLt6ij2B5TWIQsvjNYcuf++CwzGHazQvtrTlyIcfdVmuHOt9vTa760Bbf7/M3N6bKPrxo5A5xUhA7GNrSM9WpKMzxQtysen37aQFN3s3M4Z2Ou6mnCm4J0Q2qaYoU/YZRHLrI4fsg7X6RIZmWEL6KHD1PYky43zNdQskJat4brMuGCLKcMmD+zaQQsvaIYrhBBCCCGEEEIIIUQKptr2ErcnaDdwEjgHXLLFlUcWqn5hv2/bf+fsXvfMN6ZDR1M9TAC+sNi9O6r6uIQVsce2yDNg7+rqiKk7aLcI+MEOSYxUuCOiLe6dvwHfA596Dv81hrlWAm9FcHjikXvAPtuB16jM+Mj2/NysgZOTQLlpae7oD3zMA44FnIBJaizDZoOruR3DbOAE8G8NHJgUJM6W48AsasyH1r7n2cWQ1FxGrJ/Ic2yqFOYD10sodYPAKWAvsB74ClgAzLR9Ph+Y9Nm1BXaPu/cne3awhNp43WyuBV/bpwTyGvUMOG216MuCPyPQMp0DNhd4VkB6n5vtUXGHqF/mMOIusMe+A1Hl5qkee+ePloas6Xe2byQSqzIm+r41KYtqMt5uTwr3Wtqy2FR5TZiVcqdaYrGabdZZ15XxwGrgr5S2/VPl9+jG2C600MS5U45LM550jMVY22EX+gGoSr87sSQwQa6GbADG0bmMs34utLa7jr50fglIyLW6T1pS4mz5M8Duo1SAL5DmDspNonlMtoI1mu03qkiIb8z/Cc1locd2N78oHV81bDpJbPujJyAy0e1PMz7uRimd2AYmNRdlAMqA6KUwUQ2I74hETVB8ZyQRRH0AyoDopTBpcg0QQgghhBBCCCGEEHQkrwALXAG3D4j6fgAAAABJRU5ErkJggg=="
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+export function VisibleIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect width="24" height="24" fill="url(#pattern0_24_95)" />
+        <defs>
+          <pattern
+            id="pattern0_24_95"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_24_95" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_24_95"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,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"
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+// Auth SVG
+
 // First Admin Page
 export function BerandaIcon({ size = 24, color = "currentColor" }) {
   return (
@@ -346,7 +460,6 @@ export function KeluarIcon({ size = 24, color = "currentColor" }) {
     </>
   );
 }
-
 // End Admin Page
 
 // First Delete Coponents

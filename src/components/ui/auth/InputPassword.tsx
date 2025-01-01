@@ -1,9 +1,7 @@
 "use client";
 
+import { InvisibleIcon, LockIcon, VisibleIcon } from "@/constants/svgIcons";
 import { useState } from "react";
-import LockIcon from "../icon/LockIcon";
-import VisibleIcon from "../icon/VisibleIcon";
-import InvisibleIcon from "../icon/InvisibleIcon";
 
 type InputPasswordProps = {
   placeholder: string;

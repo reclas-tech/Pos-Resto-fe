@@ -1,34 +1,31 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import InputPassword from "../components/InputPassword";
-import InputEmail from "../components/InputEmail";
-import Link from "next/link";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { loginSchema } from "../validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { axiosInstance } from "@/utils/axios";
-import { showAlert2 } from "@/lib/sweetalert2";
-import { useRouter } from "next/navigation";
-import { LoadingSVG } from "@/constants/svgIcons";
 import Cookies from "js-cookie";
-
-// Tipe data form values loginSchema
-type FormValues = z.infer<typeof loginSchema>;
+import Link from "next/link";
+import { LoginValues, loginSchema } from "@/validations";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { axiosInstance } from "@/utils/axios";
+import { useRouter } from "next/navigation";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { LoadingSVG } from "@/constants/svgIcons";
+import InputEmail from "@/components/ui/auth/InputEmail";
+import InputPassword from "@/components/ui/auth/InputPassword";
 
 const LoginPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Hook form dengan react-hook-form
   const {
     register,
     handleSubmit,
     reset,
-    formState,
+    watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<LoginValues>({
     defaultValues: {
       email: "",
       password: "",
@@ -49,8 +46,10 @@ const LoginPage = () => {
   }, [router]);
 
   /* eslint-disable */
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<LoginValues> = async (data) => {
     setLoading(true);
+    setErrorMessage("");
+
     try {
       const response = await axiosInstance.post("/auth/admin/login", {
         email: data.email,
@@ -78,18 +77,20 @@ const LoginPage = () => {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Login gagal. Silakan coba lagi!";
-      showAlert2("error", errorMessage);
-      console.error("Failed to login:", error);
+      setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  React.useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      reset({ email: "", password: "" });
+  // set error messege
+  const email = watch("email");
+  const password = watch("password");
+  useEffect(() => {
+    if (errorMessage) {
+      setErrorMessage("");
     }
-  }, [formState, reset]);
+  }, [email, password]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-[388px] space-y-4">
@@ -124,11 +125,7 @@ const LoginPage = () => {
         >
           {loading ? <LoadingSVG /> : "Masuk"}
         </button>
-        {errors.email || errors.password ? (
-          <p className="text-danger">
-            {errors.email?.message || errors.password?.message}
-          </p>
-        ) : null}
+        {errorMessage && <p className="text-danger mt-2">{errorMessage}</p>}
       </div>
     </form>
   );

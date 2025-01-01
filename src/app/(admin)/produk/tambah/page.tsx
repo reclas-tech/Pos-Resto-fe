@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormValuesProduct, productSchema } from "@/validations";
+import { ProductValues, productSchema } from "@/validations";
 import { useRouter } from "next/navigation";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { AxiosError } from "axios";
@@ -37,7 +37,7 @@ function CreateProductPage() {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesProduct>({
+  } = useForm<ProductValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
@@ -51,7 +51,7 @@ function CreateProductPage() {
   });
 
   // Create
-  const onAddSubmit: SubmitHandler<FormValuesProduct> = async (data) => {
+  const onAddSubmit: SubmitHandler<ProductValues> = async (data) => {
     console.log("Form data:", data);
     setLoading(true);
     const formData = new FormData();
