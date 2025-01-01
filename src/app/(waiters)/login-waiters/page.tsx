@@ -10,15 +10,14 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 
-const otpSchema = z.object({
-  otp: z.string().length(6, "PIN harus 6 digit"),
+const pinSchema = z.object({
+  pin: z.string().length(6, "Pin harus 6 digit"),
 });
 
-type OtpFormData = z.infer<typeof otpSchema>;
+type PinFormData = z.infer<typeof pinSchema>;
 
 const LoginWaitersPage = () => {
-  const [otpValue, setOtpValue] = useState<string>("");
-  
+  const [pinValue, setPinValue] = useState<string>("");
 
   const {
     handleSubmit,
@@ -26,113 +25,114 @@ const LoginWaitersPage = () => {
     setValue,
     trigger,
     reset,
-  } = useForm<OtpFormData>({
-    resolver: zodResolver(otpSchema),
+  } = useForm<PinFormData>({
+    resolver: zodResolver(pinSchema),
     defaultValues: {
-      otp: "",
+      pin: "",
     },
   });
 
   const handleButtonClick = (num: number) => {
-    if (otpValue.length < 6) {
-      const newValue = otpValue + num;
-      setOtpValue(newValue);
-      setValue("otp", newValue);
-      trigger("otp");
+    if (pinValue.length < 6) {
+      const newValue = pinValue + num;
+      setPinValue(newValue);
+      setValue("pin", newValue);
+      trigger("pin");
     }
   };
 
   const handleDelete = () => {
-    const newValue = otpValue.slice(0, -1);
-    setOtpValue(newValue);
-    setValue("otp", newValue);
-    trigger("otp");
+    const newValue = pinValue.slice(0, -1);
+    setPinValue(newValue);
+    setValue("pin", newValue);
+    trigger("pin");
   };
 
-  const onSubmit = (data: OtpFormData) => {
+  const onSubmit = (data: PinFormData) => {
     console.log("Form submitted:", data);
-    setOtpValue("");
+    setPinValue("");
     reset();
   };
 
   return (
-    <div className="w-full h-screen flex">
-          <DarkModeComponents />
-      <div className="w-1/2 h-full">
+    <div className="w-full h-screen flex flex-col sm:flex-row">
+      <DarkModeComponents />
+      <div className="w-full sm:w-1/2 h-1/2 sm:h-full">
         <div className="w-full h-full bg-primaryColor relative flex justify-center items-center overflow-hidden">
-          <div className="absolute w-[600px] h-[600px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-300px] right-[-300px] z-0" />
-          <div className="absolute w-[700px] h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full bottom-[-250px] left-[-350px] z-0" />
-          <div className="space-y-14 z-10">
-            <div className="space-y-6 text-center text-white">
-              <p className="text-4xl font-bold leading-10">Login Waiters</p>
-              <p className="text-2xl leading-8">Waroeng Aceh Garuda</p>
+          <div className="absolute w-[300px] sm:w-[450px] md:w-[600px] h-[300px] sm:h-[450px] md:h-[600px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full top-[-150px] sm:top-[-225px] md:top-[-300px] right-[-150px] sm:right-[-225px] md:right-[-300px] z-0" />
+          <div className="absolute w-[350px] sm:w-[525px] md:w-[700px] h-[350px] sm:h-[525px] md:h-[700px] bg-gradient-to-br from-5% from-white opacity-20 rounded-full bottom-[-125px] sm:bottom-[-187px] md:bottom-[-250px] left-[-175px] sm:left-[-262px] md:left-[-350px] z-0" />
+          <div className="space-y-8 sm:space-y-10 md:space-y-14 z-10">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6 text-center text-white">
+              <p className="text-3xl sm:text-3xl md:text-4xl font-bold leading-8 sm:leading-9 md:leading-10">
+                Login Waiters
+              </p>
+              <p className="text-xl sm:text-xl md:text-2xl leading-6 sm:leading-7 md:leading-8">
+                Waroeng Aceh Garuda
+              </p>
             </div>
-            <div className="bg-white rounded-lg w-[320px] h-[430px] p-6 space-y-4">
-              <p className="text-center text-[#334155] text-xl font-semibold">
+            <div className="bg-white rounded-lg w-[280px] sm:w-[300px] md:w-[320px] h-[380px] sm:h-[405px] md:h-[430px] p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-3 md:space-y-4">
+              <p className="text-center text-[#334155] text-lg sm:text-lg md:text-xl font-semibold">
                 Kode Pin
               </p>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {/* OTP Display */}
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-4 sm:space-y-5 md:space-y-6"
+              >
                 <div className="flex justify-center space-x-2 relative">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div
                       key={index}
-                      className="w-6 h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center text-[#334155] justify-center"
+                      className="w-5 sm:w-5 md:w-6 h-7 sm:h-7 md:h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center text-[#334155] justify-center"
                     >
-                      {otpValue[index] ? "•" : ""}
+                      {pinValue[index] ? "•" : ""}
                     </div>
                   ))}
-                  {errors.otp && (
-                    <p className="text-red-500 text-sm text-center absolute top-[105%] left--4">
-                      {errors.otp.message}
+                  {errors.pin && (
+                    <p className="text-red-500 text-xs sm:text-xs md:text-sm text-center absolute top-[105%] left-[30%]">
+                      {errors.pin.message}
                     </p>
                   )}
                 </div>
 
-                {/* Numpad Container */}
-                <div className="space-y-6">
-                  {/* Numpad Grid */}
-                  <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-4 sm:space-y-5 md:space-y-6">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2 md:gap-3">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                       <button
                         key={num}
                         type="button"
                         onClick={() => handleButtonClick(num)}
-                        className="w-full h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-base "
+                        className="w-full h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-sm sm:text-sm md:text-base"
                       >
                         {num}
                       </button>
                     ))}
                   </div>
 
-                  {/* Bottom Row with Delete, 0, and Clear */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2 md:gap-3">
                     <button
                       type="button"
                       onClick={handleDelete}
-                      className="w-full h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-base"
+                      className="w-full h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center"
                     >
-                      {/* <Delete className="w-6 h-6" /> */}
                       <Image
                         src={clear}
                         alt="clear"
-                        className="w-6"
+                        className="w-5 sm:w-5 md:w-6"
                         unoptimized
                       />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleButtonClick(0)}
-                      className="col-span-2 h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-base"
+                      className="col-span-2 h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-sm sm:text-sm md:text-base"
                     >
                       0
                     </button>
                   </div>
 
-                  {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-base"
+                    className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base"
                   >
                     Kirim
                   </button>
@@ -142,7 +142,7 @@ const LoginWaitersPage = () => {
           </div>
         </div>
       </div>
-      <div className="w-1/2 h-full">
+      <div className="w-full sm:w-1/2 h-1/2 sm:h-full">
         <div className="w-full h-full flex justify-center items-center relative bg-gray-700">
           <Image
             unoptimized
@@ -154,7 +154,7 @@ const LoginWaitersPage = () => {
             unoptimized
             src={logo}
             alt="logo"
-            className="w-[300px] absolute"
+            className="w-[200px] sm:w-[250px] md:w-[300px] absolute"
           />
         </div>
       </div>
