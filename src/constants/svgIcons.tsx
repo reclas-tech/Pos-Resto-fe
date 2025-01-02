@@ -2,7 +2,121 @@
 
 import React from "react";
 
-// Awal Admin Page
+// Auth SVG
+export function InvisibleIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5.8793 16.7065L1.29289 21.2929L2.70711 22.7071L7.31908 18.0951C9.98947 20.6438 14.048 20.6349 16.7087 18.0685L23 12L18.1207 7.29353L22.7071 2.70712L21.2929 1.29291L16.6809 5.90488C14.0105 3.3562 9.95199 3.36509 7.29129 5.93155L1 12L5.8793 16.7065ZM8.73383 16.6804L9.24261 16.1716C10.033 16.6951 10.9809 17 12 17C14.7614 17 17 14.7614 17 12C17 10.9809 16.6951 10.0331 16.1716 9.24263L16.7063 8.70797L20.1192 12L15.3202 16.629C13.443 18.4397 10.6288 18.4569 8.73383 16.6804ZM7.8284 14.7574L7.29375 15.2921L3.88082 12L8.67978 7.37103C10.557 5.56031 13.3712 5.54317 15.2662 7.31963L14.7574 7.82841C13.967 7.30489 13.0191 7.00001 12 7.00001C9.23858 7.00001 7 9.23859 7 12C7 13.0191 7.30488 13.967 7.8284 14.7574ZM10.7066 14.7076L14.7076 10.7066C14.895 11.0982 15 11.5369 15 12C15 13.6569 13.6569 15 12 15C11.5369 15 11.0982 14.8951 10.7066 14.7076ZM13.2934 9.29239L9.29237 13.2934C9.10495 12.9018 9 12.4632 9 12C9 10.3432 10.3431 9.00001 12 9.00001C12.4631 9.00001 12.9018 9.10497 13.2934 9.29239Z"
+          fill="black"
+        />
+      </svg>
+    </>
+  );
+}
+export function LockIcon() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect width="24" height="24" fill="url(#pattern0_24_93)" />
+        <defs>
+          <pattern
+            id="pattern0_24_93"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_24_93" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_24_93"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,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"
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+export function UserIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect y="0.5" width="24" height="24" fill="url(#pattern0_44_71)" />
+        <defs>
+          <pattern
+            id="pattern0_44_71"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_44_71" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_44_71"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAENklEQVR4nO2cy69PVxTHP8jV1O9Ggrg6EgPELTFRSaU1aROdI0zKQGm9+QfIjUkb0SiimEgHBswMTTwSbcXAo5o0HnWFgQSJAeW6N6kjO9YvLeHufZ77/M7v+0lW8sv5nbPOXmu/1977gBBCCCGEEEIIIYQQ9aMXWAkcAS4CD4ERk4d27TCwAmjFTmyT6AMOAE+BJFDcvfvtWZGR8cDOlI5/W54AO0yXSMEU4GwOx78tvwLTlANh9AN3CnR+WwZNt/CU/L9LcH5bXMZOVQ68m56Cm533yXn1Ce9mZwXOb8su1YI3mWYjlhDnXQY2W3veMum3a1cCdbwAZigT/uNAgNOGgDXAGN7PWGCt3evT9/MoerpuhvvU46znwGcpdH4ekAmuxmnGzOvwgq+0upKflnUBepdn0Ns4jgS0+a5pSYt75qpH96ES7Ok4LnqctCmH7q0e3b8XaEfH8sjjpDk5dH/s0f2gQDs6lmGPk1wnnZXegOFo1zNcYgZMVAbkb4L6c2SAmqACOuEtOTJguzphP4c9TrqSYxj6h2bDflYETJhceCEt3wboXZZBb+NoBYQihiy8EMriwFDEhBLt6ij2B5TWIQsvjNYcuf++CwzGHazQvtrTlyIcfdVmuHOt9vTa760Bbf7/M3N6bKPrxo5A5xUhA7GNrSM9WpKMzxQtysen37aQFN3s3M4Z2Ou6mnCm4J0Q2qaYoU/YZRHLrI4fsg7X6RIZmWEL6KHD1PYky43zNdQskJat4brMuGCLKcMmD+zaQQsvaIYrhBBCCCGEEEIIIUQKptr2ErcnaDdwEjgHXLLFlUcWqn5hv2/bf+fsXvfMN6ZDR1M9TAC+sNi9O6r6uIQVsce2yDNg7+rqiKk7aLcI+MEOSYxUuCOiLe6dvwHfA596Dv81hrlWAm9FcHjikXvAPtuB16jM+Mj2/NysgZOTQLlpae7oD3zMA44FnIBJaizDZoOruR3DbOAE8G8NHJgUJM6W48AsasyH1r7n2cWQ1FxGrJ/Ic2yqFOYD10sodYPAKWAvsB74ClgAzLR9Ph+Y9Nm1BXaPu/cne3awhNp43WyuBV/bpwTyGvUMOG216MuCPyPQMp0DNhd4VkB6n5vtUXGHqF/mMOIusMe+A1Hl5qkee+ePloas6Xe2byQSqzIm+r41KYtqMt5uTwr3Wtqy2FR5TZiVcqdaYrGabdZZ15XxwGrgr5S2/VPl9+jG2C600MS5U45LM550jMVY22EX+gGoSr87sSQwQa6GbADG0bmMs34utLa7jr50fglIyLW6T1pS4mz5M8Duo1SAL5DmDspNonlMtoI1mu03qkiIb8z/Cc1locd2N78oHV81bDpJbPujJyAy0e1PMz7uRimd2AYmNRdlAMqA6KUwUQ2I74hETVB8ZyQRRH0AyoDopTBpcg0QQgghhBBCCCGEEHQkrwALXAG3D4j6fgAAAABJRU5ErkJggg=="
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+export function VisibleIcon() {
+  return (
+    <>
+      <svg
+        className="w-full h-full"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+      >
+        <rect width="24" height="24" fill="url(#pattern0_24_95)" />
+        <defs>
+          <pattern
+            id="pattern0_24_95"
+            patternContentUnits="objectBoundingBox"
+            width="1"
+            height="1"
+          >
+            <use xlinkHref="#image0_24_95" transform="scale(0.0104167)" />
+          </pattern>
+          <image
+            id="image0_24_95"
+            width="96"
+            height="96"
+            xlinkHref="data:image/png;base64,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"
+          />
+        </defs>
+      </svg>
+    </>
+  );
+}
+// Auth SVG
+
+// First Admin Page
 export function BerandaIcon({ size = 24, color = "currentColor" }) {
   return (
     <>
@@ -346,5 +460,164 @@ export function KeluarIcon({ size = 24, color = "currentColor" }) {
     </>
   );
 }
+// End Admin Page
 
-// Akhir Admin Page
+// First Delete Coponents
+export function DeleteModalSVG() {
+  return (
+    <>
+      <svg
+        className="h-20 w-20 flex-shrink-0"
+        width="126"
+        height="125"
+        viewBox="0 0 126 125"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M69.25 93.75H56.75V81.25H69.25V93.75ZM69.25 68.75H56.75L56.75 31.25L69.25 31.25L69.25 68.75ZM63 125C97.5 125 125.5 97 125.5 62.5C125.5 28 97.5 0 63 0C28.5 0 0.5 28 0.5 62.5C0.5 97 28.5 125 63 125ZM63 12.5C90.5625 12.5 113 34.9375 113 62.5C113 90.0625 90.5625 112.5 63 112.5C35.4375 112.5 13 90.0625 13 62.5C13 34.9375 35.4375 12.5 63 12.5Z"
+          fill="#EE1616"
+        />
+      </svg>
+    </>
+  );
+}
+// End Delete Components
+
+// First Delete Close Coponents
+export function CloseModalSVG() {
+  return (
+    <>
+      <svg
+        className="h-5 w-5 flex-shrink-0 text-gray-500"
+        width="24"
+        height="25"
+        viewBox="0 0 24 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5 5.5L19 19.5M19 5.5L5 19.5"
+          stroke="#282930"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Delete Close Components
+
+// First svg icon action
+export function ActionSVG({ color = "currentColor" }) {
+  return (
+    <>
+      <svg
+        className="h-5 w-5 flex-shrink-0"
+        width="5"
+        height="15"
+        viewBox="0 0 5 15"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.49992 14.1209C2.04159 14.1209 1.64936 13.9579 1.32325 13.6318C0.996586 13.3051 0.833252 12.9126 0.833252 12.4543C0.833252 11.9959 0.996586 11.6034 1.32325 11.2768C1.64936 10.9507 2.04159 10.7876 2.49992 10.7876C2.95825 10.7876 3.35075 10.9507 3.67742 11.2768C4.00353 11.6034 4.16659 11.9959 4.16659 12.4543C4.16659 12.9126 4.00353 13.3051 3.67742 13.6318C3.35075 13.9579 2.95825 14.1209 2.49992 14.1209ZM2.49992 9.12093C2.04159 9.12093 1.64936 8.9576 1.32325 8.63093C0.996586 8.30482 0.833252 7.9126 0.833252 7.45426C0.833252 6.99593 0.996586 6.60343 1.32325 6.27676C1.64936 5.95065 2.04159 5.7876 2.49992 5.7876C2.95825 5.7876 3.35075 5.95065 3.67742 6.27676C4.00353 6.60343 4.16659 6.99593 4.16659 7.45426C4.16659 7.9126 4.00353 8.30482 3.67742 8.63093C3.35075 8.9576 2.95825 9.12093 2.49992 9.12093ZM2.49992 4.12093C2.04159 4.12093 1.64936 3.9576 1.32325 3.63093C0.996586 3.30482 0.833252 2.9126 0.833252 2.45426C0.833252 1.99593 0.996586 1.60371 1.32325 1.2776C1.64936 0.950931 2.04159 0.787598 2.49992 0.787598C2.95825 0.787598 3.35075 0.950931 3.67742 1.2776C4.00353 1.60371 4.16659 1.99593 4.16659 2.45426C4.16659 2.9126 4.00353 3.30482 3.67742 3.63093C3.35075 3.9576 2.95825 4.12093 2.49992 4.12093Z"
+          fill={color}
+        />
+      </svg>
+    </>
+  );
+}
+// End svg icon action
+
+// First svg back
+export function BackSVG() {
+  return (
+    <>
+      <svg
+        className=" flex-shrink-0"
+        width="11"
+        height="18"
+        viewBox="0 0 10 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M9.49941 16.438L8.45441 17.5L0.788407 9.71C0.603909 9.5197 0.500732 9.26505 0.500732 9C0.500732 8.73495 0.603909 8.4803 0.788407 8.29L8.45441 0.5L9.49941 1.563L2.18141 9L9.49941 16.438Z"
+          fill="white"
+        />
+      </svg>
+    </>
+  );
+}
+// End svg back
+
+// First Filter Table
+export function FilterTableSVG() {
+  return (
+    <>
+      <svg
+        className=" flex-shrink-0"
+        width="19"
+        height="19"
+        viewBox="0 0 19 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.49902 5.11084H15.999"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M5.49902 9.61084H12.999"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M7.74902 14.1108H10.749"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Filter Table
+
+// First Loading
+export function LoadingSVG() {
+  return (
+    <>
+      <svg
+        className="animate-spin h-5 w-5 text-white flex-shrink-0 flex m-auto justify-center items-center text-center"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.964 7.964 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+    </>
+  );
+}
+// End Loading

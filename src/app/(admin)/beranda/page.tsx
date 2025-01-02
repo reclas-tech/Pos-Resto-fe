@@ -1,7 +1,13 @@
+"use client";
+
 import React from "react";
 
 function BerandaAdminPage() {
-  return <>Beranda Page</>;
+  return (
+    <>
+      <div className="text-black dark:text-white">Halaman Beranda</div>
+    </>
+  );
 }
 
 export default BerandaAdminPage;

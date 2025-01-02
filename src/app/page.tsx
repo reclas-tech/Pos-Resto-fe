@@ -11,7 +11,7 @@ export default function MainPage() {
   useEffect(() => {
     const splashTimeout = setTimeout(() => {
       setShowSplash(false);
-    }, 10000);
+    }, 4500);
 
     return () => clearTimeout(splashTimeout);
   }, []);

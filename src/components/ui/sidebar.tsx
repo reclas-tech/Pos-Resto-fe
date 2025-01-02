@@ -159,26 +159,37 @@ export const MobileSidebar = ({
 
 export const SidebarLink = ({
   link,
+  onClick,
   className,
   ...props
 }: {
   link: Links;
+  onClick?: () => void;
   className?: string;
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
 
   const pathname = usePathname();
-  const isActive = pathname === link.href;
+
+  const isActive =
+    pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+  const handleClick = () => {
+    if (link.label === "Keluar" && onClick) {
+      onClick();
+    }
+  };
 
   return (
     <Link
       href={link.href}
+      onClick={handleClick}
       className={cn(
-        "flex items-center justify-start gap-4 group/sidebar py-2.5 px-6 rounded-lg transition-all duration-300", 
+        "flex items-center justify-start gap-4 group/sidebar py-2.5 px-6 rounded-lg transition-all duration-300",
         isActive
           ? "bg-primaryColor text-white"
-          : "hover:bg-gray-100 dark:hover:bg-neutral-700 text-[#737791]", 
+          : "hover:bg-gray-100 dark:hover:bg-neutral-700 text-[#737791]",
         className
       )}
       {...props}
@@ -192,7 +203,7 @@ export const SidebarLink = ({
         }}
         className={cn(
           "text-sm group-hover/sidebar:translate-x-1 transition-all duration-300",
-          isActive ? "text-white" : "text-neutral-700 dark:text-neutral-200",
+          isActive ? "text-white" : "text-[#737791] dark:text-white",
           className
         )}
       >
