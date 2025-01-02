@@ -24,11 +24,21 @@ function CreateNewPasswordPage() {
     formState: { errors },
   } = useForm<NewPasswordValues>({
     defaultValues: {
-      newPassword: "",
-      confirmNewPassword: "",
+      new_password: "",
+      new_password_confirmation: "",
     },
     resolver: zodResolver(newPasswordSchema),
   });
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      router.push("/buat-password-baru");
+    } else {
+      Cookies.remove("token");
+      router.push("/login");
+    }
+  }, [router]);
 
   /* eslint-disable */
   const onSubmit: SubmitHandler<NewPasswordValues> = async (data) => {
@@ -36,24 +46,17 @@ function CreateNewPasswordPage() {
     setErrorMessage("");
 
     try {
+      const token = Cookies.get("token");
       const response = await axiosInstance.post("/auth/admin/new-password", {
-        newPassword: data.newPassword,
-        confirmNewPassword: data.confirmNewPassword,
+        token,
+        new_password: data.new_password,
+        new_password_confirmation: data.new_password_confirmation,
       });
       const result = response.data;
       if (result.status === 200) {
         showAlert2("success", "Berhasil.");
-        Cookies.set("accessToken", result?.data?.access_token, {
-          expires: 1,
-          secure: true,
-          httpOnly: false,
-        });
-        Cookies.set("refreshToken", result?.data?.refresh_token, {
-          expires: 7,
-          secure: true,
-          httpOnly: false,
-        });
         setTimeout(() => {
+          Cookies.remove("token");
           router.push("/login");
           showAlert2("success", "Berhasil.");
         }, 10);
@@ -62,6 +65,7 @@ function CreateNewPasswordPage() {
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Gagal. Silakan coba lagi!";
+      console.log(errorMessage);
       setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
@@ -69,8 +73,8 @@ function CreateNewPasswordPage() {
   };
 
   // set error messege
-  const newPassword = watch("newPassword");
-  const confirmNewPassword = watch("confirmNewPassword");
+  const newPassword = watch("new_password");
+  const confirmNewPassword = watch("new_password_confirmation");
   useEffect(() => {
     if (errorMessage) {
       setErrorMessage("");
@@ -87,21 +91,21 @@ function CreateNewPasswordPage() {
         <div className="space-y-2">
           <div className="space-y-1">
             <InputPassword
-              {...register("newPassword")}
+              {...register("new_password")}
               placeholder="Password"
             />
-            {errors.newPassword && (
-              <span className="text-danger">{errors.newPassword.message}</span>
+            {errors.new_password && (
+              <span className="text-danger">{errors.new_password.message}</span>
             )}
           </div>
           <div className="space-y-1">
             <InputPassword
-              {...register("confirmNewPassword")}
+              {...register("new_password_confirmation")}
               placeholder="Konfirmasi Password"
             />
-            {errors.confirmNewPassword && (
+            {errors.new_password_confirmation && (
               <span className="text-danger">
-                {errors.confirmNewPassword.message}
+                {errors.new_password_confirmation.message}
               </span>
             )}
           </div>

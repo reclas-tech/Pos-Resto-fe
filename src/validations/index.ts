@@ -27,18 +27,18 @@ export type OtpValues = z.infer<typeof otpSchema>;
 // Validation NewPassword
 export const newPasswordSchema = z
   .object({
-    newPassword: z
+    new_password: z
       .string({ message: "Kata sandi tidak boleh kosong!" })
       .min(6, { message: "Kata sandi minimal 6 karakter" })
       .max(32, { message: "Kata sandi maksimal 32 karakter" }),
-    confirmNewPassword: z
+      new_password_confirmation: z
       .string({ message: "Konfirmasi Kata sandi tidak boleh kosong!" })
       .min(6, { message: "Konfirmasi Kata sandi minimal 6 karakter" })
       .max(32, { message: "Konfirmasi Kata sandi maksimal 32 karakter" }),
   })
-  .refine((data) => data.newPassword === data.confirmNewPassword, {
+  .refine((data) => data.new_password === data.new_password_confirmation, {
     message: "Password dan konfirmasi password harus sama",
-    path: ["confirmNewPassword"],
+    path: ["new_password_confirmation"],
   });
 export type NewPasswordValues = z.infer<typeof newPasswordSchema>;
 
