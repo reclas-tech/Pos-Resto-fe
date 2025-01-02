@@ -38,6 +38,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
 import DeleteModal from "@/components/ui/modal/delete";
+import DetailModal from "@/components/ui/modal/detail";
+import { Label } from "@radix-ui/react-label";
 
 function EmployeePage() {
   const employees = [
@@ -46,16 +48,22 @@ function EmployeePage() {
       name: "Karyawan 1",
       pin: "123456",
       role: "Kasir",
+      phone: "0857641345",
+      address: "Kotabumi",
     },
     {
       no: "2",
       name: "Karyawan 2",
       pin: "123457",
-      role: "Admin",
+      role: "Pelayan",
+      phone: "08576413457",
+      address:
+        "Jalan Cendrawasih No. 25, RT 03/RW 05, Kelurahan Mulyorejo, Kecamatan Sukomanunggal, Kota Surabaya, Jawa Timur, 60112.",
     },
   ];
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const handleDelete = () => {
     console.log("Data dihapus");
@@ -110,7 +118,7 @@ function EmployeePage() {
                 <TableCell className="font-medium text-center">
                   {employeesView.no}
                 </TableCell>
-                <TableCell className="text-left">
+                <TableCell className="text-center">
                   {employeesView.name}
                 </TableCell>
                 <TableCell className="text-center">
@@ -140,6 +148,50 @@ function EmployeePage() {
                         >
                           Hapus
                         </button>
+                        <button
+                          onClick={() => setIsDetailModalOpen(true)}
+                          className="text-black dark:text-white w-full text-left"
+                        >
+                          Detail
+                        </button>
+                        <DetailModal
+                          isOpen={isDetailModalOpen}
+                          onClose={() => setIsDetailModalOpen(false)}
+                          title="Detail Karyawan"
+                        >
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                              <Label className="text-[#114F44] font-semibold">
+                                Nama Karyawan
+                              </Label>
+                              <p className="">{employeesView.name}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[#114F44] font-semibold">
+                                Peran
+                              </Label>
+                              <p className="">{employeesView.role}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[#114F44] font-semibold">
+                                Pin
+                              </Label>
+                              <p className="">{employeesView.pin}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[#114F44] font-semibold">
+                                Nomor Telepon
+                              </Label>
+                              <p className="">{employeesView.phone}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[#114F44] font-semibold">
+                                Alamat
+                              </Label>
+                              <p className="">{employeesView.address}</p>
+                            </div>
+                          </div>
+                        </DetailModal>
                         <DeleteModal
                           isOpen={isDeleteModalOpen}
                           onClose={() => setIsDeleteModalOpen(false)}
