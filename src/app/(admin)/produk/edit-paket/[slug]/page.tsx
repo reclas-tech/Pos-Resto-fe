@@ -209,15 +209,15 @@ function EditPacketPage() {
                     <button
                       type="button"
                       onClick={() => handleDecreaseQuantity(product.id)}
-                      className="bg-secondaryColor text-white p-1 rounded-md"
                     >
                       <Minus size={20} />
                     </button>
-                    <span>{product.quantity}</span>
+                    <span className="flex items-center justify-center border border-secondaryColor rounded-md font-medium w-10 h-6">
+                      {product.quantity}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleIncreaseQuantity(product.id)}
-                      className="bg-secondaryColor text-white p-1 rounded-md"
                     >
                       <Plus size={20} />
                     </button>
