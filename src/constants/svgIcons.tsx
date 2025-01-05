@@ -439,11 +439,15 @@ export function TransaksiIcon({ size = 24, color = "currentColor" }) {
   );
 }
 
-export function KeluarIcon({ size = 24, color = "currentColor" }) {
+export function KeluarIcon({
+  size = 24,
+  color = "currentColor",
+  className = "h-5 w-5 flex-shrink-0",
+}) {
   return (
     <>
       <svg
-        className="h-5 w-5 flex-shrink-0"
+        className={className}
         width={size}
         height={size}
         viewBox="0 0 16 17"
@@ -507,6 +511,44 @@ export function CloseModalSVG() {
   );
 }
 // End Delete Close Components
+
+// First Close Coponents
+export function CloseSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="25"
+        viewBox="0 0 24 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 22.6699C17.5228 22.6699 22 18.1928 22 12.6699C22 7.14707 17.5228 2.66992 12 2.66992C6.47715 2.66992 2 7.14707 2 12.6699C2 18.1928 6.47715 22.6699 12 22.6699Z"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 9.66992L9 15.6699"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M9 9.66992L15 15.6699"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Close Components
 
 // First svg icon action
 export function ActionSVG({ color = "currentColor" }) {
@@ -621,3 +663,105 @@ export function LoadingSVG() {
   );
 }
 // End Loading
+
+// First Meja
+export function MejaSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 20.9617C11.4757 21.0582 9.16166 20.9724 6.23865 20.7048C5.19543 20.6092 4.36239 19.736 4.26588 18.6277C3.87042 14.0861 3.94716 10.903 4.292 6.41419C4.37877 5.28469 5.21856 4.38258 6.28078 4.28634C10.4928 3.90469 13.4667 3.9038 17.7331 4.28821C18.7928 4.38368 19.6326 5.28098 19.7203 6.4076C19.9822 9.77112 20.0688 12.3867 19.9433 15.3485M14 20.9617L19.9433 15.3485M14 20.9617V17.8485C14 16.4678 15.1193 15.3485 16.5 15.3485H19.9433M8 3V5.5M16 3V5.5"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M8 9.5H16"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M8 13H13"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Meja
+
+// First Riwayat
+export function RiwayatSVG({ className = "" }) {
+  return (
+    <>
+      <svg
+        className={className}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="12" cy="12" r="9" stroke="#737791" strokeWidth="1.5" />
+        <path
+          d="M12 6.5V11.9586C12 11.9851 11.9895 12.0105 11.9707 12.0293L9 15"
+          stroke="#737791"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Riwayat
+
+// First DropDownSVG
+export function DropDownSVG() {
+  return (
+    <>
+      <svg
+        width="10"
+        height="7"
+        viewBox="0 0 10 7"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8.825 0.533203L5 4.34987L1.175 0.533203L-1.40117e-08 1.7082L5 6.7082L10 1.7082L8.825 0.533203Z"
+          fill="#636363"
+        />
+      </svg>
+    </>
+  );
+}
+// End DropDownSVG
+
+// First BackSVG
+export function BackSVGKasir() {
+  return (
+    <>
+      <svg
+        width="20"
+        height="16"
+        viewBox="0 0 20 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.25775 6.19723L1.55075 6.90423L0.84375 6.19723L1.55075 5.49023L2.25775 6.19723ZM19.2577 14.1972C19.2577 14.4625 19.1524 14.7168 18.9649 14.9043C18.7773 15.0919 18.523 15.1972 18.2577 15.1972C17.9925 15.1972 17.7382 15.0919 17.5506 14.9043C17.3631 14.7168 17.2577 14.4625 17.2577 14.1972H19.2577ZM6.55075 11.9042L1.55075 6.90423L2.96475 5.49023L7.96475 10.4902L6.55075 11.9042ZM1.55075 5.49023L6.55075 0.490234L7.96475 1.90423L2.96475 6.90423L1.55075 5.49023ZM2.25775 5.19723H12.2577V7.19723H2.25775V5.19723ZM19.2577 12.1972V14.1972H17.2577V12.1972H19.2577ZM12.2577 5.19723C14.1143 5.19723 15.8947 5.93473 17.2075 7.24749C18.5203 8.56024 19.2577 10.3407 19.2577 12.1972H17.2577C17.2577 10.8712 16.731 9.59938 15.7933 8.6617C14.8556 7.72402 13.5838 7.19723 12.2577 7.19723V5.19723Z"
+          fill="#114F44"
+        />
+      </svg>
+    </>
+  );
+}
+// End BackSVG
