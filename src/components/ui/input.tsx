@@ -45,18 +45,18 @@ const SearchInputCashier = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <div className="relative w-full">
+      <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+        <Search className="h-4 w-4 text-neutral-500" />
+      </div>
       <Input
         ref={ref}
         placeholder="Cari"
         className={cn("text-sm", className)}
         {...props}
       />
-      <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-        <Search className="h-4 w-4 text-neutral-500" />
-      </div>
     </div>
   );
 });
-SearchInput.displayName = "SearchInput";
+SearchInputCashier.displayName = "SearchInputCashier";
 
 export { Input, SearchInput, SearchInputCashier };

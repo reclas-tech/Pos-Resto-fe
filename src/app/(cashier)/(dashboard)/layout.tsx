@@ -1,16 +1,10 @@
 "use client";
 
 import React from "react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import Image from "next/image";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { adminSidebarIcons } from "@/constants/main";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import { showAlert2 } from "@/lib/sweetalert2";
-import AuthGuard from "@/hooks/authGuard";
 import logo from "@assets/splashScreen.png";
 import {
   CloseSVG,
@@ -32,16 +26,16 @@ export default function RootLayoutDashboardCashier({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
-  const handleLogout = () => {
-    setTimeout(() => {
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
-      router.push("/login");
-      showAlert2("success", "Berhasil Logout.");
-    }, 10);
-  };
+  // const handleLogout = () => {
+  //   setTimeout(() => {
+  //     Cookies.remove("accessToken");
+  //     Cookies.remove("refreshToken");
+  //     router.push("/login");
+  //     showAlert2("success", "Berhasil Logout.");
+  //   }, 10);
+  // };
 
   return (
     <>

@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { axiosPrivateInstance } from "@/utils/axios";
 import { AxiosError } from "axios";
+import PinModal from "@/components/ui/modal/confirmationPin";
 
 function RiwayatTransaksi() {
   const [loading, setLoading] = useState(false);
@@ -33,11 +34,11 @@ function RiwayatTransaksi() {
     useState(false);
   const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<transactionHistoryValues>({
     resolver: zodResolver(transactionHistorySchema),
@@ -78,7 +79,7 @@ function RiwayatTransaksi() {
   };
 
   const handleDelete = () => {
-    setIsEditModalOpenTakeaway(false);
+    // setIsEditModalOpenTakeaway(false);
     console.log("Data dihapus");
   };
 
@@ -182,7 +183,7 @@ function RiwayatTransaksi() {
                       variant={"ghostButton"}
                       className="text-xs bg-secondaryColor text-white p-2 h-fit"
                     >
-                      Simpan
+                      Berhasil
                     </Button>
                   </div>
                 </div>
@@ -215,77 +216,7 @@ function RiwayatTransaksi() {
                   variant={"ghostButton"}
                   className="text-xs bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
                 >
-                  Simpan
-                </Button>
-                <Button
-                  variant={"ghostButton"}
-                  className="text-xs bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Detail
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-1">
-            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[0px] rounded-lg"></div>
-            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[76px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] -ml-[0px] mt-[22px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[78px] mt-[22px] rounded-lg"></div>
-            <div className="w-[40%] flex items-center">
-              <div className="rounded-lg border-2 p-2 ml-3.5 border-[#FEA026]">
-                <div className="rounded-full bg-[#FEA026]/10">
-                  <span className="font-bold text-[10px] flex items-center justify-center text-[#FEA026] h-[40px] w-[40px]">
-                    7 10
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="w-[60%] space-y-1">
-              <div>#INV0001</div>
-              <div>26/02/2023 09:46:00</div>
-              <div>Rp. 126.000</div>
-              <div className="flex justify-between gap-2">
-                <Button
-                  variant={"ghostButton"}
-                  className="text-xs bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Simpan
-                </Button>
-                <Button
-                  variant={"ghostButton"}
-                  className="text-xs bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Detail
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-1">
-            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[0px] rounded-lg"></div>
-            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[76px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] -ml-[0px] mt-[22px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[78px] mt-[22px] rounded-lg"></div>
-            <div className="w-[40%] flex items-center">
-              <div className="rounded-lg border-2 p-2 ml-3.5 border-[#FEA026]">
-                <div className="rounded-full bg-[#FEA026]/10">
-                  <span className="font-bold text-[10px] flex items-center justify-center text-[#FEA026] h-[40px] w-[40px]">
-                    7 10
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="w-[60%] space-y-1">
-              <div>#INV0001</div>
-              <div>26/02/2023 09:46:00</div>
-              <div>Rp. 126.000</div>
-              <div className="flex justify-between gap-2">
-                <Button
-                  variant={"ghostButton"}
-                  className="text-xs bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Simpan
+                  Berhasil
                 </Button>
                 <Button
                   variant={"ghostButton"}
@@ -294,384 +225,502 @@ function RiwayatTransaksi() {
                 >
                   Detail
                 </Button>
-                <DetailModal
-                  isOpen={isDetailModalOpenDineIn}
-                  onClose={() => setIsDetailModalOpenDineIn(false)}
-                  onDetail={handleDetail}
-                  title="Detail Riwayat Transaksi"
-                  classNameDialogFooter="p-4 border-t w-full"
-                  showCancelButton={true}
-                  showPrintButton={true}
-                  classNameDialogHeader="border-none p-4"
-                  classNameButton="w-full rounded-lg text-sm"
-                  classNameDialogTitle="text-left font-bold"
-                  closeButton={false}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-1">
+            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[0px] rounded-lg"></div>
+            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[76px] rounded-lg"></div>
+            <div className="absolute border h-[40px] w-[10px] -ml-[0px] mt-[22px] rounded-lg"></div>
+            <div className="absolute border h-[40px] w-[10px] ml-[78px] mt-[22px] rounded-lg"></div>
+            <div className="w-[40%] flex items-center">
+              <div className="rounded-lg border-2 p-2 ml-3.5 border-[#FEA026]">
+                <div className="rounded-full bg-[#FEA026]/10">
+                  <span className="font-bold text-[10px] flex items-center justify-center text-[#FEA026] h-[40px] w-[40px]">
+                    7 10
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="w-[60%] space-y-1">
+              <div>#INV0001</div>
+              <div>26/02/2023 09:46:00</div>
+              <div>Rp. 126.000</div>
+              <div className="flex justify-between gap-2">
+                <Button
+                  variant={"ghostButton"}
+                  className="text-xs bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
                 >
-                  <>
-                    <div className="flex mb-4 gap-4 dark:text-white text-xs">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="idTransaction" className="text-xs">
-                          ID Transaksi/Invoice
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          INV0001
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="noTable" className="text-xs">
-                          Nomor Meja
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          A1
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex mb-4 gap-4 dark:text-white">
-                      <div className="flex flex-col w-full">
-                        <Label
-                          htmlFor="dateTimeTransaction"
-                          className="text-xs"
-                        >
-                          Tanggal dan Waktu Transaksi
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          15/12/2024 15:34
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="totalPrice" className="text-xs">
-                          Total Harga
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          Rp. 105.000
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex mb-4 gap-4 dark:text-white">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="name" className="text-xs">
-                          Nama Kasir
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          John Doe
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="paymentMethod" className="text-xs">
-                          Metode Pembayaran
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          -
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="purchaseHistory" className="text-xs">
-                          Rincian Pembelian
-                        </Label>
-                        <textarea
-                          id="purchaseHistory"
-                          className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                          defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
-                          disabled
-                        />
-                      </div>
-                      <div className="flex flex-col w-full space-y-2">
-                        <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-1">
-                          Takeaway
-                        </div>
-                        <Label
-                          htmlFor="statusPurchase"
-                          className="text-xs mt-2"
-                        >
-                          Status Pembayaran
-                        </Label>
-                        <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-2">
-                          Berhasil
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                </DetailModal>
-
-                <DetailModal
-                  isOpen={isDetailModalOpenTakeaway}
-                  onClose={() => setIsDetailModalOpenTakeaway(false)}
-                  onDetail={handleDetail}
-                  title="Detail Riwayat Transaksi"
-                  classNameDialogFooter="p-4 border-t w-full"
-                  showCancelButton={true}
-                  showPrintButton={false}
-                  classNameDialogHeader="border-none p-4"
-                  classNameButton="w-full rounded-lg text-sm"
-                  classNameDialogTitle="text-left font-bold"
-                  closeButton={false}
+                  Berhasil
+                </Button>
+                <Button
+                  variant={"ghostButton"}
+                  onClick={() => setIsDetailModalOpenTakeaway(true)}
+                  className="text-xs bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
                 >
-                  <>
-                    <Button
-                      onClick={() => {
-                        setIsEditModalOpenTakeaway(true);
-                        setIsDetailModalOpenTakeaway(false);
-                      }}
-                      variant={"outline"}
-                      className="rounded-lg text-xs w-[70px] text-white bg-secondaryColor p-2 absolute right-4 top-4"
-                    >
-                      Edit
-                    </Button>
-                    <div className="flex mb-4 gap-4 dark:text-white text-xs">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="idTransaction" className="text-xs">
-                          ID Transaksi/Invoice
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          INV0001
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="noTable" className="text-xs">
-                          Nomor Meja
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          A1
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex mb-4 gap-4 dark:text-white">
-                      <div className="flex flex-col w-full">
-                        <Label
-                          htmlFor="dateTimeTransaction"
-                          className="text-xs"
-                        >
-                          Tanggal dan Waktu Transaksi
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          15/12/2024 15:34
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="totalPrice" className="text-xs">
-                          Total Harga
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          Rp. 105.000
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex mb-4 gap-4 dark:text-white">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="name" className="text-xs">
-                          Nama Kasir
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          John Doe
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="paymentMethod" className="text-xs">
-                          Metode Pembayaran
-                        </Label>
-                        <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                          Tunai
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="purchaseHistory" className="text-xs">
-                          Rincian Pembelian
-                        </Label>
-                        <textarea
-                          id="purchaseHistory"
-                          className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                          defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
-                          disabled
-                        />
-                      </div>
-                      <div className="flex flex-col w-full space-y-2">
-                        <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-1">
-                          Takeaway
-                        </div>
-                        <Label htmlFor="statusPurchase" className="text-xs">
-                          Status Pembayaran
-                        </Label>
-                        <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2">
-                          Tertunda
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                </DetailModal>
+                  Detail
+                </Button>
+              </div>
+            </div>
+          </div>
 
-                <EditModal
-                  isOpen={isEditModalOpenTakeaway}
-                  onClose={() => setIsEditModalOpenTakeaway(false)}
-                  onSubmit={handleSubmit(onEditSubmit)}
-                  title="Detail Riwayat Transaksi"
-                  classNameDialogContent="sm:max-w-[640px]"
-                  loading={loading}
+          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-1">
+            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[0px] rounded-lg"></div>
+            <div className="absolute border h-[10px] w-[40px] ml-[22px] mt-[76px] rounded-lg"></div>
+            <div className="absolute border h-[40px] w-[10px] -ml-[0px] mt-[22px] rounded-lg"></div>
+            <div className="absolute border h-[40px] w-[10px] ml-[78px] mt-[22px] rounded-lg"></div>
+            <div className="w-[40%] flex items-center">
+              <div className="rounded-lg border-2 p-2 ml-3.5 border-[#FEA026]">
+                <div className="rounded-full bg-[#FEA026]/10">
+                  <span className="font-bold text-[10px] flex items-center justify-center text-[#FEA026] h-[40px] w-[40px]">
+                    7 10
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="w-[60%] space-y-1">
+              <div>#INV0001</div>
+              <div>26/02/2023 09:46:00</div>
+              <div>Rp. 126.000</div>
+              <div className="flex justify-between gap-2">
+                <Button
+                  variant={"ghostButton"}
+                  className="text-xs bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
                 >
-                  <>
-                    <Button
-                      onClick={() => {
-                        setIsDeleteModalOpen(true);
-                      }}
-                      variant={"outline"}
-                      className="rounded-xl text-xs w-[120px] text-white bg-[#FF0000] absolute right-4 top-4 border-none"
-                    >
-                      Hapus Transaksi
-                    </Button>
-                    <DeleteModal
-                      isOpen={isDeleteModalOpen}
-                      onClose={() => {
-                        setIsDeleteModalOpen(false);
-                      }}
-                      onDelete={handleDelete}
-                      title="Hapus"
-                      description="Anda yakin ingin menghapus item ini ?"
-                    />
-                    <div className="flex gap-4 justify-between mb-4 text-xs">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="idTransaction" className="text-xs">
-                          ID Transaksi/Invoice
-                        </Label>
-                        <Input
-                          type="name"
-                          id="idTransaction"
-                          placeholder="Id Transaksi"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="noTable" className="text-xs">
-                          Nomor Meja
-                        </Label>
-                        <Input
-                          type="name"
-                          id="noTable"
-                          placeholder="Nomor Meja"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 justify-between mb-4 text-xs">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="dateTime" className="text-xs">
-                          Tanggal dan Waktu Transaksi
-                        </Label>
-                        <Input
-                          type="name"
-                          id="dateTime"
-                          placeholder="Tanggal dan Waktu Transaksi"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="price" className="text-xs">
-                          Total Harga
-                        </Label>
-                        <Input
-                          type="name"
-                          id="price"
-                          placeholder="Total Harga"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 justify-between mb-4 text-xs">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="nameCashier" className="text-xs">
-                          Nama Kasir
-                        </Label>
-                        <Input
-                          type="name"
-                          id="nameCashier"
-                          placeholder="Nama Kasir"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="paymentMethod" className="text-xs">
-                          Metode Pembayaran
-                        </Label>
-                        <Input
-                          type="name"
-                          id="paymentMethod"
-                          placeholder="Metode Pembayaran"
-                          className="text-xs"
-                          {...register("cashier_id")}
-                        />
-                        {errors.cashier_id && (
-                          <span className="text-xs text-red-500">
-                            {errors.cashier_id.message}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4">
-                      <div className="flex flex-col w-full">
-                        <Label htmlFor="purchaseHistory" className="text-xs">
-                          Rincian Pembelian
-                        </Label>
-                        <textarea
-                          id="purchaseHistory"
-                          className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                          defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
-                          disabled
-                        />
-                      </div>
-                      <div className="flex flex-col w-full space-y-2">
-                        <div className="rounded-lg text-xs w-fit text-white bg-primaryColor p-1">
-                          Dine
-                        </div>
-                        <Label htmlFor="statusPurchase" className="text-xs">
-                          Status Pembayaran
-                        </Label>
-                        <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2">
-                          Tertunda
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                </EditModal>
+                  Berhasil
+                </Button>
+                <Button
+                  variant={"ghostButton"}
+                  onClick={() => setIsDetailModalOpenTakeaway(true)}
+                  className="text-xs bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
+                >
+                  Detail
+                </Button>
               </div>
             </div>
           </div>
         </section>
       </div>
+
+      <DetailModal
+        isOpen={isDetailModalOpenDineIn}
+        onClose={() => setIsDetailModalOpenDineIn(false)}
+        onDetail={handleDetail}
+        title="Detail Riwayat Transaksi"
+        classNameDialogFooter="p-4 border-t w-full"
+        showCancelButton={true}
+        showPrintButton={true}
+        classNameDialogHeader="border-none p-4"
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle="text-left font-bold"
+        closeButton={false}
+      >
+        <>
+          <div className="flex mb-4 gap-4 dark:text-white text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="idTransaction" className="text-xs">
+                ID Transaksi/Invoice
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                INV0001
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="noTable" className="text-xs">
+                Nomor Meja
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                A1
+              </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="dateTimeTransaction" className="text-xs">
+                Tanggal dan Waktu Transaksi
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                15/12/2024 15:34
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="totalPrice" className="text-xs">
+                Total Harga
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Rp. 105.000
+              </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="name" className="text-xs">
+                Nama Kasir
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                John Doe
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Metode Pembayaran
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                -
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="purchaseHistory" className="text-xs">
+                Rincian Pembelian
+              </Label>
+              <textarea
+                id="purchaseHistory"
+                className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
+                disabled
+              />
+            </div>
+            <div className="flex flex-col w-full space-y-2">
+              <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-1">
+                Takeaway
+              </div>
+              <Label htmlFor="statusPurchase" className="text-xs mt-2">
+                Status Pembayaran
+              </Label>
+              <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-2">
+                Berhasil
+              </div>
+            </div>
+          </div>
+        </>
+      </DetailModal>
+
+      <DetailModal
+        isOpen={isDetailModalOpenTakeaway}
+        onClose={() => setIsDetailModalOpenTakeaway(false)}
+        onDetail={handleDetail}
+        title="Detail Riwayat Transaksi"
+        classNameDialogFooter="p-4 border-t w-full"
+        showCancelButton={true}
+        showPrintButton={false}
+        classNameDialogHeader="border-none p-4"
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle="text-left font-bold"
+        closeButton={false}
+      >
+        <>
+          <Button
+            onClick={() => {
+              setIsEditModalOpenTakeaway(true);
+              setIsDetailModalOpenTakeaway(false);
+            }}
+            variant={"outline"}
+            className="rounded-lg text-xs w-[70px] text-white bg-secondaryColor p-2 absolute right-4 top-4"
+          >
+            Edit
+          </Button>
+          <div className="flex mb-4 gap-4 dark:text-white text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="idTransaction" className="text-xs">
+                ID Transaksi/Invoice
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                INV0001
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="noTable" className="text-xs">
+                Nomor Meja
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                A1
+              </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="dateTimeTransaction" className="text-xs">
+                Tanggal dan Waktu Transaksi
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                15/12/2024 15:34
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="totalPrice" className="text-xs">
+                Total Harga
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Rp. 105.000
+              </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="name" className="text-xs">
+                Nama Kasir
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                John Doe
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Metode Pembayaran
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Tunai
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="purchaseHistory" className="text-xs">
+                Rincian Pembelian
+              </Label>
+              <textarea
+                id="purchaseHistory"
+                className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
+                disabled
+              />
+            </div>
+            <div className="flex flex-col w-full space-y-2">
+              <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-1">
+                Takeaway
+              </div>
+              <Label htmlFor="statusPurchase" className="text-xs">
+                Status Pembayaran
+              </Label>
+              <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2">
+                Tertunda
+              </div>
+            </div>
+          </div>
+        </>
+      </DetailModal>
+
+      <EditModal
+        isOpen={isEditModalOpenTakeaway}
+        onClose={() => setIsEditModalOpenTakeaway(false)}
+        onSubmit={handleSubmit(onEditSubmit)}
+        title="Detail Riwayat Transaksi"
+        classNameDialogContent="sm:max-w-[640px]"
+        loading={loading}
+      >
+        <>
+          <Button
+            onClick={() => {
+              setIsDeleteModalOpen(true);
+            }}
+            variant={"outline"}
+            className="rounded-xl text-xs w-[120px] text-white bg-[#FF0000] absolute right-4 top-4 border-none"
+          >
+            Hapus Transaksi
+          </Button>
+          <DeleteModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => {
+              setIsDeleteModalOpen(false);
+              setIsDeletePinModalOpen(true);
+            }}
+            title="Hapus"
+            description="Anda yakin ingin menghapus item ini ?"
+          />
+          <PinModal
+            isOpen={isDeletePinModalOpen}
+            onClose={() => {
+              setIsEditModalOpenTakeaway(false);
+              setIsDeleteModalOpen(false);
+              setIsDeletePinModalOpen(false);
+            }}
+            onDelete={handleDelete}
+          />
+          <div className="flex gap-4 justify-between mb-4 text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="idTransaction" className="text-xs">
+                ID Transaksi/Invoice
+              </Label>
+              <Input
+                type="name"
+                id="idTransaction"
+                placeholder="Id Transaksi"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="noTable" className="text-xs">
+                Nomor Meja
+              </Label>
+              <Input
+                type="name"
+                id="noTable"
+                placeholder="Nomor Meja"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-4 justify-between mb-4 text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="dateTime" className="text-xs">
+                Tanggal dan Waktu Transaksi
+              </Label>
+              <Input
+                type="name"
+                id="dateTime"
+                placeholder="Tanggal dan Waktu Transaksi"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="price" className="text-xs">
+                Total Harga
+              </Label>
+              <Input
+                type="name"
+                id="price"
+                placeholder="Total Harga"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-4 justify-between mb-4 text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="nameCashier" className="text-xs">
+                Nama Kasir
+              </Label>
+              <Input
+                type="name"
+                id="nameCashier"
+                placeholder="Nama Kasir"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Metode Pembayaran
+              </Label>
+              <Input
+                type="name"
+                id="paymentMethod"
+                placeholder="Metode Pembayaran"
+                className="text-xs"
+                {...register("cashier_id")}
+              />
+              {errors.cashier_id && (
+                <span className="text-xs text-red-500">
+                  {errors.cashier_id.message}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="purchaseHistory" className="text-xs">
+                Rincian Pembelian
+              </Label>
+              {/* <textarea
+                          id="purchaseHistory"
+                          className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                          defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
+                          disabled
+                        /> */}
+              <div className="w-full rounded-md border border-neutral-200 bg-transparent px-3 py-3 text-base shadow-sm transition-colors space-y-2 max-h-32 overflow-y-auto">
+                {/* {selectedProducts.length === 0 ? ( */}
+                {/* <span className="text-slate-400">Pilih produk</span> */}
+                {/* ) : ( */}
+                {/* selectedProducts.map((product) => ( */}
+                <div
+                  // key={product.id}
+                  className="flex items-center justify-between p-2 rounded-md"
+                >
+                  {/* <span>{product.name}</span> */}
+                  <span className="text-xs">Nasi</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      // onClick={() =>
+                      //   handleDecreaseQuantity(product.id)
+                      // }
+                    >
+                      {/* <Minus size={20} /> */}-
+                    </button>
+                    <span className="flex items-center justify-center border border-secondaryColor rounded-md font-medium w-10 h-6">
+                      {/* {product.quantity} */}1
+                    </span>
+                    <button
+                      type="button"
+                      // onClick={() =>
+                      //   handleIncreaseQuantity(product.id)
+                      // }
+                    >
+                      {/* <Plus size={20} /> */}+
+                    </button>
+                    <button
+                      type="button"
+                      // onClick={() =>
+                      //   handleRemoveProduct(product.id)
+                      // }
+                      className="text-red-600"
+                    >
+                      {/* <Trash2 size={20} /> */}o
+                    </button>
+                  </div>
+                </div>
+                {/* )) */}
+                {/* )} */}
+              </div>
+            </div>
+            <div className="flex flex-col w-full space-y-2">
+              <div className="rounded-lg text-xs w-fit text-white bg-primaryColor p-1">
+                Dine In
+              </div>
+              <Label htmlFor="statusPurchase" className="text-xs">
+                Status Pembayaran
+              </Label>
+              <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2">
+                Tertunda
+              </div>
+            </div>
+          </div>
+        </>
+      </EditModal>
     </>
   );
 }
