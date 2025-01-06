@@ -101,6 +101,20 @@ export const categorySchema = z.object({
 });
 export type CategoryValues = z.infer<typeof categorySchema>;
 
+// Validation Packet
+export const packetSchema = z.object({
+  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  price: z.string().min(1, { message: "Harga harus diisi" }),
+  stock: z.string().min(1, { message: "Stok harus diisi" }),
+  hpp: z.string().min(1, { message: "HPP harus diisi" }),
+  image: z
+    .union([z.instanceof(File), z.string()])
+    .refine((val) => val instanceof File || val.length > 0, {
+      message: "Foto produk wajib diunggah.",
+    }),
+});
+export type PacketValues = z.infer<typeof packetSchema>;
+
 // Validation Transaction History
 export const transactionHistorySchema = z.object({
   id: z.string().min(1, { message: "ID TRansaksi harus diisi" }),
