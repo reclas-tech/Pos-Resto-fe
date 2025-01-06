@@ -31,7 +31,7 @@ export const newPasswordSchema = z
       .string({ message: "Kata sandi tidak boleh kosong!" })
       .min(6, { message: "Kata sandi minimal 6 karakter" })
       .max(32, { message: "Kata sandi maksimal 32 karakter" }),
-      new_password_confirmation: z
+    new_password_confirmation: z
       .string({ message: "Konfirmasi Kata sandi tidak boleh kosong!" })
       .min(6, { message: "Konfirmasi Kata sandi minimal 6 karakter" })
       .max(32, { message: "Konfirmasi Kata sandi maksimal 32 karakter" }),
@@ -100,3 +100,16 @@ export const categorySchema = z.object({
   name: z.string().min(1, { message: "Nama Produk harus diisi" }),
 });
 export type CategoryValues = z.infer<typeof categorySchema>;
+
+// Validation Transaction History
+export const transactionHistorySchema = z.object({
+  id: z.string().min(1, { message: "ID TRansaksi harus diisi" }),
+  code: z.string().min(1, { message: "Nomor Meja harus diisi" }),
+  status: z.string().min(1, { message: "Status harus diisi" }),
+  price_sum: z.string().min(1, { message: "Total Harga harus diisi" }),
+  created_at: z.string().min(1, { message: "Tanggal Waktu harus diisi" }),
+  payment_method: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  cashier_id: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  invoice_tables: z.string().min(1, { message: "Nama Produk harus diisi" }),
+});
+export type transactionHistoryValues = z.infer<typeof transactionHistorySchema>;

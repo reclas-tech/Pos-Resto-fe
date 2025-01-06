@@ -1,21 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import React, { useState } from "react";
-import logo from "@assets/splashScreen.png";
 import { Button } from "@/components/ui/button";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import DetailModal from "@/components/ui/modal/detailAndo";
-import {
-  BackSVGKasir,
-  CloseSVG,
-  DropDownSVG,
-  KeluarIcon,
-  MejaSVG,
-  RiwayatSVG,
-} from "@/constants/svgIcons";
+import { BackSVGKasir, RiwayatSVG } from "@/constants/svgIcons";
 import {
   Table,
   TableBody,
@@ -24,12 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 
 interface DetailInvoice {
   id: number;
@@ -40,7 +25,6 @@ interface DetailInvoice {
 }
 
 function SelectTable() {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
   const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
@@ -90,79 +74,6 @@ function SelectTable() {
 
   return (
     <>
-      <nav className="flex justify-between w-full pt-2 pb-2 pl-4 pr-4 text-xs border border-b">
-        <div className="flex gap-4">
-          <Image
-            unoptimized
-            src={logo}
-            alt="logo"
-            className="w-[35px] h-[42px]"
-          />
-          <div className="flex flex-col justify-center font-bold">
-            <div className="text-black">Point Of Sale</div>
-            <div className="text-[#828487]">Waroeng Aceh Garuda</div>
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-center items-center">
-          <div className="flex gap-2 items-center text-primaryColor">
-            <MejaSVG />
-            <span>Meja</span>
-          </div>
-          <div className="flex gap-2">
-            <RiwayatSVG />
-            <div className="flex flex-col justify-center text-[#737791]">
-              Riwayat
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between">
-          <div className="flex flex-col justify-center">
-            10:53:00 26/02/2023
-          </div>
-          <div className="flex gap-2">
-            <div className="flex flex-col justify-center">
-              <div className="text-black font-bold">Amalia Putri</div>
-              <div className="text-black/50 text-[10px]">Kasir</div>
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex flex-col justify-center">
-                  <DropDownSVG />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-white border border-gray-300 shadow-2xl rounded-md w-[150px]">
-                <div className="p-2 text-xs space-y-1">
-                  <div className="w-full space-y-2">
-                    <Button
-                      variant={"outline"}
-                      onClick={() => router.push("/login-kasir")}
-                      className="rounded-xl w-full justify-start text-xs border-none"
-                    >
-                      <span>
-                        <KeluarIcon className="text-primaryColor" />
-                      </span>
-                      <span>Tutup Kasir</span>
-                    </Button>
-                    <Button
-                      variant={"outline"}
-                      onClick={() => router.push("/login-kasir")}
-                      className="rounded-xl w-full justify-start text-xs border border-[#FF0000]"
-                    >
-                      <span>
-                        <CloseSVG />
-                      </span>
-                      <span>Keluar</span>
-                    </Button>
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </nav>
-
       <section className="text-xs border border-b pt-2 pb-2 pl-6 pr-6 flex justify-between">
         <div className="flex gap-4 items-center">
           <div className="flex gap-2">

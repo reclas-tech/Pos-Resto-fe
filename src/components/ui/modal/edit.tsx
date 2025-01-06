@@ -18,6 +18,7 @@ interface EditModalProps {
   title?: string;
   editButtonText?: string;
   cancelButtonText?: string;
+  classNameDialogContent?: string;
   children: React.ReactNode;
   loading?: boolean;
 }
@@ -29,12 +30,13 @@ const EditModal: React.FC<EditModalProps> = ({
   title = "Edit Data",
   editButtonText = "Simpan",
   cancelButtonText = "Batal",
+  classNameDialogContent = "sm:max-w-[470px]",
   children,
   loading = false,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[470px]">
+      <DialogContent className={classNameDialogContent}>
         <form onSubmit={onSubmit} className="space-y-5">
           <DialogHeader className="flex justify-center p-4   rounded-lg border-b">
             <Button
