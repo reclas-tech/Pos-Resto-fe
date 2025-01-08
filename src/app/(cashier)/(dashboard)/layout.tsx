@@ -42,7 +42,7 @@ export default function RootLayoutDashboardCashier({
       {/* <AuthGuard> */}
       <nav
         className={cn(
-          "flex justify-between w-full pt-2 pb-2 pl-4 pr-4 text-xs border border-b",
+          "flex justify-between w-full pt-4 pb-4 pl-4 pr-4 text-sm border border-b",
           "h-full"
         )}
       >
@@ -51,7 +51,7 @@ export default function RootLayoutDashboardCashier({
             unoptimized
             src={logo}
             alt="logo"
-            className="w-[35px] h-[42px]"
+            className="w-[45px] h-[52px]"
           />
           <div className="flex flex-col justify-center font-bold">
             <div className="text-black">Point Of Sale</div>
@@ -79,7 +79,7 @@ export default function RootLayoutDashboardCashier({
           <div className="flex gap-2">
             <div className="flex flex-col justify-center">
               <div className="text-black font-bold">Amalia Putri</div>
-              <div className="text-black/50 text-[10px]">Kasir</div>
+              <div className="text-black/50 text-xs">Kasir</div>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -88,12 +88,12 @@ export default function RootLayoutDashboardCashier({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-white border border-gray-300 shadow-2xl rounded-md w-[150px]">
-                <div className="p-2 text-xs space-y-1">
+                <div className="p-2 text-sm space-y-1">
                   <div className="w-full space-y-2">
                     <Button
                       variant={"outline"}
                       onClick={() => router.push("/login-kasir")}
-                      className="rounded-xl w-full justify-start text-xs border-none"
+                      className="rounded-xl w-full justify-start text-sm border-none"
                     >
                       <span>
                         <KeluarIcon className="text-primaryColor" />
@@ -103,7 +103,7 @@ export default function RootLayoutDashboardCashier({
                     <Button
                       variant={"outline"}
                       onClick={() => router.push("/login-kasir")}
-                      className="rounded-xl w-full justify-start text-xs border border-[#FF0000]"
+                      className="rounded-xl w-full justify-start text-sm border border-[#FF0000]"
                     >
                       <span>
                         <CloseSVG />

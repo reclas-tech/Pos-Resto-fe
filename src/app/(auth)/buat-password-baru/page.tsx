@@ -53,7 +53,7 @@ function CreateNewPasswordPage() {
         new_password_confirmation: data.new_password_confirmation,
       });
       const result = response.data;
-      if (result.status === 200) {
+      if (result.statusCode === 200) {
         showAlert2("success", "Berhasil.");
         setTimeout(() => {
           Cookies.remove("token");

@@ -47,6 +47,9 @@ function SelectTable() {
     { id: 3, status: "tersedia" },
     { id: 4, status: "tersedia" },
     { id: 5, status: "terisi" },
+    { id: 6, status: "terisi" },
+    { id: 7, status: "tersedia" },
+    { id: 8, status: "terisi" },
   ];
   const transaksi: DetailInvoice[] = [
     {
@@ -74,7 +77,7 @@ function SelectTable() {
 
   return (
     <>
-      <section className="text-xs border border-b pt-2 pb-2 pl-6 pr-6 flex justify-between">
+      <section className="text-sm border border-b pt-4 pb-4 pl-8 pr-8 flex justify-between">
         <div className="flex gap-4 items-center">
           <div className="flex gap-2">
             <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#3395F0]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
@@ -97,7 +100,7 @@ function SelectTable() {
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <button className="rounded-3xl text-xs bg-secondaryColor text-white p-1 px-2">
+              <button className="rounded-3xl text-sm bg-secondaryColor text-white p-1 px-2">
                 Take Away
               </button>
             </DialogTrigger>
@@ -109,7 +112,7 @@ function SelectTable() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 className="fixed top-0 right-0 h-full max-w-xs w-full bg-white shadow-lg border-l z-50"
               >
-                <div className="flex flex-col h-full text-xs">
+                <div className="flex flex-col h-full text-sm">
                   <div className="flex justify-between w-full border-b pl-4 pr-4 pt-2 pb-2">
                     <Button
                       variant={"ghostButton"}
@@ -123,20 +126,20 @@ function SelectTable() {
                         Take Away
                       </div>
                       <div className="rounded-full bg-[#114F44]/10 flex items-center h-fit justify-center m-auto">
-                        <span className="text-[#114F44] font-bold text-[10px] p-2">
+                        <span className="text-[#114F44] font-bold text-xs p-2">
                           10
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="p-4 text-xs">
+                  <div className="p-4 text-sm">
                     <div className="flex gap-2 pb-4">
                       {/* <Button
                         variant="outline"
-                        className="rounded-3xl text-xs border-primaryColor bg-[#FFF5EE] text-primaryColor p-2"
+                        className="rounded-3xl text-sm border-primaryColor bg-[#FFF5EE] text-primaryColor p-2"
                       > */}
                       <button
-                        className={`rounded-3xl text-xs p-1 px-2 h-fit border ${
+                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
                           activeFilterTakeAway === "Semua"
                             ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                             : ""
@@ -146,7 +149,7 @@ function SelectTable() {
                         Semua
                       </button>
                       <button
-                        className={`rounded-3xl text-xs p-1 px-2 border ${
+                        className={`rounded-3xl text-sm p-1 px-2 border ${
                           activeFilterTakeAway === "BelumBayar"
                             ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                             : ""
@@ -156,7 +159,7 @@ function SelectTable() {
                         Belum Bayar
                       </button>
                       <button
-                        className={`rounded-3xl text-xs p-1 px-2 border ${
+                        className={`rounded-3xl text-sm p-1 px-2 border ${
                           activeFilterTakeAway === "SudahBayar"
                             ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                             : ""
@@ -167,29 +170,29 @@ function SelectTable() {
                       </button>
                     </div>
                     <div className="overflow-auto h-screen space-y-2 scroll-container">
-                      <div className="border rounded-xl text-[10px]">
+                      <div className="border rounded-xl text-xs">
                         <div className="flex justify-between border-b p-2">
                           <div className="space-y-0">
                             <div className="flex gap-2">
                               <span className="flex items-center text-[#828487]">
                                 #INV873
                               </span>
-                              <div className="rounded-3xl text-[8px] p-1.5 text-primaryColor bg-[#FEA026]/10">
+                              <div className="rounded-3xl text-[10px] p-1.5 text-primaryColor bg-[#FEA026]/10">
                                 Belum Bayar
                               </div>
                             </div>
-                            <div className="text-black font-bold text-xs">
+                            <div className="text-black font-bold text-sm">
                               Putri Diana
                             </div>
                           </div>
                           <div className="flex gap-2">
                             <button
                               onClick={() => setIsDetailModalOpen(true)}
-                              className="rounded-3xl text-[10px] pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
+                              className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
                             >
                               Detail
                             </button>
-                            <button className="rounded-3xl text-[10px] pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
+                            <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
                               Bayar
                             </button>
                           </div>
@@ -209,25 +212,25 @@ function SelectTable() {
                           </div>
                         </div>
                       </div>
-                      <div className="border rounded-xl text-[10px]">
+                      <div className="border rounded-xl text-xs">
                         <div className="flex justify-between border-b p-2">
                           <div className="space-y-0">
                             <div className="flex gap-2">
                               <span className="flex items-center text-[#828487]">
                                 #INV873
                               </span>
-                              <div className="rounded-3xl text-[8px] p-1.5 text-[#35C335] bg-[#35C335]/10">
+                              <div className="rounded-3xl text-[10px] p-1.5 text-[#35C335] bg-[#35C335]/10">
                                 Sudah Bayar
                               </div>
                             </div>
-                            <div className="text-black font-bold text-xs">
+                            <div className="text-black font-bold text-sm">
                               Putri Diana
                             </div>
                           </div>
                           <div className="flex gap-2">
                             <button
                               onClick={() => setIsDetailModalOpen(true)}
-                              className="rounded-3xl text-[10px] pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
+                              className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
                             >
                               Detail
                             </button>
@@ -258,7 +261,7 @@ function SelectTable() {
 
         <div className="flex gap-2 items-center">
           <button
-            className={`rounded-3xl text-xs p-1 px-2 h-fit border ${
+            className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
               activeFilter === "Semua Meja"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -268,7 +271,7 @@ function SelectTable() {
             Semua Meja
           </button>
           <button
-            className={`rounded-3xl text-xs p-1 px-2 border ${
+            className={`rounded-3xl text-sm p-1 px-2 border ${
               activeFilter === "Tersedia"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -278,7 +281,7 @@ function SelectTable() {
             Tersedia
           </button>
           <button
-            className={`rounded-3xl text-xs p-1 px-2 border ${
+            className={`rounded-3xl text-sm p-1 px-2 border ${
               activeFilter === "Terisi"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -290,11 +293,11 @@ function SelectTable() {
         </div>
       </section>
 
-      <section className="grid grid-cols-8 gap-4 pt-6 pb-6 pl-12 pr-12">
+      <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
         {mejaData.map((meja) => (
           <button
             key={meja.id}
-            className={`rounded-lg border p-2 ${
+            className={`rounded-lg border p-3 ${
               meja.status === "tersedia"
                 ? "border-[#3395F0]"
                 : "border-[#FEA026]"
@@ -308,10 +311,10 @@ function SelectTable() {
                 meja.status === "tersedia"
                   ? "bg-[#3395F0]/10"
                   : "bg-[#FEA026]/10"
-              }`}
+              } flex items-center justify-center w-12 h-12`}
             >
               <span
-                className={`font-bold text-[10px] flex items-center justify-center ${
+                className={`font-bold text-xs ${
                   meja.status === "tersedia"
                     ? "text-[#3395F0]"
                     : "text-[#FEA026]"
@@ -329,17 +332,17 @@ function SelectTable() {
         onClose={() => setIsDetailModalOpen(false)}
         onDetail={handleDetail}
         title="Detail Pesanan"
-        classNameDialogFooter="p-4 border-t"
+        classNameDialogFooter="p-4 border-t flex md:justify-end"
         showKeluarButton={true}
         showCetakButton={true}
         showBuyyButton={true}
-        classNameDialogHeader="border-none p-4"
+        classNameDialogHeader="border-none mt-8"
         classNameButton="w-fit rounded-3xl text-sm"
-        classNameDialogTitle="text-center font-bold"
+        classNameDialogTitle="text-center font-bold pb-4"
         closeButton={false}
       >
         <>
-          <div className="justify-between flex text-xs">
+          <div className="justify-between flex text-sm">
             <div className="">
               <div className="text-secondaryColor font-bold">Take Away</div>
               <div className="text-black">Putri Diana</div>
@@ -350,7 +353,7 @@ function SelectTable() {
             </div>
           </div>
 
-          <Table className="mt-4 mb-4 text-xs">
+          <Table className="mt-4 mb-4 text-sm">
             <TableHeader className="bg-transparent">
               <TableRow className="border-none">
                 <TableHead className="text-left border-b-2 text-[#636363]">
@@ -387,7 +390,7 @@ function SelectTable() {
             </TableBody>
           </Table>
 
-          <div className="flex justify-end items-end text-xs">
+          <div className="flex justify-end items-end text-sm">
             <div className="text-end space-y-2">
               <div className="space-x-4">
                 <span className="text-[#9C9C9C]">SUBTOTAL</span>

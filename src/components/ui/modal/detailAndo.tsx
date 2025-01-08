@@ -65,7 +65,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[640px]">
+      <DialogContent className="sm:max-w-[704px]">
         <DialogHeader className={classNameDialogHeader}>
           {closeButton && (
             <Button className="" variant="closeModal" onClick={onClose}>
@@ -74,7 +74,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
           )}
           <DialogTitle className={classNameDialogTitle}>{title}</DialogTitle>
         </DialogHeader>
-        <div className="ml-4 mr-4 mt-1">{children}</div>
+        <div className="ml-6 mr-6">{children}</div>
         <DialogDescription className="hidden"></DialogDescription>
         <DialogFooter className={classNameDialogFooter}>
           {showCancelButton && (

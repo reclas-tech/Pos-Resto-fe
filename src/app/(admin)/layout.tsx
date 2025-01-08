@@ -22,8 +22,8 @@ export default function RootLayoutDashboard({
 
   const handleLogout = () => {
     setTimeout(() => {
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
       router.push("/login");
       showAlert2("success", "Berhasil Logout.");
     }, 10);
