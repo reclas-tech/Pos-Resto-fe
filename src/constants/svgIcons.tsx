@@ -439,11 +439,15 @@ export function TransaksiIcon({ size = 24, color = "currentColor" }) {
   );
 }
 
-export function KeluarIcon({ size = 24, color = "currentColor" }) {
+export function KeluarIcon({
+  size = 24,
+  color = "currentColor",
+  className = "h-5 w-5 flex-shrink-0",
+}) {
   return (
     <>
       <svg
-        className="h-5 w-5 flex-shrink-0"
+        className={className}
         width={size}
         height={size}
         viewBox="0 0 16 17"
@@ -507,6 +511,44 @@ export function CloseModalSVG() {
   );
 }
 // End Delete Close Components
+
+// First Close Coponents
+export function CloseSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="25"
+        viewBox="0 0 24 25"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 22.6699C17.5228 22.6699 22 18.1928 22 12.6699C22 7.14707 17.5228 2.66992 12 2.66992C6.47715 2.66992 2 7.14707 2 12.6699C2 18.1928 6.47715 22.6699 12 22.6699Z"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 9.66992L9 15.6699"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M9 9.66992L15 15.6699"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Close Components
 
 // First svg icon action
 export function ActionSVG({ color = "currentColor" }) {
@@ -593,6 +635,30 @@ export function FilterTableSVG() {
 }
 // End Filter Table
 
+// First Filter Table
+export function FilterSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Filter Table
+
 // First Loading
 export function LoadingSVG() {
   return (
@@ -621,3 +687,435 @@ export function LoadingSVG() {
   );
 }
 // End Loading
+// First Growth
+export function GrowthSVG() {
+  return (
+    <>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9.75 3.75H14.25V8.25"
+          stroke="#00BF40"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M14.25 3.75L3.75 14.25"
+          stroke="#00BF40"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Growth
+
+// First Decrease
+export function DecreaseSVG() {
+  return (
+    <>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14.25 9.75V14.25H9.75"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M3.75 3.75L14.25 14.25"
+          stroke="#FF0000"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Decrease
+
+// First Product
+export function ProductSVG() {
+  return (
+    <>
+      <svg
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M23.75 3.75H6.25C4.86929 3.75 3.75 4.86929 3.75 6.25V23.75C3.75 25.1307 4.86929 26.25 6.25 26.25H23.75C25.1307 26.25 26.25 25.1307 26.25 23.75V6.25C26.25 4.86929 25.1307 3.75 23.75 3.75Z"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M3.75 11.25C3.75 10.587 4.01339 9.95107 4.48223 9.48223C4.95107 9.01339 5.58696 8.75 6.25 8.75H23.75C24.413 8.75 25.0489 9.01339 25.5178 9.48223C25.9866 9.95107 26.25 10.587 26.25 11.25"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M3.75 13.75H7.5C8.5 13.75 9.5 14.125 10.125 14.875L11.5 16C13.5 18 16.625 18 18.625 16L20 14.875C20.625 14.25 21.625 13.75 22.625 13.75H26.25"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Product
+
+// First Money
+export function MoneySVG() {
+  return (
+    <>
+      <svg
+        width="36"
+        height="36"
+        viewBox="0 0 36 36"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M30 9H6C4.34315 9 3 10.3431 3 12V24C3 25.6569 4.34315 27 6 27H30C31.6569 27 33 25.6569 33 24V12C33 10.3431 31.6569 9 30 9Z"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18 21C19.6569 21 21 19.6569 21 18C21 16.3431 19.6569 15 18 15C16.3431 15 15 16.3431 15 18C15 19.6569 16.3431 21 18 21Z"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M9 18H9.015M27 18H27.015"
+          stroke="black"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Money
+
+// First Meja
+export function MejaSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 20.9617C11.4757 21.0582 9.16166 20.9724 6.23865 20.7048C5.19543 20.6092 4.36239 19.736 4.26588 18.6277C3.87042 14.0861 3.94716 10.903 4.292 6.41419C4.37877 5.28469 5.21856 4.38258 6.28078 4.28634C10.4928 3.90469 13.4667 3.9038 17.7331 4.28821C18.7928 4.38368 19.6326 5.28098 19.7203 6.4076C19.9822 9.77112 20.0688 12.3867 19.9433 15.3485M14 20.9617L19.9433 15.3485M14 20.9617V17.8485C14 16.4678 15.1193 15.3485 16.5 15.3485H19.9433M8 3V5.5M16 3V5.5"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M8 9.5H16"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M8 13H13"
+          stroke="#FEA026"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Meja
+
+// First Riwayat
+export function RiwayatSVG({ className = "" }) {
+  return (
+    <>
+      <svg
+        className={className}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="12" cy="12" r="9" stroke="#737791" strokeWidth="1.5" />
+        <path
+          d="M12 6.5V11.9586C12 11.9851 11.9895 12.0105 11.9707 12.0293L9 15"
+          stroke="#737791"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End Riwayat
+
+// First DropDownSVG
+export function DropDownSVG() {
+  return (
+    <>
+      <svg
+        width="10"
+        height="7"
+        viewBox="0 0 10 7"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8.825 0.533203L5 4.34987L1.175 0.533203L-1.40117e-08 1.7082L5 6.7082L10 1.7082L8.825 0.533203Z"
+          fill="#636363"
+        />
+      </svg>
+    </>
+  );
+}
+// End DropDownSVG
+
+// First BackSVG
+export function BackSVGKasir() {
+  return (
+    <>
+      <svg
+        width="20"
+        height="16"
+        viewBox="0 0 20 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.25775 6.19723L1.55075 6.90423L0.84375 6.19723L1.55075 5.49023L2.25775 6.19723ZM19.2577 14.1972C19.2577 14.4625 19.1524 14.7168 18.9649 14.9043C18.7773 15.0919 18.523 15.1972 18.2577 15.1972C17.9925 15.1972 17.7382 15.0919 17.5506 14.9043C17.3631 14.7168 17.2577 14.4625 17.2577 14.1972H19.2577ZM6.55075 11.9042L1.55075 6.90423L2.96475 5.49023L7.96475 10.4902L6.55075 11.9042ZM1.55075 5.49023L6.55075 0.490234L7.96475 1.90423L2.96475 6.90423L1.55075 5.49023ZM2.25775 5.19723H12.2577V7.19723H2.25775V5.19723ZM19.2577 12.1972V14.1972H17.2577V12.1972H19.2577ZM12.2577 5.19723C14.1143 5.19723 15.8947 5.93473 17.2075 7.24749C18.5203 8.56024 19.2577 10.3407 19.2577 12.1972H17.2577C17.2577 10.8712 16.731 9.59938 15.7933 8.6617C14.8556 7.72402 13.5838 7.19723 12.2577 7.19723V5.19723Z"
+          fill="#114F44"
+        />
+      </svg>
+    </>
+  );
+}
+// End BackSVG
+
+// first TotalIncomeSVG
+export function TotalIncomeSVG() {
+  return (
+    <>
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7.997 11.48C7.55167 11.48 7.17167 11.3217 6.857 11.005C6.54233 10.6883 6.385 10.3073 6.385 9.862C6.385 9.41667 6.54333 9.03667 6.86 8.722C7.17667 8.40733 7.558 8.25 8.004 8.25C8.45 8.25 8.83 8.40867 9.144 8.726C9.458 9.04333 9.61533 9.42433 9.616 9.869C9.61667 10.3137 9.458 10.6937 9.14 11.009C8.822 11.3243 8.441 11.4817 7.997 11.481M4.375 3.75H11.625L13.491 0H2.51L4.375 3.75ZM4.631 16H11.369C12.6557 16 13.749 15.5497 14.649 14.649C15.5497 13.7483 16 12.653 16 11.363C16 10.8243 15.9077 10.2997 15.723 9.789C15.5383 9.27833 15.2717 8.81333 14.923 8.394L11.881 4.75H4.119L1.077 8.394C0.728333 8.81333 0.461667 9.27833 0.277 9.789C0.0923333 10.299 0 10.8237 0 11.363C0 12.653 0.450333 13.7483 1.351 14.649C2.25167 15.5497 3.345 16 4.631 16Z"
+          fill="#114F44"
+        />
+      </svg>
+    </>
+  );
+}
+// End TotalIncomeSVG
+
+// first TotalTransactionsSVG
+export function TotalTransactionsSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M13.015 14.554L11.901 16.93C11.8635 17.0102 11.8537 17.1006 11.8731 17.1869C11.8925 17.2733 11.94 17.3508 12.0081 17.4073C12.0763 17.4637 12.1613 17.496 12.2497 17.4991C12.3382 17.5021 12.4251 17.4757 12.497 17.424L17.297 13.955C17.3825 13.8931 17.4462 13.8057 17.479 13.7054C17.5118 13.6051 17.512 13.4969 17.4796 13.3965C17.4472 13.296 17.3838 13.2084 17.2986 13.1461C17.2133 13.0839 17.1106 13.0503 17.005 13.05H13.72L13.718 13.054H7V14.554H13.015ZM11.21 9.446L12.324 7.07C12.3618 6.98968 12.3718 6.89906 12.3525 6.81242C12.3331 6.72578 12.2855 6.64804 12.2171 6.59144C12.1487 6.53484 12.0634 6.50261 11.9747 6.49981C11.886 6.49702 11.7988 6.52382 11.727 6.576L6.927 10.045C6.84143 10.107 6.77768 10.1944 6.7449 10.2948C6.71212 10.3953 6.71198 10.5035 6.74452 10.604C6.77706 10.7045 6.8406 10.7921 6.92602 10.8543C7.01144 10.9164 7.11436 10.95 7.22 10.95H10.505L10.506 10.946H17.22V9.446H11.21ZM12 22C6.477 22 2 17.523 2 12C2 6.477 6.477 2 12 2C17.523 2 22 6.477 22 12C22 17.523 17.523 22 12 22Z"
+          fill="#FEA026"
+        />
+      </svg>
+    </>
+  );
+}
+// End TotalTransactionsSVG
+
+// first AverageIncomeSVG
+export function AverageIncomeSVG() {
+  return (
+    <>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7 18C8.1 18 9 18.9 9 20C9 21.1 8.1 22 7 22C5.9 22 5 21.1 5 20C5 18.9 5.9 18 7 18ZM17 18C18.1 18 19 18.9 19 20C19 21.1 18.1 22 17 22C15.9 22 15 21.1 15 20C15 18.9 15.9 18 17 18ZM7.2 14.8C7.2 14.9 7.3 15 7.4 15H19V17H7C5.9 17 5 16.1 5 15C5 14.6 5.1 14.3 5.2 14L6.5 11.6L3 4H1V2H4.3L8.6 11H15.6L19.5 4L21.2 5L17.3 12C17 12.6 16.3 13 15.6 13H8.1L7.2 14.6V14.8ZM9.4 1C10.2 1 10.8 1.6 10.8 2.4C10.8 3.2 10.2 3.8 9.4 3.8C8.6 3.8 8 3.2 8 2.4C8 1.6 8.7 1 9.4 1ZM14.6 9C13.8 9 13.2 8.4 13.2 7.6C13.2 6.8 13.8 6.2 14.6 6.2C15.4 6.2 16 6.8 16 7.6C16 8.4 15.3 9 14.6 9ZM9.2 9L8 7.8L14.8 1L16 2.2L9.2 9Z"
+          fill="#6E8FFF"
+        />
+      </svg>
+    </>
+  );
+}
+// End AverageIncomeSVG
+
+// first ProductsSoldSVG
+export function ProductsSoldSVG() {
+  return (
+    <>
+      <svg
+        width="16"
+        height="19"
+        viewBox="0 0 16 19"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M11.7876 4.65472C11.8143 4.58886 11.8269 4.51711 11.8242 4.44506H11.8464C11.7517 1.96067 9.88742 0 7.61977 0C5.35212 0 3.48781 1.96067 3.39318 4.44506C3.38205 4.51441 3.38203 4.58536 3.39311 4.65472H3.32696C2.24261 4.65472 1.08349 5.44235 0.746971 7.55962L0.0888875 13.3271C-0.449544 17.5616 1.53218 18.6202 4.11965 18.6202H11.1342C13.7142 18.6202 15.6361 17.0873 15.1575 13.3271L14.5069 7.55962C14.1105 5.50163 12.9888 4.65472 11.9194 4.65472H11.7876ZM10.5712 4.65472C10.5478 4.58777 10.5354 4.51678 10.5345 4.44506C10.5345 2.6598 9.2147 1.21257 7.58661 1.21257C5.95851 1.21257 4.63868 2.6598 4.63868 4.44506C4.64981 4.51441 4.64984 4.58536 4.63875 4.65472H10.5712ZM5.1592 9.44849C4.74619 9.44849 4.41138 9.06931 4.41138 8.60158C4.41138 8.13384 4.74619 7.75467 5.1592 7.75467C5.57221 7.75467 5.90702 8.13384 5.90702 8.60158C5.90702 9.06931 5.57221 9.44849 5.1592 9.44849ZM9.30961 8.60158C9.30961 9.06931 9.64442 9.44849 10.0574 9.44849C10.4704 9.44849 10.8053 9.06931 10.8053 8.60158C10.8053 8.13384 10.4704 7.75467 10.0574 7.75467C9.64442 7.75467 9.30961 8.13384 9.30961 8.60158Z"
+          fill="#FF8F6B"
+        />
+      </svg>
+    </>
+  );
+}
+// End ProductsSoldSVG
+
+// first ProductsSoldSVG
+export function TotalIncomeGrafikSVG() {
+  return (
+    <>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <mask
+          id="mask0_704_2121"
+          fontStyle="mask-type:luminance"
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width="18"
+          height="18"
+        >
+          <rect
+            x="0.494141"
+            y="0.360352"
+            width="17.28"
+            height="17.28"
+            fill="white"
+          />
+        </mask>
+        <g mask="url(#mask0_704_2121)">
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M11.8947 15.8405C14.1024 15.8405 15.7961 15.0431 15.3151 11.8336L14.7549 7.48391C14.4583 5.88244 13.4368 5.26953 12.5405 5.26953H5.21201C4.30253 5.26953 3.34034 5.92858 2.99763 7.48391L2.43745 11.8336C2.02885 14.6806 3.67645 15.8405 5.88423 15.8405H11.8947Z"
+            stroke="#FEA026"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M5.78516 5.11118C5.78516 3.39321 7.17785 2.00052 8.8958 2.00052C9.72308 1.99701 10.5177 2.32319 11.1039 2.90694C11.6901 3.49068 12.0197 4.2839 12.0197 5.11118"
+            stroke="#FEA026"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M6.76074 8.35352H6.7937"
+            stroke="#FEA026"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M10.959 8.35352H10.992"
+            stroke="#FEA026"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+      </svg>
+    </>
+  );
+}
+// End ProductsSoldSVG
+
+// first PrintSVG
+export function PrintSVG({ className = "" }) {
+  return (
+    <>
+      <svg
+        className={className}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6 9V2H18V9"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M6 18H4C3.46957 18 2.96086 17.7893 2.58579 17.4142C2.21071 17.0391 2 16.5304 2 16V11C2 10.4696 2.21071 9.96086 2.58579 9.58579C2.96086 9.21071 3.46957 9 4 9H20C20.5304 9 21.0391 9.21071 21.4142 9.58579C21.7893 9.96086 22 10.4696 22 11V16C22 16.5304 21.7893 17.0391 21.4142 17.4142C21.0391 17.7893 20.5304 18 20 18H18"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M18 14H6V22H18V14Z"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End PrintSVG

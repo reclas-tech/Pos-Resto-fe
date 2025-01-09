@@ -30,12 +30,24 @@ function OtpInputPage() {
     },
   });
 
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      router.push("/input-kode-otp");
+    } else {
+      Cookies.remove("token");
+      router.push("/login");
+    }
+  }, [router]);
+
   /* eslint-disable */
   const onSubmit: SubmitHandler<OtpValues> = async (data) => {
     setLoading(true);
     setErrorMessage("");
 
     try {
+      const token = Cookies.get("token");
+      console.log("token sebelum", token);
       const response = await axiosInstance.post(
         "/auth/admin/otp-verification",
         {
@@ -43,17 +55,11 @@ function OtpInputPage() {
         }
       );
       const result = response.data;
-      if (result.status === 200) {
+      if (result.statusCode === 200) {
         setSubmittedOtp(data.otp);
         showAlert2("success", "Berhasil.");
-        console.log(result.otp);
-        Cookies.set("accessToken", result?.data?.access_token, {
+        Cookies.set("token", result?.data?.token, {
           expires: 1,
-          secure: true,
-          httpOnly: false,
-        });
-        Cookies.set("refreshToken", result?.data?.refresh_token, {
-          expires: 7,
           secure: true,
           httpOnly: false,
         });
@@ -65,8 +71,14 @@ function OtpInputPage() {
       }
     } catch (error: any) {
       console.log(data.otp);
-      const errorMessage =
+      let errorMessage =
         error.response?.data?.message || "Otp gagal. Silakan coba lagi!";
+      if (error.response?.data?.statusCode === 400) {
+        console.log(error.response.data);
+        errorMessage =
+          error.response?.data?.data[0].message ||
+          "Login gagal. Silakan coba lagi!";
+      }
       setErrorMessage(errorMessage);
     } finally {
       setLoading(false);

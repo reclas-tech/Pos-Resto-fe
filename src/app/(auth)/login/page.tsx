@@ -35,12 +35,12 @@ const LoginPage = () => {
 
   // cek berdasarkan cookies
   useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-    if (accessToken) {
+    const access_token = Cookies.get("access_token");
+    if (access_token) {
       router.push("/beranda");
     } else {
-      Cookies.remove("accessToken");
-      Cookies.remove("refreshToken");
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
       router.push("/login");
     }
   }, [router]);
@@ -55,15 +55,16 @@ const LoginPage = () => {
         email: data.email,
         password: data.password,
       });
+      router.push("/beranda");
       const result = response.data;
-      if (result.status === 200) {
+      if (result.statusCode === 200) {
         showAlert2("success", "Berhasil Login.");
-        Cookies.set("accessToken", result?.data?.access_token, {
+        Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
           httpOnly: false,
         });
-        Cookies.set("refreshToken", result?.data?.refresh_token, {
+        Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
           secure: true,
           httpOnly: false,
@@ -75,8 +76,14 @@ const LoginPage = () => {
         reset();
       }
     } catch (error: any) {
-      const errorMessage =
+      let errorMessage =
         error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      if (error.response?.data?.statusCode === 400) {
+        console.log(error.response.data);
+        errorMessage =
+          error.response?.data?.data[0].message ||
+          "Login gagal. Silakan coba lagi!";
+      }
       setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
