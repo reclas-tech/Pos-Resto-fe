@@ -80,7 +80,7 @@ export default function RootLayoutDashboard({
           </Sidebar>
           <>
             <div className="flex flex-1">
-              <div className="p-2 md:p-6 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full m-6 rounded-xl">
+              <div className="p-2 md:p-6 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full m-6 rounded-xl h-full overflow-y-auto max-h-full">
                 {children}
               </div>
             </div>
