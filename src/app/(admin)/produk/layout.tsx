@@ -9,18 +9,47 @@ export default function RootLayoutDashboard({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   const pathname = usePathname();
 
-  let linkHref = "/produk";
-  let pageTitle = "Produk";
+  const getRouteConfig = () => {
+    if (pathname.includes("/edit-paket")) {
+      return {
+        href: "/produk/menu-paket",
+        title: "Edit Paket",
+      };
+    }
+    if (pathname.includes("/tambah-paket")) {
+      return {
+        href: "/produk/menu-paket",
+        title: "Tambah Paket",
+      };
+    }
+    if (pathname.includes("/menu-paket")) {
+      return {
+        href: "/produk",
+        title: "Menu Paket",
+      };
+    }
+    if (pathname.includes("/edit")) {
+      return {
+        href: "/produk",
+        title: "Edit Produk",
+      };
+    }
+    if (pathname.includes("/tambah")) {
+      return {
+        href: "/produk",
+        title: "Tambah Produk",
+      };
+    }
+    return {
+      href: "/produk",
+      title: "Produk",
+    };
+  };
 
-  if (pathname.includes("/produk/") && pathname.includes("/edit")) {
-    linkHref = "/produk";
-    pageTitle = "Edit Produk";
-  } else if (pathname !== "/produk") {
-    linkHref = "/produk";
-    pageTitle = "Tambah Produk";
-  }
+  const { href: linkHref, title: pageTitle } = getRouteConfig();
 
   return (
     <>
