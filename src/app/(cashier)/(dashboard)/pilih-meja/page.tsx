@@ -6,7 +6,13 @@ import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import DetailModal from "@/components/ui/modal/detailAndo";
-import { BackSVGKasir, RiwayatSVG } from "@/constants/svgIcons";
+import {
+  BackSVGKasir,
+  MoneyCardSVG,
+  MoneyCashSVG,
+  MoneyQrisSVG,
+  RiwayatSVG,
+} from "@/constants/svgIcons";
 import {
   Table,
   TableBody,
@@ -15,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import PaymentModal from "@/components/ui/modal/payment";
 
 interface DetailInvoice {
   id: number;
@@ -29,6 +36,7 @@ function SelectTable() {
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
   const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const handleDetail = () => {
     console.log("Data diedit");
@@ -73,7 +81,25 @@ function SelectTable() {
       price: 20000,
       subTotal: 30000,
     },
+    {
+      id: 4,
+      name: "Mie kuah pedas",
+      quantity: 2,
+      price: 20000,
+      subTotal: 30000,
+    },
+    {
+      id: 5,
+      name: "Mie kuah pedas",
+      quantity: 2,
+      price: 20000,
+      subTotal: 30000,
+    },
   ];
+
+  const handleSubmit = () => {
+    console.log("Data diedit");
+  };
 
   return (
     <>
@@ -330,7 +356,7 @@ function SelectTable() {
       <DetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
-        onDetail={handleDetail}
+        onDetail={() => setIsPaymentModalOpen(true)}
         title="Detail Pesanan"
         classNameDialogFooter="p-4 border-t flex md:justify-end"
         showKeluarButton={true}
@@ -408,6 +434,124 @@ function SelectTable() {
           </div>
         </>
       </DetailModal>
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onSubmit={handleSubmit}
+        title="Pembayaran"
+        classNameDialogFooter=""
+        showCancelButton={false}
+        showPrintButton={false}
+        classNameDialogHeader="border-b p-5"
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle="text-left font-semibold"
+        closeButton={true}
+      >
+        <>
+          <div className="p-4 flex w-full text-sm">
+            <div className="w-[75%] space-y-2">
+              <div className="text-primaryColor font-semibold">Dine In</div>
+              <div className="flex justify-between w-full">
+                <div className="w-[70%]">
+                  <div className="div">#INV1231, #INV1231, #INV1231</div>
+                  <div className="div">19.35 WIB</div>
+                </div>
+                <div className="w-[30%]">
+                  Meja : T-1 / T-2 T-1 / T-2 / T-1 / T-2
+                </div>
+              </div>
+              <div className="w-full">
+                <div className="div">Kasir : John Doe</div>
+                <div className="div">Pemesan : Putri Diana</div>
+              </div>
+              <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container">
+                <Table className="mt-4 mb-4 text-sm">
+                  <TableHeader className="bg-transparent">
+                    <TableRow className="border-none">
+                      <TableHead className="text-left border-b-2 text-[#636363]">
+                        Nama
+                      </TableHead>
+                      <TableHead className="text-center border-b-2 text-[#636363]">
+                        Jumlah
+                      </TableHead>
+                      <TableHead className="text-right border-b-2 text-[#636363]">
+                        Harga
+                      </TableHead>
+                      <TableHead className="text-right border-b-2 text-[#636363]">
+                        Subtotal
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transaksi.map((transaksiItem) => (
+                      <TableRow key={transaksiItem.id} className="border-none">
+                        <TableCell className="text-start border-b text-[#19191C]">
+                          {transaksiItem.name}
+                        </TableCell>
+                        <TableCell className="text-center border-b text-[#19191C]">
+                          {transaksiItem.quantity}
+                        </TableCell>
+                        <TableCell className="text-right border-b text-[#19191C]">
+                          Rp. {transaksiItem.price.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right border-b text-[#19191C]">
+                          Rp. {transaksiItem.subTotal}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex justify-end items-end text-sm !mt-6">
+                <div className="text-end space-y-2">
+                  <div className="space-x-4">
+                    <span className="text-[#9C9C9C]">SUBTOTAL</span>
+                    <span className="text-[#19191C]">Rp. 95000</span>
+                  </div>
+                  <div className="space-x-4">
+                    <span className="text-[#9C9C9C]">PAJAK</span>
+                    <span className="text-[#19191C]">Rp. 10000</span>
+                  </div>
+                  <div className="space-x-4">
+                    <span className="text-[#19191C]">TOTAL</span>
+                    <span className="text-primaryColor">Rp. 105.000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-[25%] border-l pl-8 ml-5 space-y-2">
+              <Button
+                variant={"default"}
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor"
+              >
+                <span>
+                  <MoneyCashSVG className="!w-6 !h-6" />
+                </span>
+                <span>Bayar dengan Tunai</span>
+              </Button>
+              <Button
+                variant={"default"}
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor"
+              >
+                <span>
+                  <MoneyCardSVG className="!w-6 !h-6" />
+                </span>
+                <span>Bayar dengan Kartu</span>
+              </Button>
+              <Button
+                variant={"default"}
+                className="justify-start text-sm p-2 h-fit w-full bg-primaryColor"
+              >
+                <span>
+                  <MoneyQrisSVG className="!w-6 !h-6" />
+                </span>
+                <span>QRIS</span>
+              </Button>
+            </div>
+          </div>
+        </>
+      </PaymentModal>
 
       <DarkModeComponents className="hidden" />
     </>
