@@ -52,6 +52,7 @@ const PaginationLink = ({
         variant: isActive ? "default" : "isPaginationOtline",
         size,
       }),
+      "rounded-lg text-xs md:text-sm w-[40px] md:py-2",
       className
     )}
     {...props}
