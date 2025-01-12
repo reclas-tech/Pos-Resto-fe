@@ -12,11 +12,11 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
 
   useEffect(() => {
-    const accessToken = Cookies.get("accessToken");
-    const refreshToken = Cookies.get("refreshToken");
-    // console.log("Access Token:", accessToken);
-    // console.log("Refresh Token:", refreshToken);
-    if (!accessToken && !refreshToken) {
+    const access_token = Cookies.get("access_token");
+    const refresh_token = Cookies.get("refresh_token");
+    // console.log("Access Token:", access_token);
+    // console.log("Refresh Token:", refresh_token);
+    if (!access_token && !refresh_token) {
       router.push("/login");
     } else {
       setLoading(false);

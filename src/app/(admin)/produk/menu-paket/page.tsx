@@ -39,28 +39,28 @@ import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
 import DeleteModal from "@/components/ui/modal/delete";
 
-const products = [
+const packets = [
   {
     no: "1",
-    nameProducts: "Produk 1",
+    namePackets: "Paket 1",
     prices: "Rp. 35.000",
     stocks: "12",
   },
   {
     no: "2",
-    nameProducts: "Produk 2",
+    namePackets: "Paket 2",
     prices: "Rp. 35.000",
     stocks: "45",
   },
   {
     no: "3",
-    nameProducts: "Produk 3",
+    namePackets: "Paket 3",
     prices: "Rp. 35.000",
     stocks: "30",
   },
 ];
 
-function ProductPage() {
+function PacketPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleDelete = () => {
@@ -87,13 +87,8 @@ function ProductPage() {
             <SearchInput className="w-[450px]" />
           </div>
         </div>
-        <div className="w-fit flex items-center space-x-4">
-          <Link href="/produk/menu-paket">
-            <Button variant="default" >
-              Menu Paket
-            </Button>
-          </Link>
-          <Link href="/produk/tambah">
+        <div className="w-fit">
+          <Link href="/produk/tambah-paket">
             <Button variant="default" iconLeft={<Plus />}>
               Tambah
             </Button>
@@ -105,29 +100,29 @@ function ProductPage() {
           <TableHeader className="bg-primaryColor">
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
-              <TableHead className="w-[260px]">Nama Produk</TableHead>
+              <TableHead className="w-[260px]">Nama Menu</TableHead>
               <TableHead className="w-[260px]">Harga</TableHead>
               <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((productsView) => (
+            {packets.map((packetsView) => (
               <TableRow
                 className="text-sm text-[#141414] dark:text-white"
-                key={productsView.no}
+                key={packetsView.no}
               >
                 <TableCell className="font-medium text-center">
-                  {productsView.no}
-                </TableCell>
-                <TableCell className="text-left">
-                  {productsView.nameProducts}
+                  {packetsView.no}
                 </TableCell>
                 <TableCell className="text-center">
-                  {productsView.prices}
+                  {packetsView.namePackets}
                 </TableCell>
                 <TableCell className="text-center">
-                  {productsView.stocks}
+                  {packetsView.prices}
+                </TableCell>
+                <TableCell className="text-center">
+                  {packetsView.stocks}
                 </TableCell>
                 <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                   <DropdownMenu>
@@ -141,7 +136,7 @@ function ProductPage() {
                         Pilih Aksi
                       </DropdownMenuLabel>
                       <div className="p-2 text-sm space-y-1">
-                        <Link href={`/produk/edit/${productsView.no}`}>
+                        <Link href={`/produk/edit-paket/${packetsView.no}`}>
                           <div className="w-full">Edit</div>
                         </Link>
                         <button
@@ -196,4 +191,4 @@ function ProductPage() {
   );
 }
 
-export default ProductPage;
+export default PacketPage;

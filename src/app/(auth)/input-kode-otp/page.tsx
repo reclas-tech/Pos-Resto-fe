@@ -55,7 +55,7 @@ function OtpInputPage() {
         }
       );
       const result = response.data;
-      if (result.status === 200) {
+      if (result.statusCode === 200) {
         setSubmittedOtp(data.otp);
         showAlert2("success", "Berhasil.");
         Cookies.set("token", result?.data?.token, {
@@ -71,8 +71,14 @@ function OtpInputPage() {
       }
     } catch (error: any) {
       console.log(data.otp);
-      const errorMessage =
+      let errorMessage =
         error.response?.data?.message || "Otp gagal. Silakan coba lagi!";
+      if (error.response?.data?.statusCode === 400) {
+        console.log(error.response.data);
+        errorMessage =
+          error.response?.data?.data[0].message ||
+          "Login gagal. Silakan coba lagi!";
+      }
       setErrorMessage(errorMessage);
     } finally {
       setLoading(false);

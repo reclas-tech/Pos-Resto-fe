@@ -13,7 +13,7 @@ import { CloseModalSVG, DeleteModalSVG } from "@/constants/svgIcons";
 interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   title?: string;
   description?: string;
   deleteButtonText?: string;
@@ -30,7 +30,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   cancelButtonText = "Batal",
 }) => {
   const handleDelete = () => {
-    onDelete();
+    if (onDelete) {
+      onDelete();
+    }
     onClose();
   };
 
@@ -41,7 +43,9 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
           <Button className="" variant="closeModal" onClick={onClose}>
             <CloseModalSVG />
           </Button>
-          <DialogTitle className="text-black dark:text-white">{title}</DialogTitle>
+          <DialogTitle className="text-black dark:text-white">
+            {title}
+          </DialogTitle>
         </DialogHeader>
         <DialogDescription className="justify-center m-auto mb-4">
           <DeleteModalSVG />
@@ -50,10 +54,18 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
           {description}
         </DialogDescription>
         <DialogFooter className="w-full p-4 flex gap-2">
-          <Button className="w-full dark:text-white" variant="outline" onClick={onClose}>
+          <Button
+            className="w-full dark:text-white"
+            variant="outline"
+            onClick={onClose}
+          >
             {cancelButtonText}
           </Button>
-          <Button className="w-full" variant="destructive" onClick={handleDelete}>
+          <Button
+            className="w-full"
+            variant="destructive"
+            onClick={handleDelete}
+          >
             {deleteButtonText}
           </Button>
         </DialogFooter>
