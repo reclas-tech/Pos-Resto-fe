@@ -1,9 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import { putSubmitEmployee, useGetEmployeeOne } from "@/components/parts/admin/karyawan/api";
+import { employeeSchema } from "@/components/parts/admin/karyawan/validation";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import LoadingForm from "@/components/ui/LoadingForm";
 import {
   Select,
   SelectContent,
@@ -11,29 +13,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { employeeSchema } from "@/validations";
 
-// type Role = "Kasir" | "Admin";
+// type Role = "cashier" | "waiter";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
 const EditEmployeePage: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
-    reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(employeeSchema),
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Form data:", data);
-    reset();
+    // GET ONE SLUG
+    const { slug } = useParams();
+    const { data: dataUser } = useGetEmployeeOne(slug as string);
+
+    useEffect(() => {
+        if (dataUser?.data) {
+            const timer = setTimeout(() => {
+                setValue("name", dataUser?.data?.name ?? '');
+                setValue("phone", dataUser?.data?.phone ?? '');
+                setValue("address", dataUser?.data?.address ?? '');
+                setValue("pin", dataUser?.data?.pin ?? '');
+                setValue("role", dataUser?.data?.role ?? '');
+                // 
+            }, 100);
+
+            return () => clearTimeout(timer); // Clean up the timeout on component unmount or data change
+        }
+    }, [dataUser, setValue]);
+
+    // GET ONE SLUG
+
+  // API CREATE
+  const { handlePostSubmit } = putSubmitEmployee(slug as string);
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    handlePostSubmit(data, setLoading);
   };
 
   return (
@@ -45,7 +73,6 @@ const EditEmployeePage: React.FC = () => {
             <Input
               type="text"
               id="name"
-              defaultValue="Karyawan 1"
               placeholder="Nama Karyawan"
               {...register("name")}
             />
@@ -60,19 +87,14 @@ const EditEmployeePage: React.FC = () => {
             <Controller
               name="role"
               control={control}
-              defaultValue="Kasir"
               render={({ field }) => (
-                <Select
-                  defaultValue="Kasir"
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="w-full text-neutral-500">
-                    <SelectValue placeholder="Pilih Lokasi Meja" />
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Peran" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Kasir">Kasir</SelectItem>
-                    <SelectItem value="Pelayan">Pelayan</SelectItem>
+                    <SelectItem value="cashier">Kasir</SelectItem>
+                    <SelectItem value="waiter">Pelayan</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -91,7 +113,6 @@ const EditEmployeePage: React.FC = () => {
             <Input
               type="text"
               id="pin"
-              defaultValue="123456"
               placeholder="Pin"
               {...register("pin")}
             />
@@ -104,13 +125,12 @@ const EditEmployeePage: React.FC = () => {
             <Input
               type="text"
               id="no_hp"
-              defaultValue="083245781153"
               placeholder="Nomor Telepon"
-              {...register("no_hp")}
+              {...register("phone")}
             />
-            {errors.no_hp && (
+            {errors.phone && (
               <span className="text-sm text-red-500">
-                {errors.no_hp.message}
+                {errors.phone.message}
               </span>
             )}
           </div>
@@ -123,7 +143,6 @@ const EditEmployeePage: React.FC = () => {
               id=""
               className="flex h-40 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
               placeholder="Masukkan Alamat"
-              defaultValue="Jl. Antasari, Bandar Lampung"
               {...register("address")}
             ></textarea>
             {errors.address && (
@@ -138,8 +157,13 @@ const EditEmployeePage: React.FC = () => {
           <Link href={"/karyawan"}>
             <Button variant={"outline"}>Batal</Button>
           </Link>
-          <Button type="submit" variant={"default"}>
-            Simpan
+          <Button
+            type="submit"
+            variant={"default"}
+            className="px-2 w-[90px]"
+            disabled={loading}
+          >
+            {loading ? <LoadingForm /> : "Simpan"}
           </Button>
         </div>
       </form>
