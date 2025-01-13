@@ -10,7 +10,7 @@ import { adminSidebarIcons } from "@/constants/main";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { showAlert2 } from "@/lib/sweetalert2";
-import AuthGuard from "@/hooks/authGuard";
+// import AuthGuard from "@/hooks/authGuard";
 
 export default function RootLayoutDashboard({
   children,
@@ -31,7 +31,7 @@ export default function RootLayoutDashboard({
 
   return (
     <>
-      <AuthGuard>
+      {/* <AuthGuard> */}
         <div
           className={cn(
             "flex flex-col md:flex-row dark:bg-neutral-800 w-full flex-1 max-w-full mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
@@ -87,7 +87,7 @@ export default function RootLayoutDashboard({
           </>
         </div>
         <DarkModeComponents />
-      </AuthGuard>
+      {/* </AuthGuard> */}
     </>
   );
 }
