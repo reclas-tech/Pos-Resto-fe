@@ -38,6 +38,9 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ActionSVG } from "@/constants/svgIcons";
 import DeleteModal from "@/components/ui/modal/delete";
+import DataTable from "@/components/parts/admin/produk/Datatable";
+import { useGetProduct } from "@/components/parts/admin/produk/api";
+import PaginationTable from "@/components/ui/paginationTable";
 
 const products = [
   {
@@ -66,6 +69,30 @@ function ProductPage() {
   const handleDelete = () => {
     console.log("Data dihapus");
   };
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Search state
+  const [search, setSearch] = useState("");
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    setCurrentPage(1); // Reset to page 1
+  };
+
+  // Limit state
+  const [limit, setLimit] = useState(10);
+  const handleLimitChange = (value: string) => {
+    setLimit(parseInt(value, 10));
+    setCurrentPage(1); // Reset to page 1
+  };
+
+  // Data fetching
+  const { data } = useGetProduct(currentPage, search, limit);
+
   return (
     <>
       <div className="flex justify-between mb-2">
@@ -89,9 +116,7 @@ function ProductPage() {
         </div>
         <div className="w-fit flex items-center space-x-4">
           <Link href="/produk/menu-paket">
-            <Button variant="default" >
-              Menu Paket
-            </Button>
+            <Button variant="default">Menu Paket</Button>
           </Link>
           <Link href="/produk/tambah">
             <Button variant="default" iconLeft={<Plus />}>
@@ -100,6 +125,15 @@ function ProductPage() {
           </Link>
         </div>
       </div>
+
+      {/* Table */}
+      <DataTable
+        data={data?.data}
+        limit={limit}
+        search={search}
+        currentPage={currentPage}
+      />
+
       <div className="border border-[#E4E4E7] rounded-lg overflow-hidden">
         <Table>
           <TableHeader className="bg-primaryColor">
@@ -166,31 +200,14 @@ function ProductPage() {
           </TableBody>
         </Table>
       </div>
-      <div className="mt-2">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious className="w-10" href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext className="w-10" href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+       
+      {/* Pagination */}
+      <div className="pagi flex items-center justify-center md:justify-end mt-3 pb-5 lg:pb-0 mb-20">
+        <PaginationTable
+          currentPage={currentPage}
+          totalPages={data?.data?.pagination?.last_page as number}
+          onPageChange={onPageChange}
+        />
       </div>
     </>
   );

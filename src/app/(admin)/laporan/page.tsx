@@ -666,24 +666,24 @@ function LaporanAdminPage() {
                   </div>
                   <div className="border"></div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Dapur 1</div>
-                    <div>145</div>
-                    <div>Rp. 800.000</div>
+                    <div className="w-full text-start">Dapur 1</div>
+                    <div className="w-full text-center">145</div>
+                    <div className="w-full text-end">Rp. 800.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Dapur 2</div>
-                    <div>123</div>
-                    <div>Rp. 480.000</div>
+                    <div className="w-full text-start">Dapur 2</div>
+                    <div className="w-full text-center">123</div>
+                    <div className="w-full text-end">Rp. 480.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Dapur 3</div>
-                    <div>221</div>
-                    <div>Rp. 765.000</div>
+                    <div className="w-full text-start">Dapur 3</div>
+                    <div className="w-full text-center">221</div>
+                    <div className="w-full text-end">Rp. 765.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Dapur 4</div>
-                    <div>311</div>
-                    <div>Rp. 287.000</div>
+                    <div className="w-full text-start">Dapur 4</div>
+                    <div className="w-full text-center">311</div>
+                    <div className="w-full text-end">Rp. 287.000</div>
                   </div>
                   <div className="border border-dashed border-black/50 mt-8"></div>
                   <div className="flex justify-between text-black font-bold text-lg">
@@ -698,24 +698,24 @@ function LaporanAdminPage() {
                   </div>
                   <div className="border"></div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Makanan</div>
-                    <div>145</div>
-                    <div>Rp. 800.000</div>
+                    <div className="w-full">Makanan</div>
+                    <div className="w-full text-center">145</div>
+                    <div className="w-full text-end">Rp. 800.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Minuman</div>
-                    <div>123</div>
-                    <div>Rp. 480.000</div>
+                    <div className="w-full">Minuman</div>
+                    <div className="w-full text-center">123</div>
+                    <div className="w-full text-end">Rp. 480.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Snack</div>
-                    <div>221</div>
-                    <div>Rp. 765.000</div>
+                    <div className="w-full">Snack</div>
+                    <div className="w-full text-center">221</div>
+                    <div className="w-full text-end">Rp. 765.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
-                    <div>Dessert</div>
-                    <div>311</div>
-                    <div>Rp. 287.000</div>
+                    <div className="w-full">Dessert</div>
+                    <div className="w-full text-center">311</div>
+                    <div className="w-full text-end">Rp. 287.000</div>
                   </div>
                   <div className="border border-dashed border-black/50 mt-8"></div>
                   <div className="flex justify-between text-black font-bold text-lg">

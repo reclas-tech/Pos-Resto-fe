@@ -75,32 +75,6 @@ export const employeeSchema = z.object({
 });
 export type EmployeeValues = z.infer<typeof employeeSchema>;
 
-// Validation Product
-export const productSchema = z.object({
-  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
-  price: z.string().min(1, { message: "Harga harus diisi" }),
-  stock: z.string().min(1, { message: "Stok harus diisi" }),
-  category: z.enum(["Kategori 1", "Kategori 2"], {
-    required_error: "Kategori harus dipilih",
-  }),
-  hpp: z.string().min(1, { message: "HPP harus diisi" }),
-  kitchen: z.enum(["Dapur 1", "Dapur 2"], {
-    required_error: "Dapur harus dipilih",
-  }),
-  image: z
-    .union([z.instanceof(File), z.string()])
-    .refine((val) => val instanceof File || val.length > 0, {
-      message: "Foto produk wajib diunggah.",
-    }),
-});
-export type ProductValues = z.infer<typeof productSchema>;
-
-// Validation Category
-export const categorySchema = z.object({
-  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
-});
-export type CategoryValues = z.infer<typeof categorySchema>;
-
 // Validation Packet
 export const packetSchema = z.object({
   name: z.string().min(1, { message: "Nama Produk harus diisi" }),
