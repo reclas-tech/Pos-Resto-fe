@@ -29,6 +29,8 @@ interface PaymentModalProps {
   showBuyyButton?: boolean;
   closeButton?: boolean;
   classNameDialogHeader?: string;
+  classNameDialogContent?: string;
+  classNameContent?: string;
   classNameDialogFooter?: string;
   classNameDialogTitle?: string;
   classNameButton?: string;
@@ -52,6 +54,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   showBuyyButton = false,
   closeButton = false,
   classNameDialogHeader = "relative p-4 rounded-lg border-b",
+  classNameDialogContent = "sm:max-w-[924px]",
+  classNameContent = "ml-6 mr-6",
   classNameDialogFooter = "w-full p-4 pt-3 flex gap-2",
   classNameDialogTitle = "text-black dark:text-white font-semibold",
   classNameButton = "w-full",
@@ -65,7 +69,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[924px]">
+      <DialogContent className={classNameDialogContent}>
         <DialogHeader className={classNameDialogHeader}>
           {closeButton && (
             <Button className="" variant="closeModal" onClick={onClose}>
@@ -74,7 +78,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           )}
           <DialogTitle className={classNameDialogTitle}>{title}</DialogTitle>
         </DialogHeader>
-        <div className="ml-6 mr-6">{children}</div>
+        <div className={classNameContent}>{children}</div>
         <DialogDescription className="hidden"></DialogDescription>
         <DialogFooter className={classNameDialogFooter}>
           {showCancelButton && (

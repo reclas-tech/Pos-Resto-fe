@@ -1,17 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { DarkModeComponents } from "@/components/ui/darkModeButton";
-import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
+import Image from "next/image";
+import clear from "@assets/clearIcon.png";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import DetailModal from "@/components/ui/modal/detailAndo";
 import {
   BackSVGKasir,
   MoneyCardSVG,
   MoneyCashSVG,
   MoneyQrisSVG,
   RiwayatSVG,
+  WarningSVG,
 } from "@/constants/svgIcons";
 import {
   Table,
@@ -22,6 +24,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import PaymentModal from "@/components/ui/modal/payment";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DarkModeComponents } from "@/components/ui/darkModeButton";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import DetailModal from "@/components/ui/modal/detailAndo";
 
 interface DetailInvoice {
   id: number;
@@ -33,22 +51,24 @@ interface DetailInvoice {
 
 function SelectTable() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("Semua Meja");
-  const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isPaymentCashModalOpen, setIsPaymentCashModalOpen] = useState(false);
+  const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [pinValue, setPinValue] = useState<string>("");
+  const [activeFilter, setActiveFilter] = useState("Semua Meja");
+  const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
 
-  const handleDetail = () => {
-    console.log("Data diedit");
-  };
   const handleFilterClick = (filter: React.SetStateAction<string>) => {
     setActiveFilter(filter);
     console.log(`Filter aktif: ${filter}`);
   };
+
   const handleFilterClickTakeAway = (filter: React.SetStateAction<string>) => {
     setActiveFilterTakeAway(filter);
     console.log(`Filter aktif: ${filter}`);
   };
+
   const mejaData = [
     { id: 1, status: "tersedia" },
     { id: 2, status: "terisi" },
@@ -59,6 +79,7 @@ function SelectTable() {
     { id: 7, status: "tersedia" },
     { id: 8, status: "terisi" },
   ];
+
   const transaksi: DetailInvoice[] = [
     {
       id: 1,
@@ -97,9 +118,84 @@ function SelectTable() {
     },
   ];
 
-  const handleSubmit = () => {
-    console.log("Data diedit");
+  const pinCashPaymentSchema = z.object({
+    pin: z.string().length(6, "Pin harus 6 digit"),
+  });
+
+  const pinCashSchema = z.object({
+    cash: z.string().min(1, "Cash On Hand Tidak Boleh Kosong"),
+  });
+
+  type PinCashTunaiFormData = z.infer<typeof pinCashPaymentSchema>;
+
+  const {
+    handleSubmit,
+    register: register,
+    formState: { errors },
+  } = useForm<PinCashTunaiFormData>({
+    resolver: zodResolver(pinCashSchema),
+    defaultValues: {
+      pin: "",
+    },
+  });
+
+  const formatRupiah = (angka: any) => {
+    const number = angka.toString().replace(/\D/g, "");
+    const formatted = new Intl.NumberFormat("id-ID").format(number);
+    return `Rp ${formatted}`;
   };
+
+  const calculateChange = () => {
+    const totalAmount = 10000;
+    const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
+    const change = paymentAmount - totalAmount;
+    if (change < 0) {
+      return `-${formatRupiah(Math.abs(change))}`;
+    } else {
+      return change >= 0 ? formatRupiah(change) : "Rp 0";
+    }
+  };
+
+  const handleButtonClick = (num: any) => {
+    const newValue = pinValue.replace(/\D/g, "") + num;
+    setPinValue(formatRupiah(newValue));
+  };
+
+  const handleDelete = () => {
+    const numericValue = pinValue.replace(/\D/g, "");
+    const newValue = numericValue.slice(0, -1);
+    setPinValue(newValue ? formatRupiah(newValue) : "");
+  };
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+    console.log("Nominal Payment :", pinValue.replace(/\D/g, ""));
+    console.log("Retun Emount :", calculateChange());
+  };
+
+  // const onSubmit: SubmitHandler<PinCashTunaiFormData> = async (data) => {
+  //   console.log("Form data:", data);
+  //   setLoading(true);
+  //   const formData = new FormData();
+  //   formData.append("name", data.pin);
+  //   try {
+  //     await axiosPrivateInstance.post("/", formData);
+  //     showAlert2("success", "Berhasil menambahkan data.");
+  //     navigate.push("/category");
+  //   } catch (error) {
+  //     if (error instanceof AxiosError) {
+  //       const errorMessage =
+  //         error.response?.data?.data?.[0]?.message || "Gagal menambahkan data.";
+  //       showAlert2("error", errorMessage);
+  //     } else {
+  //       showAlert2("error", "Terjadi kesalahan!");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //     setIsCreateModalOpen(false);
+  //     reset();
+  //   }
+  // };
 
   return (
     <>
@@ -124,6 +220,7 @@ function SelectTable() {
             </div>
           </div>
 
+          {/* Modal Take Away */}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <button className="rounded-3xl text-sm bg-secondaryColor text-white p-1 px-2">
@@ -160,10 +257,6 @@ function SelectTable() {
                   </div>
                   <div className="p-4 text-sm">
                     <div className="flex gap-2 pb-4">
-                      {/* <Button
-                        variant="outline"
-                        className="rounded-3xl text-sm border-primaryColor bg-[#FFF5EE] text-primaryColor p-2"
-                      > */}
                       <button
                         className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
                           activeFilterTakeAway === "Semua"
@@ -283,6 +376,7 @@ function SelectTable() {
               </motion.div>
             </DialogPortal>
           </Dialog>
+          {/* Modal Take Away */}
         </div>
 
         <div className="flex gap-2 items-center">
@@ -353,6 +447,7 @@ function SelectTable() {
         ))}
       </section>
 
+      {/* Modal Detail Order */}
       <DetailModal
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
@@ -434,7 +529,9 @@ function SelectTable() {
           </div>
         </>
       </DetailModal>
+      {/* Modal Detail Order */}
 
+      {/* Modal Payment */}
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
@@ -523,6 +620,9 @@ function SelectTable() {
             <div className="w-[25%] border-l pl-8 ml-5 space-y-2">
               <Button
                 variant={"default"}
+                onClick={() => {
+                  setIsPaymentCashModalOpen(true);
+                }}
                 className="justify-center text-sm p-2 h-fit w-full bg-primaryColor"
               >
                 <span>
@@ -552,6 +652,152 @@ function SelectTable() {
           </div>
         </>
       </PaymentModal>
+      {/* Modal Payment */}
+
+      {/* Modal Payment Cash */}
+      <PaymentModal
+        isOpen={isPaymentCashModalOpen}
+        onClose={() => setIsPaymentCashModalOpen(false)}
+        onSubmit={handleSubmit}
+        title="Tunai"
+        classNameDialogFooter=""
+        showCancelButton={false}
+        showPrintButton={false}
+        classNameDialogHeader=""
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle="text-left font-semibold"
+        closeButton={false}
+        classNameDialogContent="sm:max-w-[400px] pt-3 pl-3 pr-3"
+        classNameContent=""
+      >
+        <>
+          <form onSubmit={onSubmit} className="space-y-4" id="paymentForm">
+            <div className="space-y-1">
+              <Label className="text-sm" htmlFor="name">
+                Masukkan Nominal Pembayaran
+              </Label>
+              <Input
+                type="text"
+                id="name"
+                placeholder="Rp. 0"
+                className="w-full"
+                value={pinValue}
+                {...register("pin")}
+                onChange={(e) => {
+                  const numericValue = e.target.value.replace(/\D/g, "");
+                  setPinValue(formatRupiah(numericValue));
+                }}
+              />
+              {errors.pin && (
+                <span className="text-sm text-red-500">
+                  {errors.pin.message}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-2 md:gap-3">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                  <button
+                    key={num}
+                    type="button"
+                    onClick={() => handleButtonClick(num)}
+                    className="w-full h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-sm sm:text-sm md:text-base"
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-2 sm:gap-2 md:gap-3">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="w-full h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center"
+                >
+                  <Image
+                    src={clear}
+                    alt="clear"
+                    className="w-5 sm:w-5 md:w-6"
+                    unoptimized
+                  />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleButtonClick(0)}
+                  className="col-span-1 h-9 sm:h-9 md:h-10 font-semibold text-[#334155] rounded-md bg-[#E2E8F0] hover:bg-[#dae1e9] flex items-center justify-center text-sm sm:text-sm md:text-base"
+                >
+                  0
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmationDialogOpen(true)}
+                  className="col-span-1 h-9 sm:h-9 md:h-10 font-semibold text-white rounded-md bg-secondaryColor hover:bg-secondaryColor flex items-center justify-center text-sm"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-sm" htmlFor="change">
+                Jumlah Kembalian
+              </Label>
+              <Input
+                type="text"
+                id="change"
+                className="w-full"
+                value={calculateChange()}
+                readOnly
+              />
+            </div>
+
+            {/* Modal Validation Cash Payment */}
+            <Dialog
+              open={isConfirmationDialogOpen}
+              onOpenChange={setConfirmationDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <button className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base">
+                  Selesai
+                </button>
+              </DialogTrigger>
+              <DialogContent className="w-[392px]">
+                <DialogHeader className="relative p-4 rounded-lg">
+                  <DialogTitle className="font-semibold text-black dark:text-white m-auto flex mb-4">
+                    <WarningSVG />
+                  </DialogTitle>
+                  <DialogDescription className="text-lg font-bold text-center">
+                    Apakah Pembayaran Selesai?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="w-full pb-4 pl-4 pr-4 flex gap-2">
+                  <DialogClose asChild>
+                    <Button
+                      className="w-full dark:text-white border-[#114F44] text-[#114F44]"
+                      variant="outline"
+                      type="button"
+                    >
+                      Gagal
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      variant="default"
+                      form="paymentForm"
+                    >
+                      Selesai
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            {/* Modal Validation Cash Payment */}
+          </form>
+        </>
+      </PaymentModal>
+      {/* Modal Payment Cash */}
 
       <DarkModeComponents className="hidden" />
     </>

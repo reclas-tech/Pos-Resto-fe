@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Input, SearchInputCashier } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { axiosPrivateInstance } from "@/utils/axios";
@@ -20,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Input, SearchInputCashier } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DetailModal from "@/components/ui/modal/detailAndo";

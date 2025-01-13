@@ -1278,3 +1278,42 @@ export function MoneyQrisSVG({ className = "" }) {
   );
 }
 // End MoneyQrisSVG
+
+// first WarningSVG
+export function WarningSVG({ className = "" }) {
+  return (
+    <>
+      <svg
+        width="126"
+        height="125"
+        viewBox="0 0 126 125"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+      >
+        <path
+          d="M62.9998 114.584C91.7647 114.584 115.083 91.2652 115.083 62.5003C115.083 33.7355 91.7647 10.417 62.9998 10.417C34.235 10.417 10.9165 33.7355 10.9165 62.5003C10.9165 91.2652 34.235 114.584 62.9998 114.584Z"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M63 41.667V62.5003"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M63 83.333H63.0521"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End WarningSVG
