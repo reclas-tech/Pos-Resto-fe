@@ -70,7 +70,7 @@ const LoginWaitersPage = () => {
                 Waroeng Aceh Garuda
               </p>
             </div>
-            <div className="bg-white rounded-lg w-[280px] sm:w-[300px] md:w-[320px] h-[380px] sm:h-[405px] md:h-[430px] p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-3 md:space-y-4">
+            <div className="bg-white rounded-lg w-[280px] sm:w-[300px] md:w-[320px] h-[380px] sm:h-[405px] md:h-[430px] p-8 sm:space-y-3 md:space-y-4">
               <p className="text-center text-[#334155] text-lg sm:text-lg md:text-xl font-semibold">
                 Kode Pin
               </p>

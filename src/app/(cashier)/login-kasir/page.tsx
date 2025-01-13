@@ -105,7 +105,7 @@ const LoginKasirPage = () => {
                 Waroeng Aceh Garuda
               </p>
             </div>
-            <div className="bg-white rounded-lg w-[280px] sm:w-[300px] md:w-[320px] h-[380px] sm:h-[405px] md:h-[430px] p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-3 md:space-y-4">
+            <div className="bg-white rounded-lg w-[280px] sm:w-[300px] md:w-[320px] h-[380px] sm:h-[405px] md:h-[430px] p-8 sm:space-y-3 md:space-y-4">
               <p className="text-center text-[#334155] text-lg sm:text-lg md:text-xl font-semibold">
                 Kode Pin
               </p>
@@ -117,7 +117,7 @@ const LoginKasirPage = () => {
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div
                       key={index}
-                      className="w-5 sm:w-5 md:w-6 h-7 sm:h-7 md:h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center justify-center"
+                      className="w-5 sm:w-5 md:w-6 h-7 sm:h-7 md:h-8 border-b-[3px] bg-[#E2E8F0] border-primaryColor rounded-t-md flex items-center text-[#334155] justify-center"
                     >
                       {pinValue[index] ? "•" : ""}
                     </div>
