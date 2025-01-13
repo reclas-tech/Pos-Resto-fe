@@ -8,9 +8,3 @@ export const categorySchema = z.object({
 });
 export type CategoryValues = z.infer<typeof categorySchema>;
 
-// edit
-export const categorySchemaEdit = z.object({
-  name: z.string().min(1, { message: "Nama Category harus diisi" }),
-});
-export type CategoryValuesEdit = z.infer<typeof categorySchemaEdit>;
-

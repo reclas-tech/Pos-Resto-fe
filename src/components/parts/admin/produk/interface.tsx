@@ -17,15 +17,15 @@ interface Data {
 interface Product {
   id: string;
   name: string;
-  price: string;
-  stock: string;
-  cogp: string;
-  category_id: string;
-  kitchen_id: string;
+  cogp: number;
+  price: number;
+  stock: number;
   image: string;
   created_at: string;
   updated_at: string;
   deleted_at: null;
+  category_id: string;
+  kitchen_id: string;
 }
 
 export interface ProductOne {
@@ -37,13 +37,13 @@ export interface ProductOne {
 export interface ProductEdit {
   id: string;
   name: string;
-  price: string;
-  stock: string;
-  cogp: string;
-  category_id: string;
-  kitchen_id: string;
+  cogp: number;
+  price: number;
+  stock: number;
   image: string;
   created_at: string;
   updated_at: string;
   deleted_at: null;
+  category_id: string;
+  kitchen_id: string;
 }

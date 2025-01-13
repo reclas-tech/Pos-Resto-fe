@@ -4,11 +4,11 @@ import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { showAlert2 } from "@/lib/sweetalert2";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import useSWR, { mutate } from "swr";
-import { ProductValues } from "./validation";
+import useSWR from "swr";
 import { ProductOne } from "./interface";
+import { ProductValues } from "./validation";
 
-// Get product
+// Get Product
 const useGetProduct = (currentPage: number, search: string, limit: number) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
@@ -50,86 +50,33 @@ const useGetProductOne = (slug: string) => {
 
   return { data, error, mutate, isValidating, isLoading };
 };
-//
 
-// Create Kategory
-const postSubmitproduct = () => {
-  const navigate = useRouter(); // Pindahkan ke dalam fungsi
+// Create Product
+const postSubmitProduct = () => {
+  const navigate = useRouter();
   const axiosPrivate = useAxiosPrivateInstance();
 
-  // Menggunakan mutate dari SWR untuk menyegarkan data setelah mutasi
   const handlePostSubmit = async (
-    data: ProductValues,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    url: string, // URL untuk mutasi dan pemanggilan data
-    setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    reset: any
+    formData: FormData,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     const accessToken = Cookies.get("access_token");
 
     try {
       setLoading(true);
-      // Melakukan PUT request menggunakan axios
-      const response = await axiosPrivate.post(`/product/admin/create`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      showAlert2("success", response?.data?.message);
-      navigate.push("/kategori");
-      reset(); // Reset formulir
-      setIsCreateModalOpen(false);
-      // Setelah mutasi berhasil, lakukan mutate untuk menyegarkan data di cache SWR
-      mutate(url); // Mutate menggunakan URL untuk menyegarkan data yang diambil menggunakan SWR
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.data?.[0]?.message ||
-        error.response?.data?.message ||
-        "Gagal menambahkan data!";
-      showAlert2("error", errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { handlePostSubmit };
-};
-
-// Update Kategory
-const putSubmitproduct = (id: string) => {
-  const navigate = useRouter(); // Pindahkan ke dalam fungsi
-  const axiosPrivate = useAxiosPrivateInstance();
-
-  // Menggunakan mutate dari SWR untuk menyegarkan data setelah mutasi
-  const handlePostSubmit = async (
-    data: ProductValues,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    url: string, // URL untuk mutasi dan pemanggilan data
-    setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    reset: any
-  ) => {
-    const accessToken = Cookies.get("access_token");
-
-    try {
-      setLoading(true);
-      // Melakukan PUT request menggunakan axios
-      const response = await axiosPrivate.put(
-        `/product/admin/edit/${id}`,
-        data,
+      const response = await axiosPrivate.post(
+        "/product/admin/create",
+        formData,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       showAlert2("success", response?.data?.message);
-      navigate.push("/kategori");
-      setIsCreateModalOpen(false);
-      reset(); // Reset formulir
-      // Setelah mutasi berhasil, lakukan mutate untuk menyegarkan data di cache SWR
-      mutate(url); // Mutate menggunakan URL untuk menyegarkan data yang diambil menggunakan SWR
+      navigate.push("/produk");
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.data?.[0]?.message ||
@@ -144,4 +91,45 @@ const putSubmitproduct = (id: string) => {
   return { handlePostSubmit };
 };
 
-export { postSubmitproduct, putSubmitproduct, useGetProduct, useGetProductOne };
+// Update Product
+const putSubmitProduct = (slug: string) => {
+  const navigate = useRouter(); // Pindahkan ke dalam fungsi
+  const axiosPrivate = useAxiosPrivateInstance();
+
+
+  const handlePostSubmit = async (
+    formData: FormData,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    const accessToken = Cookies.get("access_token");
+
+    try {
+      setLoading(true);
+      const response = await axiosPrivate.put(
+        `/product/admin/edit/${slug}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      showAlert2("success", response?.data?.message);
+      navigate.push("/produk");
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal menambahkan data!";
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { handlePostSubmit };
+};
+
+export { postSubmitProduct, putSubmitProduct, useGetProduct, useGetProductOne };

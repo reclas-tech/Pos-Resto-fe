@@ -7,10 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import EditModal from "@/components/ui/modal/edit";
 import DeleteModal from "@/components/ui/modal/delete2";
 import {
   Table,
@@ -23,15 +20,11 @@ import {
 import { ActionSVG } from "@/constants/svgIcons";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { showAlert2 } from "@/lib/sweetalert2";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { mutate } from "swr";
-import { z } from "zod";
-import { ProductEdit, ProductInterface } from "./interface";
-import { putSubmitproduct, useGetProductOne } from "./api";
-import { productSchema } from "./validation";
+import Link from "next/link";
+import { ProductInterface } from "./interface";
 
 const DataTable: React.FC<ProductInterface> = ({
   data,
@@ -39,70 +32,36 @@ const DataTable: React.FC<ProductInterface> = ({
   limit,
   search,
 }) => {
-  type FormValues = z.infer<typeof productSchema>;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const accessToken = Cookies.get("access_token"); // Get Token
+  const accessToken = Cookies.get("access_token"); // Ambil token langsung
   const axiosPrivate = useAxiosPrivateInstance();
   const handleDelete = async (id: string | number) => {
     try {
       const response = await axiosPrivate.delete(
-        `/category/admin/delete/${id}`,
+        `/product/admin/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
+      // alert
       showAlert2("success", response?.data?.message);
+      // alert
+      // Update the local data after successful deletion
     } catch (error: any) {
+      // Extract error message from API response
       const errorMessage =
         error.response?.data?.data?.[0]?.message ||
         error.response?.data?.message ||
         "Gagal menghapus data!";
       showAlert2("error", errorMessage);
+      //   alert
     }
     mutate(
-      `/category/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
+      `/product/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
     );
-  };
-
-  // edit
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(productSchema),
-  });
-
-  // edit
-  const [selectedItem, setSelectedItem] = useState<ProductEdit | null>(null);
-  const id = selectedItem?.id ?? "";
-  const [loading, setLoading] = useState(false);
-
-  // GET ONE
-  const { data: dataUser } = useGetProductOne(id as string);
-
-  useEffect(() => {
-    if (dataUser?.data) {
-      const timer = setTimeout(() => {
-        setValue("name", dataUser?.data?.name ?? "");
-      }, 1000);
-
-      return () => clearTimeout(timer); // Clean up
-    }
-  }, [dataUser, setValue]);
-
-  // GET ONE
-  const { handlePostSubmit } = putSubmitproduct(id);
-  const url = `/category/admin/list?page=${currentPage}&limit=${limit}&search=${search}`;
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    handlePostSubmit(data, setLoading, url, setIsEditModalOpen, reset);
   };
 
   return (
@@ -113,7 +72,9 @@ const DataTable: React.FC<ProductInterface> = ({
           <TableHeader className="bg-primaryColor">
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
-              <TableHead className="w-[260px]">Nama Kategori</TableHead>
+              <TableHead className="w-[260px]">Nama Produk</TableHead>
+              <TableHead className="w-[260px]">Harga</TableHead>
+              <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -130,6 +91,12 @@ const DataTable: React.FC<ProductInterface> = ({
                   <TableCell className="text-center">
                     {item?.name ?? "-"}
                   </TableCell>
+                  <TableCell className="text-center">
+                    {item?.price ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.stock ?? "-"}
+                  </TableCell>
                   <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -143,43 +110,9 @@ const DataTable: React.FC<ProductInterface> = ({
                         </DropdownMenuLabel>
                         <div className="p-2 text-sm space-y-1">
                           {/* edit */}
-                          <button
-                            className="text-black hover:text-primaryColor dark:text-white w-full text-left"
-                            onClick={() => {
-                              setSelectedItem(item); // Simpan data item yang dipilih
-                              setIsEditModalOpen(true); // Buka modal edit
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <EditModal
-                            isOpen={isEditModalOpen}
-                            onClose={() => {
-                              setSelectedItem(null);
-                              setIsEditModalOpen(false);
-                            }}
-                            onSubmit={handleSubmit(onSubmit)}
-                            title="Edit Meja"
-                            loading={loading}
-                            editButtonText="Simpan"
-                          >
-                            <div className="flex flex-col w-full">
-                              <Label htmlFor="name">Nama Kategori</Label>
-                              <Input
-                                type="text"
-                                id="name"
-                                placeholder="Edit Kategori"
-                                className="w-full"
-                                {...register("name")}
-                              />
-                              {errors.name && (
-                                <span className="text-sm text-red-500 mt-1">
-                                  {errors.name.message}
-                                </span>
-                              )}
-                            </div>
-                          </EditModal>
-
+                          <Link href={`/produk/edit/${item.id}`}>
+                            <div className="w-full">Edit</div>
+                          </Link>
                           {/* hapus */}
                           <button
                             className="text-black hover:text-primaryColor  dark:text-white w-full text-left"

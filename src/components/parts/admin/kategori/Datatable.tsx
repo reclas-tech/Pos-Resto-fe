@@ -72,7 +72,6 @@ const DataTable: React.FC<CategoryInterface> = ({
   const {
     register,
     handleSubmit,
-    control,
     setValue,
     reset,
     formState: { errors },

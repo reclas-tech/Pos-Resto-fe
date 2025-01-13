@@ -31,6 +31,26 @@ const useGetCategory = (currentPage: number, search: string, limit: number) => {
   return { data, error, mutate, isValidating, isLoading };
 };
 
+// Get Kitchen
+const useGetKitchen = (currentPage: number, search: string, limit: number) => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `kitchen/admin/get`,
+    () =>
+      axiosPrivate
+        .get(`kitchen/admin/get`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
 // Get one
 const useGetCategoryOne = (slug: string) => {
   const accessToken = Cookies.get("access_token");
@@ -149,4 +169,5 @@ export {
   putSubmitCategory,
   useGetCategory,
   useGetCategoryOne,
+  useGetKitchen,
 };
