@@ -4,6 +4,12 @@ import Image from "next/image";
 import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
 import clear from "@assets/clearIcon.png";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/utils/axios";
+import { showAlert2 } from "@/lib/sweetalert2";
+import Cookies from "js-cookie";
+import { LoadingSVG } from "@/constants/svgIcons";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +20,6 @@ import {
 } from "@/components/ui/dialog";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -35,9 +40,12 @@ type PinFormData = z.infer<typeof pinSchema>;
 type CashFormData = z.infer<typeof cashSchema>;
 
 const LoginKasirPage = () => {
-  const [pinValue, setPinValue] = useState<string>("");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModal, setIsModal] = useState<boolean>(false);
   const rupiahInput = useRupiah();
+  const [pinValue, setPinValue] = useState<string>("");
 
   const {
     handleSubmit,
@@ -77,19 +85,78 @@ const LoginKasirPage = () => {
     trigger("pin");
   };
 
-  const onSubmit = (data: PinFormData) => {
-    console.log("Form submitted:", data);
-    setPinValue("");
-    reset();
-    setIsModal(true);
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<PinFormData> = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await axiosInstance.post("/auth/employee/login", {
+        pin: data.pin,
+      });
+      const result = response.data;
+      if (result.statusCode === 200) {
+        console.log("Form submitted:", data);
+        setPinValue("");
+        reset();
+        setIsModal(true);
+        // showAlert2("success", "Berhasil Login.");
+        Cookies.set("access_token", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refresh_token", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("role", result?.data?.role, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          // router.push("/");
+        }, 10);
+      }
+    } catch (error: any) {
+      showAlert2("error", "Gagal Login.");
+
+      let errorMessage =
+        error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      if (error.response?.data?.statusCode === 400) {
+        console.log(error.response.data);
+        errorMessage =
+          error.response?.data?.data[0].message ||
+          "Login gagal. Silakan coba lagi!";
+      }
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onCashSubmit = (data: CashFormData) => {
+    const access_token = Cookies.get("access_token");
+    const refresh_token = Cookies.get("refresh_token");
+    const role = Cookies.get("role");
+    const handleCookiesCheck = () => {
+      router.push("/pilih-meja");
+      console.log("test", role);
+      if (access_token && refresh_token && role) {
+      } else {
+        Cookies.remove("access_token");
+        Cookies.remove("refresh_token");
+        Cookies.remove("role");
+        router.push("/login-kasir");
+      }
+    };
+    handleCookiesCheck();
     console.log("Form Submitted: ", data);
     resetCashOnHand();
     setIsModal(false);
   };
-
   return (
     <div className="w-full h-screen flex flex-col sm:flex-row">
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full">
@@ -168,8 +235,9 @@ const LoginKasirPage = () => {
                   <button
                     type="submit"
                     className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base"
+                    disabled={loading}
                   >
-                    Kirim
+                    {loading ? <LoadingSVG /> : "Kirim"}
                   </button>
                 </div>
               </form>
@@ -257,9 +325,13 @@ const LoginKasirPage = () => {
                 type="submit"
                 className="w-full h-9 sm:h-10 text-sm sm:text-base"
                 variant="default"
+                disabled={loading}
               >
-                Ok
+                {loading ? <LoadingSVG /> : "Ok"}
               </Button>
+              {errorMessage && (
+                <p className="text-danger mt-2">{errorMessage}</p>
+              )}
             </DialogFooter>
           </form>
         </DialogContent>

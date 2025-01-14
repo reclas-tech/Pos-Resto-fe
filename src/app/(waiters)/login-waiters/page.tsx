@@ -5,10 +5,15 @@ import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
 import clear from "@assets/clearIcon.png";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/utils/axios";
+import { showAlert2 } from "@/lib/sweetalert2";
+import Cookies from "js-cookie";
+import { LoadingSVG } from "@/constants/svgIcons";
 
 const pinSchema = z.object({
   pin: z.string().length(6, "Pin harus 6 digit"),
@@ -17,6 +22,10 @@ const pinSchema = z.object({
 type PinFormData = z.infer<typeof pinSchema>;
 
 const LoginWaitersPage = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isModal, setIsModal] = useState<boolean>(false);
   const [pinValue, setPinValue] = useState<string>("");
 
   const {
@@ -48,10 +57,56 @@ const LoginWaitersPage = () => {
     trigger("pin");
   };
 
-  const onSubmit = (data: PinFormData) => {
-    console.log("Form submitted:", data);
-    setPinValue("");
-    reset();
+  /* eslint-disable */
+  const onSubmit: SubmitHandler<PinFormData> = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await axiosInstance.post("/auth/employee/login", {
+        pin: data.pin,
+      });
+      const result = response.data;
+      if (result.statusCode === 200) {
+        console.log("Form submitted:", data);
+        setPinValue("");
+        reset();
+        setIsModal(true);
+        showAlert2("success", "Berhasil Login.");
+        Cookies.set("access_token", result?.data?.access_token, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("refresh_token", result?.data?.refresh_token, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("role", result?.data?.role, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+          router.push("/pos");
+        }, 10);
+      }
+    } catch (error: any) {
+      showAlert2("error", "Gagal Login.");
+
+      let errorMessage =
+        error.response?.data?.message || "Login gagal. Silakan coba lagi!";
+      if (error.response?.data?.statusCode === 400) {
+        console.log(error.response.data);
+        errorMessage =
+          error.response?.data?.data[0].message ||
+          "Login gagal. Silakan coba lagi!";
+      }
+      setErrorMessage(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -133,9 +188,13 @@ const LoginWaitersPage = () => {
                   <button
                     type="submit"
                     className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base"
+                    disabled={loading}
                   >
-                    Kirim
+                    {loading ? <LoadingSVG /> : "Kirim"}
                   </button>
+                  {errorMessage && (
+                    <p className="text-danger mt-2">{errorMessage}</p>
+                  )}
                 </div>
               </form>
             </div>
