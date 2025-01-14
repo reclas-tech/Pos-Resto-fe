@@ -8,7 +8,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/utils/axios";
 import { showAlert2 } from "@/lib/sweetalert2";
@@ -25,7 +25,6 @@ const LoginWaitersPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isModal, setIsModal] = useState<boolean>(false);
   const [pinValue, setPinValue] = useState<string>("");
 
   const {
@@ -71,7 +70,6 @@ const LoginWaitersPage = () => {
         console.log("Form submitted:", data);
         setPinValue("");
         reset();
-        setIsModal(true);
         showAlert2("success", "Berhasil Login.");
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
