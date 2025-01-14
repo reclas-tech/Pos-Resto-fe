@@ -40,7 +40,7 @@ const CreateModal: React.FC<CreateModalProps> = ({
             <Button type="button" variant="closeModal" onClick={onClose}>
               <CloseModalSVG />
             </Button>
-            <DialogTitle className="font-semibold  text-black  dark:text-white">
+            <DialogTitle className="font-semibold text-black dark:text-white">
               {title}
             </DialogTitle>
           </DialogHeader>

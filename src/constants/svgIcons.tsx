@@ -1120,107 +1120,54 @@ export function PrintSVG({ className = "" }) {
 }
 // End PrintSVG
 
-// First Notes
-export function NotesSVG() {
+// first MoneyCashSVG
+export function MoneyCashSVG({ className = "" }) {
   return (
     <>
       <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
+        className={className}
+        fill="currentColor"
+        viewBox="0 0 32 32"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path
-          d="M14 20.9617C11.4757 21.0582 9.16166 20.9724 6.23865 20.7048C5.19543 20.6092 4.36239 19.736 4.26588 18.6277C3.87042 14.0861 3.94716 10.903 4.292 6.41419C4.37877 5.28469 5.21856 4.38258 6.28078 4.28634C10.4928 3.90469 13.4667 3.9038 17.7331 4.28821C18.7928 4.38368 19.6326 5.28098 19.7203 6.4076C19.9822 9.77112 20.0688 12.3867 19.9433 15.3485M14 20.9617L19.9433 15.3485M14 20.9617V17.8485C14 16.4678 15.1193 15.3485 16.5 15.3485H19.9433M8 3V5.5M16 3V5.5"
-          stroke="currentColor"
-          strokeWidth="1.5"
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+        <g
+          id="SVGRepo_tracerCarrier"
           strokeLinecap="round"
-        />
-        <path
-          d="M8 9.5H16"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M8 13H13"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
+          strokeLinejoin="round"
+        ></g>
+        <g id="SVGRepo_iconCarrier">
+          <path d="M 2 7 L 2 24 L 30 24 L 30 7 L 2 7 z M 6 9 L 26 9 C 26 10.105 26.895 11 28 11 L 28 20 C 26.895 20 26 20.895 26 22 L 6 22 C 6 20.895 5.105 20 4 20 L 4 11 C 5.105 11 6 10.105 6 9 z M 16 11 C 13.789 11 12 13.016 12 15.5 C 12 17.984 13.789 20 16 20 C 18.211 20 20 17.984 20 15.5 C 20 13.016 18.211 11 16 11 z M 16 13 C 17.102 13 18 14.121 18 15.5 C 18 16.879 17.102 18 16 18 C 14.898 18 14 16.879 14 15.5 C 14 14.121 14.898 13 16 13 z M 8.5 14 C 7.672 14 7 14.672 7 15.5 C 7 16.328 7.672 17 8.5 17 C 9.328 17 10 16.328 10 15.5 C 10 14.672 9.328 14 8.5 14 z M 23.5 14 C 22.672 14 22 14.672 22 15.5 C 22 16.328 22.672 17 23.5 17 C 24.328 17 25 16.328 25 15.5 C 25 14.672 24.328 14 23.5 14 z"></path>
+        </g>
       </svg>
     </>
   );
 }
-// End Notes
+// End MoneyCashSVG
 
-// First History
-export function HistorySVG() {
+// first MoneyCardSVG
+export function MoneyCardSVG({ className = "" }) {
   return (
     <>
       <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-        <path
-          d="M12 6.5V11.9586C12 11.9851 11.9895 12.0105 11.9707 12.0293L9 15"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    </>
-  );
-}
-// End History
-
-// First Delete
-export function DeleteSVG() {
-  return (
-    <>
-      <svg
-        className="w-full h-full"
-        viewBox="0 0 11 11"
+        className={className}
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M5.5 0.6875C2.81875 0.6875 0.6875 2.81875 0.6875 5.5C0.6875 8.18125 2.81875 10.3125 5.5 10.3125C8.18125 10.3125 10.3125 8.18125 10.3125 5.5C10.3125 2.81875 8.18125 0.6875 5.5 0.6875ZM7.35625 7.90625L5.5 6.05L3.64375 7.90625L3.09375 7.35625L4.95 5.5L3.09375 3.64375L3.64375 3.09375L5.5 4.95L7.35625 3.09375L7.90625 3.64375L6.05 5.5L7.90625 7.35625L7.35625 7.90625Z"
-          fill="currentColor"
-        />
-      </svg>
-    </>
-  );
-}
-// End Delete
-
-// First Note Order
-export function NoteOrderSVG() {
-  return (
-    <>
-      <svg
-        width="14"
-        height="13"
-        viewBox="0 0 14 13"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M7.43962 3.48384L10.2537 4.23305M6.83719 5.72144L8.24365 6.09634M6.90734 9.93787L7.46968 10.0882C9.06123 10.5126 9.85701 10.7242 10.4842 10.3641C11.1108 10.0045 11.3242 9.21283 11.7504 7.63071L12.3534 5.39252C12.7802 3.80981 12.993 3.01875 12.631 2.3951C12.2691 1.77145 11.4739 1.55983 9.88177 1.13601L9.31942 0.985694C7.72787 0.561281 6.93209 0.349663 6.30549 0.709825C5.6783 1.0694 5.46492 1.86105 5.03815 3.44317L4.43572 5.68136C4.00894 7.26407 3.79556 8.05513 4.15808 8.67878C4.52001 9.30184 5.31578 9.51405 6.90734 9.93787Z"
-          stroke="currentColor"
-          strokeWidth="0.842105"
+          d="M25 6.25H5C3.61929 6.25 2.5 7.36929 2.5 8.75V21.25C2.5 22.6307 3.61929 23.75 5 23.75H25C26.3807 23.75 27.5 22.6307 27.5 21.25V8.75C27.5 7.36929 26.3807 6.25 25 6.25Z"
+          stroke="white"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M6.92096 11.6954L6.35979 11.8486C4.77177 12.2807 3.97835 12.497 3.35234 12.1298C2.72751 11.7631 2.51413 10.9568 2.08912 9.34281L1.48728 7.06041C1.06169 5.44705 0.848893 4.64007 1.21023 4.00463C1.52265 3.45466 2.20525 3.4747 3.08944 3.4747"
-          stroke="currentColor"
-          strokeWidth="0.842105"
+          d="M2.5 12.5H27.5"
+          stroke="white"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -1228,25 +1175,145 @@ export function NoteOrderSVG() {
     </>
   );
 }
-// End Note Order
+// End MoneyCardSVG
 
-// First Customer
-export function CustomerSVG(){
+// first MoneyQrisSVG
+export function MoneyQrisSVG({ className = "" }) {
   return (
     <>
       <svg
-        width="12"
-        height="12"
-        viewBox="0 0 12 12"
+        className={className}
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M9.89899 1.33629H7.31288C7.05303 0.690384 6.37248 0.222656 5.56818 0.222656C4.76389 0.222656 4.08333 0.690384 3.82349 1.33629H1.23737C0.556818 1.33629 0 1.83743 0 2.44993V10.2454C0 10.8579 0.556818 11.359 1.23737 11.359H9.89899C10.5795 11.359 11.1364 10.8579 11.1364 10.2454V2.44993C11.1364 1.83743 10.5795 1.33629 9.89899 1.33629ZM5.56818 1.33629C5.90846 1.33629 6.18687 1.58686 6.18687 1.89311C6.18687 2.19936 5.90846 2.44993 5.56818 2.44993C5.2279 2.44993 4.9495 2.19936 4.9495 1.89311C4.9495 1.58686 5.2279 1.33629 5.56818 1.33629ZM5.56818 3.56357C6.5952 3.56357 7.42424 4.3097 7.42424 5.23402C7.42424 6.15834 6.5952 6.90447 5.56818 6.90447C4.54116 6.90447 3.71212 6.15834 3.71212 5.23402C3.71212 4.3097 4.54116 3.56357 5.56818 3.56357ZM9.2803 10.2454H1.85606V9.46584C1.85606 8.3522 4.33081 7.7397 5.56818 7.7397C6.80556 7.7397 9.2803 8.3522 9.2803 9.46584V10.2454Z"
-          fill="currentColor"
+          d="M8.75 3.75H5C4.30964 3.75 3.75 4.30964 3.75 5V8.75C3.75 9.44036 4.30964 10 5 10H8.75C9.44036 10 10 9.44036 10 8.75V5C10 4.30964 9.44036 3.75 8.75 3.75Z"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M25 3.75H21.25C20.5596 3.75 20 4.30964 20 5V8.75C20 9.44036 20.5596 10 21.25 10H25C25.6904 10 26.25 9.44036 26.25 8.75V5C26.25 4.30964 25.6904 3.75 25 3.75Z"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M8.75 20H5C4.30964 20 3.75 20.5596 3.75 21.25V25C3.75 25.6904 4.30964 26.25 5 26.25H8.75C9.44036 26.25 10 25.6904 10 25V21.25C10 20.5596 9.44036 20 8.75 20Z"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M26.25 20H22.5C21.837 20 21.2011 20.2634 20.7322 20.7322C20.2634 21.2011 20 21.837 20 22.5V26.25"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M26.25 26.25V26.2625"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 8.75V12.5C15 13.163 14.7366 13.7989 14.2678 14.2678C13.7989 14.7366 13.163 15 12.5 15H8.75"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M3.75 15H3.7625"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 3.75H15.0125"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 20V20.0125"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M20 15H21.25"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M26.25 15V15.0125"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M15 26.25V25"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </>
   );
-} 
-// End Customer SVG
+}
+// End MoneyQrisSVG
+
+// first WarningSVG
+export function WarningSVG({ className = "" }) {
+  return (
+    <>
+      <svg
+        width="126"
+        height="125"
+        viewBox="0 0 126 125"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+      >
+        <path
+          d="M62.9998 114.584C91.7647 114.584 115.083 91.2652 115.083 62.5003C115.083 33.7355 91.7647 10.417 62.9998 10.417C34.235 10.417 10.9165 33.7355 10.9165 62.5003C10.9165 91.2652 34.235 114.584 62.9998 114.584Z"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M63 41.667V62.5003"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M63 83.333H63.0521"
+          stroke="#FEA026"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </>
+  );
+}
+// End WarningSVG

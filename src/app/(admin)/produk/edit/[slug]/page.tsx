@@ -1,11 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { useRupiah } from "@/hooks/useRupiah";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoadingSVG } from "@/constants/svgIcons";
+import { z } from "zod";
+import { productSchema } from "@/components/parts/admin/produk/validation";
+import {
+  putSubmitProduct,
+  useGetProductOne,
+} from "@/components/parts/admin/produk/api";
+import {
+  useGetCategory,
+  useGetKitchen,
+} from "@/components/parts/admin/kategori/api";
 import {
   Select,
   SelectContent,
@@ -13,293 +26,289 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ProductValues, productSchema } from "@/validations";
-import { useRouter } from "next/navigation";
-import { showAlert2 } from "@/lib/sweetalert2";
-import { AxiosError } from "axios";
-import { LoadingSVG } from "@/constants/svgIcons";
-import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
-import { useRupiah } from "@/hooks/useRupiah";
+import { useParams } from "next/navigation";
 
-type Category = "Kategori 1" | "Kategori 2";
-type Kitchen = "Dapur 1" | "Dapur 2";
+type FormValues = z.infer<typeof productSchema>;
 
 function EditProductPage() {
-  const axiosPrivate = useAxiosPrivateInstance();
-  const navigate = useRouter();
   const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useGetCategory(1, "", 10);
+  const {
+    data: kitchens,
+    isLoading: isKitchensLoading,
+    error: kitchensError,
+  } = useGetKitchen(1, "", 10);
 
   const {
     register,
     handleSubmit,
-    reset,
+    watch,
     setValue,
     formState: { errors },
-  } = useForm<ProductValues>({
+  } = useForm<FormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: "Produk 1",
-      category: "Kategori 1",
-      price: "Rp. 45.000",
-      hpp: "Rp. 3.000",
-      stock: "23",
-      kitchen: "Dapur 1",
-      image:
-        "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
+      category_id: "",
+      kitchen_id: "",
+      price: 0,
+      cogp: 0,
+      stock: 0,
     },
   });
 
-  // Read One
-  // const { slug } = useParams();
-  // const { data: dataUser } = useGetProductSlug(slug as string);
-  // useEffect(() => {
-  //   if (dataUser?.data) {
-  //     const timer = setTimeout(() => {
-  //       setValue("name", dataUser?.data?.name ?? "Produk 1");
-  //       setValue("category", dataUser?.data?.category ?? "Kategori 1");
-  //       setValue("price", dataUser?.data?.price ?? "45000");
-  //       setValue("hpp", dataUser?.data?.hpp ?? "3000");
-  //       setValue("kitchen", dataUser?.data?.kitchen ?? "23");
-  //       setValue("stock", dataUser?.data?.stock ?? "Dapur 1");
-  //       if (dataUser?.data?.image) {
-  //         setImagePreview(dataUser?.data?.image);
-  //       }
-  //     }, 1000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [dataUser, setValue]);
-  // Read One
+  const { value: price, onChange: handlePriceChange } = useRupiah();
+  const { value: cogp, onChange: handleCogpChange } = useRupiah();
 
-  // Update
-  const onEditSubmit: SubmitHandler<ProductValues> = async (data) => {
-    console.log("Form data:", data);
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("category", data.category);
-    formData.append("price", data.price);
-    formData.append("hpp", data.hpp);
-    formData.append("stock", data.stock);
-    if (data.image) {
-      formData.append("image", data.image);
-    }
-
-    try {
-      await axiosPrivate.put(`/`, formData);
-      showAlert2("success", "Berhasil menyimpan data.");
-      navigate.push("/produk");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
-        showAlert2("error", errorMessage);
-      } else {
-        showAlert2("error", "Terjadi kesalahan!");
-      }
-    } finally {
-      setLoading(false);
-      reset();
-    }
-  };
-  // Update
-
-  const handleCategoryChange = (value: Category) => {
-    setValue("category", value);
-  };
-
-  const handleKitchenChange = (value: Kitchen) => {
-    setValue("kitchen", value);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setValue("image", file);
-      const objectUrl = URL.createObjectURL(file);
-      setImagePreview(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
-  );
+  // GET ONE SLUG
+  const { slug } = useParams();
+  const { data: getDataOne } = useGetProductOne(slug as string);
 
-  const { value: price, onChange: handlePriceChange } = useRupiah();
-  const { value: hpp, onChange: handleHppChange } = useRupiah();
+  useEffect(() => {
+    if (getDataOne?.data) {
+      const timer = setTimeout(() => {
+        setValue("name", getDataOne?.data?.name ?? "");
+        setValue("price", getDataOne?.data?.price ?? "");
+        setValue("stock", getDataOne?.data?.stock ?? "");
+        setValue("cogp", getDataOne?.data?.cogp ?? "");
+        setValue("category_id", getDataOne?.data?.category_id ?? "");
+        setValue("kitchen_id", getDataOne?.data?.kitchen_id ?? "");
+
+        if (getDataOne?.data?.image) {
+          setImagePreview(getDataOne?.data?.image);
+        }
+      }, 100);
+
+      return () => clearTimeout(timer); 
+    }
+  }, [getDataOne, setValue]);
+
+  useEffect(() => {
+    if (getDataOne?.data?.price) {
+      handlePriceChange({
+        target: { value: getDataOne.data.price.toString() },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+    if (getDataOne?.data?.cogp) {
+      handleCogpChange({
+        target: { value: getDataOne.data.cogp.toString() },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+  }, [getDataOne?.data?.price, getDataOne?.data?.cogp]);
+
+  const { handlePostSubmit } = putSubmitProduct(slug as string);
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("_method", "PUT");
+      formData.append("name", data.name);
+      formData.append("price", data?.price.toString());
+      formData.append("stock", data.stock.toString());
+      formData.append("cogp", data.cogp.toString());
+      formData.append("category_id", data.category_id);
+      formData.append("kitchen_id", data.kitchen_id);
+
+      if (data.image) {
+        formData.append("image", data.image);
+      }
+
+      handlePostSubmit(formData, setLoading);
+    } catch (error) {
+      console.error("Error submitting product:", error);
+    }
+    console.log(data)
+  };
+
+  if (isCategoriesLoading || isKitchensLoading) {
+    return <LoadingSVG />;
+  }
+  if (categoriesError || kitchensError) {
+    return <div>Error loading data</div>;
+  }
 
   return (
-    <>
-      <form
-        className="text-black dark:text-white"
-        onSubmit={handleSubmit(onEditSubmit)}
-      >
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="flex flex-col w-full">
-            <Label htmlFor="nameProducts">Nama Produk</Label>
-            <Input
-              type="name"
-              id="nameProducts"
-              placeholder="Nama Produk"
-              {...register("name")}
-            />
-            {errors.name && (
-              <span className="text-sm text-red-500">
-                {errors.name.message}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col w-full">
-            <Label htmlFor="category">Kategori</Label>
-            <Select
-              onValueChange={handleCategoryChange}
-              {...register("category")}
-              defaultValue="Kategori 1"
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih Kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Kategori 1">Kategori 1</SelectItem>
-                <SelectItem value="Kategori 2">Kategori 2</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.category && (
-              <span className="text-sm text-red-500">
-                {errors.category.message}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="flex flex-col w-full">
-            <Label htmlFor="price">Harga</Label>
-            <Input
-              type="text"
-              id="price"
-              placeholder="Rp."
-              value={price}
-              {...register("price")}
-              onChange={(e) => {
-                handlePriceChange(e);
-                setValue("price", e.target.value.replace(/\D/g, ""));
-              }}
-            />
-            {errors.price && (
-              <span className="text-sm text-red-500">
-                {errors.price.message}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col w-full">
-            <Label htmlFor="hpp">HPP</Label>
-            <Input
-              type="text"
-              id="hpp"
-              placeholder="Rp."
-              value={hpp}
-              {...register("hpp")}
-              onChange={(e) => {
-                handleHppChange(e);
-                setValue("hpp", e.target.value.replace(/\D/g, ""));
-              }}
-            />
-            {errors.hpp && (
-              <span className="text-sm text-red-500">{errors.hpp.message}</span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-4 justify-between mb-4">
-          <div className="flex flex-col w-full">
-            <Label htmlFor="stocks">Stok</Label>
-            <Input
-              type="name"
-              id="stocks"
-              defaultValue="23"
-              placeholder="Jumlah Stok"
-              {...register("stock")}
-            />
-            {errors.stock && (
-              <span className="text-sm text-red-500">
-                {errors.stock.message}
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col w-full">
-            <Label htmlFor="kitchen">Dapur</Label>
-            <Select
-              onValueChange={handleKitchenChange}
-              defaultValue="Dapur 1"
-              {...register("kitchen")}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Pilih Dapur" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Dapur 1">Dapur 1</SelectItem>
-                <SelectItem value="Dapur 2">Dapur 2</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.kitchen && (
-              <span className="text-sm text-red-500">
-                {errors.kitchen.message}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="w-full mb-5">
-          <label
-            className="block text-sm font-medium"
-            htmlFor="productsCapture"
-          >
-            Foto Produk
-          </label>
-          <div
-            className="h-[170px] bg-white border border-dashed border-[#D9D9D9] rounded-lg overflow-hidden flex justify-center items-center mt-2 p-2 cursor-pointer"
-            onClick={() => document.getElementById("image-upload")?.click()}
-          >
-            {imagePreview ? (
-              <Image
-                src={imagePreview}
-                width={100}
-                height={100}
-                alt="Preview"
-                className="h-full w-[200px] object-cover"
-              />
-            ) : (
-              <span className="text-gray-500 text-sm">Pilih file</span>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="image-upload"
-              {...register("image")}
-              onChange={handleFileChange}
-            />
-          </div>
-          {errors.image && (
-            <span className="text-sm text-red-500">{errors.image.message}</span>
+    <form
+      className="text-black dark:text-white"
+      onSubmit={handleSubmit(onSubmit)}
+      encType="multipart/form-data"
+    >
+      <div className="flex gap-4 justify-between mb-4">
+        <div className="flex flex-col w-full">
+          <Label htmlFor="nameProducts">Nama Produk</Label>
+          <Input
+            type="text"
+            id="nameProducts"
+            placeholder="Nama Produk"
+            {...register("name")}
+          />
+          {errors.name && (
+            <span className="text-sm text-red-500">{errors.name.message}</span>
           )}
         </div>
 
-        <div className="flex justify-end gap-2">
-          <Link href={"/produk"}>
-            <Button variant={"outline"} className="border-secondaryColor">
-              Batal
-            </Button>
-          </Link>
-          <Button variant={"default"}>
-            {loading ? <LoadingSVG /> : "Simpan"}
-          </Button>
+        <div className="flex flex-col w-full">
+          <Label htmlFor="category">Kategori</Label>
+          <Select
+            value={String(watch("category_id"))}
+            onValueChange={(value: string) => setValue("category_id", value)}
+            {...register("category_id")}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih Kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories?.data?.items?.map((category: any) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.category_id && (
+            <span className="text-sm text-red-500">
+              {errors.category_id.message}
+            </span>
+          )}
         </div>
-      </form>
-    </>
+      </div>
+
+      <div className="flex gap-4 justify-between mb-4">
+        <div className="flex flex-col w-full">
+          <Label htmlFor="price">Harga</Label>
+          <Input
+            type="text"
+            id="price"
+            placeholder="Rp."
+            value={price}
+            onChange={(e) => {
+              handlePriceChange(e);
+              setValue(
+                "price",
+                parseInt(e.target.value.replace(/\D/g, "")) || 0
+              );
+            }}
+          />
+          {errors.price && (
+            <span className="text-sm text-red-500">{errors.price.message}</span>
+          )}
+        </div>
+
+        <div className="flex flex-col w-full">
+          <Label htmlFor="cogp">HPP</Label>
+          <Input
+            type="text"
+            id="cogp"
+            placeholder="Rp."
+            value={cogp}
+            onChange={(e) => {
+              handleCogpChange(e);
+              setValue(
+                "cogp",
+                parseInt(e.target.value.replace(/\D/g, "")) || 0
+              );
+            }}
+          />
+          {errors.cogp && (
+            <span className="text-sm text-red-500">{errors.cogp.message}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-4 justify-between mb-4">
+        <div className="flex flex-col w-full">
+          <Label htmlFor="stocks">Stok</Label>
+          <Input
+            type="number"
+            id="stocks"
+            placeholder="Jumlah Stok"
+            {...register("stock", { valueAsNumber: true })}
+          />
+          {errors.stock && (
+            <span className="text-sm text-red-500">{errors.stock.message}</span>
+          )}
+        </div>
+
+        <div className="flex flex-col w-full">
+          <Label htmlFor="kitchen">Dapur</Label>
+          <Select
+            value={String(watch("kitchen_id"))} // Menggunakan value dalam bentuk string
+            onValueChange={(value: string) => setValue("kitchen_id", value)} // Mengupdate form state dengan id dapur
+            {...register("kitchen_id")}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih Dapur" />
+            </SelectTrigger>
+            <SelectContent>
+              {kitchens?.data?.map((kitchen: any) => (
+                <SelectItem key={kitchen.id} value={kitchen.id}>
+                  {kitchen.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.kitchen_id && (
+            <span className="text-sm text-red-500">
+              {errors.kitchen_id.message}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full mb-5">
+        <label className="block text-sm font-medium" htmlFor="productsCapture">
+          Foto Produk
+        </label>
+        <div
+          className="h-[170px] bg-white border border-dashed border-[#D9D9D9] rounded-lg overflow-hidden flex justify-center items-center mt-2 p-2 cursor-pointer"
+          onClick={() => document.getElementById("image-upload")?.click()}
+        >
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="h-full w-[200px] object-cover"
+            />
+          ) : (
+            <span className="text-gray-500 text-sm">Pilih file</span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="image-upload"
+            {...register("image")}
+            onChange={handleImageChange}
+          />
+        </div>
+        {errors.image && (
+          <span className="text-sm text-red-500">{errors.image.message}</span>
+        )}
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <Link href="/produk">
+          <Button variant="outline" className="border-secondaryColor">
+            Batal
+          </Button>
+        </Link>
+        <Button variant="default" disabled={loading}>
+          {loading ? <LoadingSVG /> : "Simpan"}
+        </Button>
+      </div>
+    </form>
   );
 }
 
