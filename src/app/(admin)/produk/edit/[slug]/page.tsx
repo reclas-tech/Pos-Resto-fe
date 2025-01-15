@@ -1,8 +1,11 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRupiah } from "@/hooks/useRupiah";
+import { useInputRp } from "@/hooks/useRupiah";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,7 +13,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { z } from "zod";
-import { productSchema } from "@/components/parts/admin/produk/validation";
+import { productSchemaEdit } from "@/components/parts/admin/produk/validation";
 import {
   putSubmitProduct,
   useGetProductOne,
@@ -27,12 +30,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
-type FormValues = z.infer<typeof productSchema>;
+type FormValues = z.infer<typeof productSchemaEdit>;
 
 function EditProductPage() {
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
 
   const {
     data: categories,
@@ -52,7 +57,7 @@ function EditProductPage() {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchemaEdit),
     defaultValues: {
       category_id: "",
       kitchen_id: "",
@@ -62,14 +67,12 @@ function EditProductPage() {
     },
   });
 
-  const { value: price, onChange: handlePriceChange } = useRupiah();
-  const { value: cogp, onChange: handleCogpChange } = useRupiah();
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setValue("image", file);
       setImagePreview(URL.createObjectURL(file));
+      setExistingImage(null);
     }
   };
 
@@ -89,48 +92,39 @@ function EditProductPage() {
 
         if (getDataOne?.data?.image) {
           setImagePreview(getDataOne?.data?.image);
+          setExistingImage(getDataOne?.data?.image);
+          setValue("image", getDataOne?.data?.image);
         }
       }, 100);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [getDataOne, setValue]);
-
-  useEffect(() => {
-    if (getDataOne?.data?.price) {
-      handlePriceChange({
-        target: { value: getDataOne.data.price.toString() },
-      } as React.ChangeEvent<HTMLInputElement>);
-    }
-    if (getDataOne?.data?.cogp) {
-      handleCogpChange({
-        target: { value: getDataOne.data.cogp.toString() },
-      } as React.ChangeEvent<HTMLInputElement>);
-    }
-  }, [getDataOne?.data?.price, getDataOne?.data?.cogp]);
 
   const { handlePostSubmit } = putSubmitProduct(slug as string);
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     try {
       const formData = new FormData();
-      formData.append("_method", "PUT");
       formData.append("name", data.name);
-      formData.append("price", data?.price.toString());
+      formData.append("price", data.price.toString());
       formData.append("stock", data.stock.toString());
       formData.append("cogp", data.cogp.toString());
       formData.append("category_id", data.category_id);
       formData.append("kitchen_id", data.kitchen_id);
 
-      if (data.image) {
+      if (data.image instanceof File) {
         formData.append("image", data.image);
+      } else if (existingImage) {
+        formData.append("existing_image", existingImage);
       }
 
+      formData.append("_method", "PUT");
       handlePostSubmit(formData, setLoading);
     } catch (error) {
       console.error("Error submitting product:", error);
     }
-    console.log(data)
   };
+
 
   if (isCategoriesLoading || isKitchensLoading) {
     return <LoadingSVG />;
@@ -192,13 +186,11 @@ function EditProductPage() {
             type="text"
             id="price"
             placeholder="Rp."
-            value={price}
+            value={useInputRp(watch("price"))}
             onChange={(e) => {
-              handlePriceChange(e);
-              setValue(
-                "price",
-                parseInt(e.target.value.replace(/\D/g, "")) || 0
-              );
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("price", numericValue);
             }}
           />
           {errors.price && (
@@ -212,13 +204,11 @@ function EditProductPage() {
             type="text"
             id="cogp"
             placeholder="Rp."
-            value={cogp}
+            value={useInputRp(watch("cogp"))}
             onChange={(e) => {
-              handleCogpChange(e);
-              setValue(
-                "cogp",
-                parseInt(e.target.value.replace(/\D/g, "")) || 0
-              );
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("cogp", numericValue);
             }}
           />
           {errors.cogp && (
@@ -244,8 +234,8 @@ function EditProductPage() {
         <div className="flex flex-col w-full">
           <Label htmlFor="kitchen">Dapur</Label>
           <Select
-            value={String(watch("kitchen_id"))} // Menggunakan value dalam bentuk string
-            onValueChange={(value: string) => setValue("kitchen_id", value)} // Mengupdate form state dengan id dapur
+            value={String(watch("kitchen_id"))}
+            onValueChange={(value: string) => setValue("kitchen_id", value)}
             {...register("kitchen_id")}
           >
             <SelectTrigger className="w-full">
@@ -276,10 +266,12 @@ function EditProductPage() {
           onClick={() => document.getElementById("image-upload")?.click()}
         >
           {imagePreview ? (
-            <img
-              src={imagePreview}
+            <Image
+              src={imagePreview || 'waroeng aceh garuda'}
               alt="Preview"
-              className="h-full w-[200px] object-cover"
+              width={200}
+              height={200}
+              className="object-cover"
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>

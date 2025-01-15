@@ -3,11 +3,11 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import NotFound from "@/app/not-found";
 
-interface AuthGuardProps {
+interface AuthGuardAdminProps {
   children: ReactNode;
 }
 
-export default function AuthGuard({ children }: AuthGuardProps) {
+export default function AuthGuardAdmin({ children }: AuthGuardAdminProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 

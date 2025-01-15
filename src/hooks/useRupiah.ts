@@ -20,3 +20,13 @@ export const useRupiah = () => {
 
   return { value, onChange: handleChange, setValue };
 };
+
+export const useInputRp = (value: number | string) => {
+  if (!value) return "Rp 0";
+  const number = typeof value === "string" ? parseInt(value, 10) : value;
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(number).replace(/,00$/, "");
+};
+

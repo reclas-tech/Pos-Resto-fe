@@ -26,6 +26,7 @@ interface Product {
   deleted_at: null;
   category_id: string;
   kitchen_id: string;
+  _method: string;
 }
 
 export interface ProductOne {
@@ -46,4 +47,5 @@ export interface ProductEdit {
   deleted_at: null;
   category_id: string;
   kitchen_id: string;
+  _method: string;
 }
