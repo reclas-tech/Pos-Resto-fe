@@ -11,8 +11,8 @@ const useAxiosPrivateInstance = () => {
         const accessToken = Cookies.get("accessToken");
         const refreshToken = Cookies.get("refreshToken");
 
-        console.log("Access Token", accessToken);
-        console.log("Refresh Token", refreshToken);
+        // console.log("Access Token", accessToken);
+        // console.log("Refresh Token", refreshToken);
 
         if (accessToken && refreshToken) {
           config.headers["accessToken"] = `Bearer ${accessToken}`;

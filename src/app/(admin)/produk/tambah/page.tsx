@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRupiah } from "@/hooks/useRupiah";
+import { useInputRp } from "@/hooks/useRupiah";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -52,9 +52,6 @@ function CreateProductPage() {
     defaultValues: {
       category_id: "",
       kitchen_id: "",
-      price: 0,
-      cogp: 0,
-      stock: 0,
     },
   });
 
@@ -83,6 +80,7 @@ function CreateProductPage() {
       }
 
       handlePostSubmit(formData, setLoading);
+      console.log(data)
     } catch (error) {
       console.error("Error submitting product:", error);
     }
@@ -145,10 +143,15 @@ function CreateProductPage() {
         <div className="flex flex-col w-full">
           <Label htmlFor="price">Harga</Label>
           <Input
-            type="number"
+            type="text"
             id="price"
             placeholder="Rp."
-            {...register("price", { valueAsNumber: true })}
+            value={useInputRp(watch("price"))}
+            onChange={(e) => {
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("price", numericValue);
+            }}
           />
           {errors.price && (
             <span className="text-sm text-red-500">{errors.price.message}</span>
@@ -158,10 +161,15 @@ function CreateProductPage() {
         <div className="flex flex-col w-full">
           <Label htmlFor="cogp">HPP</Label>
           <Input
-            type="number"
+            type="text"
             id="cogp"
             placeholder="Rp."
-            {...register("cogp", { valueAsNumber: true })}
+            value={useInputRp(watch("cogp"))}
+            onChange={(e) => {
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("cogp", numericValue);
+            }}
           />
           {errors.cogp && (
             <span className="text-sm text-red-500">{errors.cogp.message}</span>

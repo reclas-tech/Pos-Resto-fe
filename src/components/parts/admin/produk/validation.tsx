@@ -8,10 +8,30 @@ export const productSchema = z.object({
   price: z.number().min(1, { message: "Harga harus diisi" }),
   stock: z.number().min(1, { message: "Stok harus diisi" }),
   cogp: z.number().min(1, { message: "HPP harus diisi" }),
-  category_id: z.string().min(1, { message: "Kategori harus dipilih" }), // Expecting category_id to be a string.
-  kitchen_id: z.string().min(1, { message: "Dapur harus dipilih" }), // Expecting kitchen_id to be a string.
+  category_id: z.string().min(1, { message: "Kategori harus dipilih" }),
+  kitchen_id: z.string().min(1, { message: "Dapur harus dipilih" }),
   image: z
     .instanceof(File)
-    .refine((file) => file.size > 0, { message: "Image is required" }),
+    .optional()
+    .refine((file) => !file || file.size > 0, {
+      message: "Gambar harus memiliki ukuran valid jika diunggah",
+    }),
 });
+
+// Validation product
+export const productSchemaEdit = z.object({
+  name: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  price: z.number().min(1, { message: "Harga harus diisi" }),
+  stock: z.number().min(1, { message: "Stok harus diisi" }),
+  cogp: z.number().min(1, { message: "HPP harus diisi" }),
+  category_id: z.string().min(1, { message: "Kategori harus dipilih" }),
+  kitchen_id: z.string().min(1, { message: "Dapur harus dipilih" }),
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.size > 0, {
+      message: "Gambar harus memiliki ukuran valid jika diunggah",
+    }),
+});
+
 export type ProductValues = z.infer<typeof productSchema>;

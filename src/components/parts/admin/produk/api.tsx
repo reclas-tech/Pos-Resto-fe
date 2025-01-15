@@ -93,7 +93,7 @@ const postSubmitProduct = () => {
 
 // Update Product
 const putSubmitProduct = (slug: string) => {
-  const navigate = useRouter(); // Pindahkan ke dalam fungsi
+  const navigate = useRouter(); 
   const axiosPrivate = useAxiosPrivateInstance();
 
 
@@ -105,7 +105,7 @@ const putSubmitProduct = (slug: string) => {
 
     try {
       setLoading(true);
-      const response = await axiosPrivate.put(
+      const response = await axiosPrivate.post(
         `/product/admin/edit/${slug}`,
         formData,
         {

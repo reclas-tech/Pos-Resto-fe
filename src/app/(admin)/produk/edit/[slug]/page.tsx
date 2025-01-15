@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRupiah } from "@/hooks/useRupiah";
+import { useInputRp } from "@/hooks/useRupiah";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { z } from "zod";
-import { productSchema } from "@/components/parts/admin/produk/validation";
+import { productSchemaEdit } from "@/components/parts/admin/produk/validation";
 import {
   putSubmitProduct,
   useGetProductOne,
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { useParams } from "next/navigation";
 
-type FormValues = z.infer<typeof productSchema>;
+type FormValues = z.infer<typeof productSchemaEdit>;
 
 function EditProductPage() {
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ function EditProductPage() {
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(productSchema),
+    resolver: zodResolver(productSchemaEdit),
     defaultValues: {
       category_id: "",
       kitchen_id: "",
@@ -61,9 +61,6 @@ function EditProductPage() {
       stock: 0,
     },
   });
-
-  const { value: price, onChange: handlePriceChange } = useRupiah();
-  const { value: cogp, onChange: handleCogpChange } = useRupiah();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,30 +89,16 @@ function EditProductPage() {
         }
       }, 100);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [getDataOne, setValue]);
-
-  useEffect(() => {
-    if (getDataOne?.data?.price) {
-      handlePriceChange({
-        target: { value: getDataOne.data.price.toString() },
-      } as React.ChangeEvent<HTMLInputElement>);
-    }
-    if (getDataOne?.data?.cogp) {
-      handleCogpChange({
-        target: { value: getDataOne.data.cogp.toString() },
-      } as React.ChangeEvent<HTMLInputElement>);
-    }
-  }, [getDataOne?.data?.price, getDataOne?.data?.cogp]);
 
   const { handlePostSubmit } = putSubmitProduct(slug as string);
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     try {
       const formData = new FormData();
-      formData.append("_method", "PUT");
       formData.append("name", data.name);
-      formData.append("price", data?.price.toString());
+      formData.append("price", data.price.toString());
       formData.append("stock", data.stock.toString());
       formData.append("cogp", data.cogp.toString());
       formData.append("category_id", data.category_id);
@@ -123,13 +106,17 @@ function EditProductPage() {
 
       if (data.image) {
         formData.append("image", data.image);
+      } else if (getDataOne?.data?.image) {
+        formData.append("image", getDataOne.data.image);
       }
+
+      formData.append("_method", "PUT");
 
       handlePostSubmit(formData, setLoading);
     } catch (error) {
       console.error("Error submitting product:", error);
     }
-    console.log(data)
+    console.log(data);
   };
 
   if (isCategoriesLoading || isKitchensLoading) {
@@ -192,13 +179,11 @@ function EditProductPage() {
             type="text"
             id="price"
             placeholder="Rp."
-            value={price}
+            value={useInputRp(watch("price"))}
             onChange={(e) => {
-              handlePriceChange(e);
-              setValue(
-                "price",
-                parseInt(e.target.value.replace(/\D/g, "")) || 0
-              );
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("price", numericValue);
             }}
           />
           {errors.price && (
@@ -212,13 +197,11 @@ function EditProductPage() {
             type="text"
             id="cogp"
             placeholder="Rp."
-            value={cogp}
+            value={useInputRp(watch("cogp"))}
             onChange={(e) => {
-              handleCogpChange(e);
-              setValue(
-                "cogp",
-                parseInt(e.target.value.replace(/\D/g, "")) || 0
-              );
+              const numericValue =
+                parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+              setValue("cogp", numericValue);
             }}
           />
           {errors.cogp && (
@@ -244,8 +227,8 @@ function EditProductPage() {
         <div className="flex flex-col w-full">
           <Label htmlFor="kitchen">Dapur</Label>
           <Select
-            value={String(watch("kitchen_id"))} // Menggunakan value dalam bentuk string
-            onValueChange={(value: string) => setValue("kitchen_id", value)} // Mengupdate form state dengan id dapur
+            value={String(watch("kitchen_id"))}
+            onValueChange={(value: string) => setValue("kitchen_id", value)}
             {...register("kitchen_id")}
           >
             <SelectTrigger className="w-full">
