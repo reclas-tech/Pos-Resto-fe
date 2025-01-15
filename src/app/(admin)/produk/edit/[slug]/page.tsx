@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -27,12 +30,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 type FormValues = z.infer<typeof productSchemaEdit>;
 
 function EditProductPage() {
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
 
   const {
     data: categories,
@@ -67,6 +72,7 @@ function EditProductPage() {
     if (file) {
       setValue("image", file);
       setImagePreview(URL.createObjectURL(file));
+      setExistingImage(null);
     }
   };
 
@@ -86,6 +92,8 @@ function EditProductPage() {
 
         if (getDataOne?.data?.image) {
           setImagePreview(getDataOne?.data?.image);
+          setExistingImage(getDataOne?.data?.image);
+          setValue("image", getDataOne?.data?.image);
         }
       }, 100);
 
@@ -104,20 +112,19 @@ function EditProductPage() {
       formData.append("category_id", data.category_id);
       formData.append("kitchen_id", data.kitchen_id);
 
-      if (data.image) {
+      if (data.image instanceof File) {
         formData.append("image", data.image);
-      } else if (getDataOne?.data?.image) {
-        formData.append("image", getDataOne.data.image);
+      } else if (existingImage) {
+        formData.append("existing_image", existingImage);
       }
 
       formData.append("_method", "PUT");
-
       handlePostSubmit(formData, setLoading);
     } catch (error) {
       console.error("Error submitting product:", error);
     }
-    console.log(data);
   };
+
 
   if (isCategoriesLoading || isKitchensLoading) {
     return <LoadingSVG />;
@@ -259,10 +266,12 @@ function EditProductPage() {
           onClick={() => document.getElementById("image-upload")?.click()}
         >
           {imagePreview ? (
-            <img
-              src={imagePreview}
+            <Image
+              src={imagePreview || 'waroeng aceh garuda'}
               alt="Preview"
-              className="h-full w-[200px] object-cover"
+              width={200}
+              height={200}
+              className="object-cover"
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>

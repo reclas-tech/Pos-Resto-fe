@@ -26,12 +26,11 @@ export const productSchemaEdit = z.object({
   cogp: z.number().min(1, { message: "HPP harus diisi" }),
   category_id: z.string().min(1, { message: "Kategori harus dipilih" }),
   kitchen_id: z.string().min(1, { message: "Dapur harus dipilih" }),
-  image: z
-    .instanceof(File)
-    .optional()
-    .refine((file) => !file || file.size > 0, {
-      message: "Gambar harus memiliki ukuran valid jika diunggah",
-    }),
+  image: z.union([
+    z.instanceof(File),
+    z.string(),
+    z.undefined()
+  ]).optional(),
 });
 
 export type ProductValues = z.infer<typeof productSchema>;
