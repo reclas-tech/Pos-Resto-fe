@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input, SearchInputCashier } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import DetailModal from "@/components/ui/modal/detailAndo";
+import DetailModal from "@/components/ui/modal/detailReusable";
 import DeleteModal from "@/components/ui/modal/delete";
 import EditModal from "@/components/ui/modal/edit";
 import PinModal from "@/components/ui/modal/confirmationPin";

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import clear from "@assets/clearIcon.png";
 import { z } from "zod";
@@ -39,7 +39,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import DetailModal from "@/components/ui/modal/detailAndo";
+import DetailModal from "@/components/ui/modal/detailReusable";
+import ProcessModal from "@/components/ui/modal/proses";
+import ValidationModal from "@/components/ui/modal/validation";
 
 interface DetailInvoice {
   id: number;
@@ -51,10 +53,16 @@ interface DetailInvoice {
 
 function SelectTable() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isDetailModalOpenDineIn, setIsDetailModalOpenDineIn] = useState(false);
+  const [isDetailModalOpenTakeAway, setIsDetailModalOpenTakeAway] =
+    useState(false);
+  const [isPaymentModalOpenDineIn, setIsPaymentModalOpenDineIn] =
+    useState(false);
+  const [isPaymentModalOpenTakeAway, setIsPaymentModalOpenTakeAway] =
+    useState(false);
   const [isPaymentCashModalOpen, setIsPaymentCashModalOpen] = useState(false);
-  const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const [isModalProses, setIsModalProses] = useState(false);
+  const [isValidationModal, setIsValidationModal] = useState(false);
   const [pinValue, setPinValue] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
   const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
@@ -197,6 +205,22 @@ function SelectTable() {
   //   }
   // };
 
+  const animationLoadingProcess = (index: number): string | undefined => {
+    const sequence = [0, 1, 2, 5, 8, 7, 6, 3];
+    const position = sequence.indexOf(index);
+    useEffect(() => {
+      if (isModalProses) {
+        const timer = setTimeout(() => {
+          setIsModalProses(false);
+          setIsPaymentCashModalOpen(true);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+      }
+    }, [isModalProses]);
+    return position === -1 ? undefined : `${position * 0.15}s`;
+  };
+
   return (
     <>
       <section className="text-sm border border-b pt-4 pb-4 pl-8 pr-8 flex justify-between">
@@ -220,10 +244,10 @@ function SelectTable() {
             </div>
           </div>
 
-          {/* Modal Take Away */}
+          {/* Sidebar Modal Take Away */}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <button className="rounded-3xl text-sm bg-secondaryColor text-white p-1 px-2">
+              <button className="rounded-3xl text-sm bg-secondaryColor text-white p-1.5 px-3">
                 Take Away
               </button>
             </DialogTrigger>
@@ -306,7 +330,7 @@ function SelectTable() {
                           </div>
                           <div className="flex gap-2">
                             <button
-                              onClick={() => setIsDetailModalOpen(true)}
+                              onClick={() => setIsDetailModalOpenTakeAway(true)}
                               className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
                             >
                               Detail
@@ -348,7 +372,7 @@ function SelectTable() {
                           </div>
                           <div className="flex gap-2">
                             <button
-                              onClick={() => setIsDetailModalOpen(true)}
+                              onClick={() => setIsDetailModalOpenTakeAway(true)}
                               className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
                             >
                               Detail
@@ -376,12 +400,12 @@ function SelectTable() {
               </motion.div>
             </DialogPortal>
           </Dialog>
-          {/* Modal Take Away */}
+          {/* Sidebar Modal Take Away */}
         </div>
 
         <div className="flex gap-2 items-center">
           <button
-            className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
+            className={`rounded-3xl text-sm p-1.5 px-3 h-fit border ${
               activeFilter === "Semua Meja"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -391,7 +415,7 @@ function SelectTable() {
             Semua Meja
           </button>
           <button
-            className={`rounded-3xl text-sm p-1 px-2 border ${
+            className={`rounded-3xl text-sm p-1.5 px-3 border ${
               activeFilter === "Tersedia"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -401,7 +425,7 @@ function SelectTable() {
             Tersedia
           </button>
           <button
-            className={`rounded-3xl text-sm p-1 px-2 border ${
+            className={`rounded-3xl text-sm p-1.5 px-3 border ${
               activeFilter === "Terisi"
                 ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                 : ""
@@ -414,6 +438,36 @@ function SelectTable() {
       </section>
 
       <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
+        <button
+          className={`rounded-lg border p-3 border-[#FEA026]`}
+          onClick={() => setIsDetailModalOpenDineIn(true)}
+        >
+          <div
+            className={`p-3 rounded-full bg-[#FEA026]/10 flex items-center justify-center w-12 h-12`}
+          >
+            <span
+              className={`font-bold text-xs text-[#FEA026]
+                `}
+            >
+              7-1
+            </span>
+          </div>
+        </button>
+        <button
+          className={`rounded-lg border p-3 border-[#3395F0]`}
+          onClick={() => setIsDetailModalOpenTakeAway(true)}
+        >
+          <div
+            className={`p-3 rounded-full bg-[#3395F0]/10 flex items-center justify-center w-12 h-12`}
+          >
+            <span
+              className={`font-bold text-xs text-[#3395F0]
+                `}
+            >
+              7-1
+            </span>
+          </div>
+        </button>
         {mejaData.map((meja) => (
           <button
             key={meja.id}
@@ -423,7 +477,7 @@ function SelectTable() {
                 : "border-[#FEA026]"
             }`}
             onClick={() =>
-              meja.status !== "tersedia" && setIsDetailModalOpen(true)
+              meja.status !== "tersedia" && setIsDetailModalOpenDineIn(true)
             }
           >
             <div
@@ -447,11 +501,13 @@ function SelectTable() {
         ))}
       </section>
 
-      {/* Modal Detail Order */}
+      {/* Modal Detail Order Dine In */}
       <DetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        onDetail={() => setIsPaymentModalOpen(true)}
+        isOpen={isDetailModalOpenDineIn}
+        onClose={() => {
+          setIsDetailModalOpenDineIn(false);
+        }}
+        onDetail={() => setIsPaymentModalOpenDineIn(true)}
         title="Detail Pesanan"
         classNameDialogFooter="p-4 border-t flex md:justify-end"
         showKeluarButton={true}
@@ -462,54 +518,60 @@ function SelectTable() {
         classNameDialogTitle="text-center font-bold pb-4"
         closeButton={false}
       >
-        <>
+        <div className="space-y-4">
           <div className="justify-between flex text-sm">
-            <div className="">
-              <div className="text-secondaryColor font-bold">Take Away</div>
+            <div className="text-start">
+              <div className="text-primaryColor font-bold truncate max-w-[255px]">
+                Dine In / T-1, T-2, T-3
+              </div>
               <div className="text-black">Putri Diana</div>
             </div>
-            <div className="">
-              <div className="text-[#4F4F4F] font-bold">#Inv1231</div>
+            <div className="text-end">
+              <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
+                #INV1231, #INV234
+              </div>
               <div className="text-[#989898]">19.35 WIB</div>
             </div>
           </div>
 
-          <Table className="mt-4 mb-4 text-sm">
-            <TableHeader className="bg-transparent">
-              <TableRow className="border-none">
-                <TableHead className="text-left border-b-2 text-[#636363]">
-                  Nama
-                </TableHead>
-                <TableHead className="text-center border-b-2 text-[#636363]">
-                  Jumlah
-                </TableHead>
-                <TableHead className="text-right border-b-2 text-[#636363]">
-                  Harga
-                </TableHead>
-                <TableHead className="text-right border-b-2 text-[#636363]">
-                  Subtotal
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {transaksi.map((transaksiItem) => (
-                <TableRow key={transaksiItem.id} className="border-none">
-                  <TableCell className="text-start border-b text-[#6D6D6D]">
-                    {transaksiItem.name}
-                  </TableCell>
-                  <TableCell className="text-center border-b text-[#6D6D6D]">
-                    {transaksiItem.quantity}
-                  </TableCell>
-                  <TableCell className="text-right border-b text-[#6D6D6D]">
-                    Rp. {transaksiItem.price.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right border-b text-[#6D6D6D]">
-                    Rp. {transaksiItem.subTotal}
-                  </TableCell>
+          <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container text-sm">
+            <Table>
+              <TableHeader className="bg-transparent">
+                <TableRow className="border-none">
+                  <TableHead className="text-left border-b-2 text-[#636363]">
+                    Nama
+                  </TableHead>
+                  <TableHead className="text-center border-b-2 text-[#636363]">
+                    Jumlah
+                  </TableHead>
+                  <TableHead className="text-right border-b-2 text-[#636363]">
+                    Harga
+                  </TableHead>
+                  <TableHead className="text-right border-b-2 text-[#636363]">
+                    Subtotal
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {transaksi.map((transaksiItem) => (
+                  <TableRow key={transaksiItem.id} className="border-none">
+                    <TableCell className="text-start border-b text-[#6D6D6D]">
+                      {transaksiItem.name}
+                    </TableCell>
+                    <TableCell className="text-center border-b text-[#6D6D6D]">
+                      {transaksiItem.quantity}
+                    </TableCell>
+                    <TableCell className="text-right border-b text-[#6D6D6D]">
+                      Rp. {transaksiItem.price.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right border-b text-[#6D6D6D]">
+                      Rp. {transaksiItem.subTotal}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
           <div className="flex justify-end items-end text-sm">
             <div className="text-end space-y-2">
@@ -527,14 +589,107 @@ function SelectTable() {
               </div>
             </div>
           </div>
-        </>
+        </div>
       </DetailModal>
-      {/* Modal Detail Order */}
+      {/* Modal Detail Order Dine In */}
 
-      {/* Modal Payment */}
+      {/* Modal Detail Order Take Away */}
+      <DetailModal
+        isOpen={isDetailModalOpenTakeAway}
+        onClose={() => {
+          setIsDetailModalOpenTakeAway(false);
+        }}
+        onDetail={() => setIsPaymentModalOpenTakeAway(true)}
+        title="Detail Pesanan"
+        classNameDialogFooter="p-4 border-t flex md:justify-end"
+        showKeluarButton={true}
+        showCetakButton={true}
+        showBuyyButton={true}
+        classNameDialogHeader="border-none mt-8"
+        classNameButton="w-fit rounded-3xl text-sm"
+        classNameDialogTitle="text-center font-bold pb-4"
+        closeButton={false}
+      >
+        <div className="space-y-4">
+          <div className="justify-between flex text-sm">
+            <div className="text-start">
+              <div className="text-secondaryColor font-bold">Take Away</div>
+              <div className="text-black">Putri Diana</div>
+            </div>
+            <div className="text-end">
+              <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
+                #Inv1231, #Inv1231, #Inv1231
+              </div>
+
+              <div className="text-[#989898]">19.35 WIB</div>
+            </div>
+          </div>
+
+          <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container text-sm">
+            <Table>
+              <TableHeader className="bg-transparent">
+                <TableRow className="border-none">
+                  <TableHead className="text-left border-b-2 text-[#636363]">
+                    Nama
+                  </TableHead>
+                  <TableHead className="text-center border-b-2 text-[#636363]">
+                    Jumlah
+                  </TableHead>
+                  <TableHead className="text-right border-b-2 text-[#636363]">
+                    Harga
+                  </TableHead>
+                  <TableHead className="text-right border-b-2 text-[#636363]">
+                    Subtotal
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transaksi.map((transaksiItem) => (
+                  <TableRow key={transaksiItem.id} className="border-none">
+                    <TableCell className="text-start border-b text-[#6D6D6D]">
+                      {transaksiItem.name}
+                    </TableCell>
+                    <TableCell className="text-center border-b text-[#6D6D6D]">
+                      {transaksiItem.quantity}
+                    </TableCell>
+                    <TableCell className="text-right border-b text-[#6D6D6D]">
+                      Rp. {transaksiItem.price.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right border-b text-[#6D6D6D]">
+                      Rp. {transaksiItem.subTotal}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="flex justify-end items-end text-sm">
+            <div className="text-end space-y-2">
+              <div className="space-x-4">
+                <span className="text-[#9C9C9C]">SUBTOTAL</span>
+                <span className="text-[#19191C]">Rp. 95000</span>
+              </div>
+              <div className="space-x-4">
+                <span className="text-[#9C9C9C]">PAJAK</span>
+                <span className="text-[#19191C]">Rp. 10000</span>
+              </div>
+              <div className="space-x-4">
+                <span className="text-[#9C9C9C]">TOTAL</span>
+                <span className="text-primaryColor">Rp. 85000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DetailModal>
+      {/* Modal Detail Order Take Away */}
+
+      {/* Modal Payment Dine In */}
       <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
+        isOpen={isPaymentModalOpenDineIn}
+        onClose={() => {
+          setIsPaymentModalOpenDineIn(false);
+        }}
         onSubmit={handleSubmit}
         title="Pembayaran"
         classNameDialogFooter=""
@@ -562,8 +717,8 @@ function SelectTable() {
                 <div className="div">Kasir : John Doe</div>
                 <div className="div">Pemesan : Putri Diana</div>
               </div>
-              <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container">
-                <Table className="mt-4 mb-4 text-sm">
+              <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container text-sm">
+                <Table>
                   <TableHeader className="bg-transparent">
                     <TableRow className="border-none">
                       <TableHead className="text-left border-b-2 text-[#636363]">
@@ -607,7 +762,7 @@ function SelectTable() {
                     <span className="text-[#19191C]">Rp. 95000</span>
                   </div>
                   <div className="space-x-4">
-                    <span className="text-[#9C9C9C]">PAJAK</span>
+                    <span className="text-[#9C9C9C]">PB1</span>
                     <span className="text-[#19191C]">Rp. 10000</span>
                   </div>
                   <div className="space-x-4">
@@ -623,7 +778,7 @@ function SelectTable() {
                 onClick={() => {
                   setIsPaymentCashModalOpen(true);
                 }}
-                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor"
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
               >
                 <span>
                   <MoneyCashSVG className="!w-6 !h-6" />
@@ -632,7 +787,7 @@ function SelectTable() {
               </Button>
               <Button
                 variant={"default"}
-                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor"
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
               >
                 <span>
                   <MoneyCardSVG className="!w-6 !h-6" />
@@ -641,7 +796,7 @@ function SelectTable() {
               </Button>
               <Button
                 variant={"default"}
-                className="justify-start text-sm p-2 h-fit w-full bg-primaryColor"
+                className="justify-start text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
               >
                 <span>
                   <MoneyQrisSVG className="!w-6 !h-6" />
@@ -652,7 +807,178 @@ function SelectTable() {
           </div>
         </>
       </PaymentModal>
-      {/* Modal Payment */}
+      {/* Modal Payment Dine In */}
+
+      {/* Modal Payment Take Away */}
+      <PaymentModal
+        isOpen={isPaymentModalOpenTakeAway}
+        onClose={() => {
+          setIsPaymentModalOpenTakeAway(false);
+        }}
+        onSubmit={handleSubmit}
+        title="Pembayaran"
+        classNameDialogFooter=""
+        showCancelButton={false}
+        showPrintButton={false}
+        classNameDialogHeader="border-b p-5"
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle="text-left font-semibold"
+        closeButton={true}
+      >
+        <>
+          <div className="p-4 flex w-full text-sm">
+            <div className="w-[75%] space-y-2">
+              <div className="text-secondaryColor font-semibold">Take Away</div>
+              <div className="w-full text-start">
+                <div>#INV1231, #INV1231, #INV1231</div>
+                <div>19.35 WIB</div>
+              </div>
+              <div className="w-full text-start">
+                <div>Kasir : John Doe</div>
+                <div>Pemesan : Aprilia</div>
+              </div>
+              <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container text-sm">
+                <Table>
+                  <TableHeader className="bg-transparent">
+                    <TableRow className="border-none">
+                      <TableHead className="text-left border-b-2 text-[#636363]">
+                        Nama
+                      </TableHead>
+                      <TableHead className="text-center border-b-2 text-[#636363]">
+                        Jumlah
+                      </TableHead>
+                      <TableHead className="text-right border-b-2 text-[#636363]">
+                        Harga
+                      </TableHead>
+                      <TableHead className="text-right border-b-2 text-[#636363]">
+                        Subtotal
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {transaksi.map((transaksiItem) => (
+                      <TableRow key={transaksiItem.id} className="border-none">
+                        <TableCell className="text-start border-b text-[#19191C]">
+                          {transaksiItem.name}
+                        </TableCell>
+                        <TableCell className="text-center border-b text-[#19191C]">
+                          {transaksiItem.quantity}
+                        </TableCell>
+                        <TableCell className="text-right border-b text-[#19191C]">
+                          Rp. {transaksiItem.price.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right border-b text-[#19191C]">
+                          Rp. {transaksiItem.subTotal}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex justify-end items-end text-sm !mt-6">
+                <div className="text-end space-y-2">
+                  <div className="space-x-4">
+                    <span className="text-[#9C9C9C]">SUBTOTAL</span>
+                    <span className="text-[#19191C]">Rp. 95000</span>
+                  </div>
+                  <div className="space-x-4">
+                    <span className="text-[#9C9C9C]">PB1</span>
+                    <span className="text-[#19191C]">Rp. 10000</span>
+                  </div>
+                  <div className="space-x-4">
+                    <span className="text-[#19191C]">TOTAL</span>
+                    <span className="text-primaryColor">Rp. 105.000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-[25%] border-l pl-8 ml-5 space-y-2">
+              <Button
+                variant={"default"}
+                onClick={() => {
+                  setIsPaymentCashModalOpen(true);
+                }}
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
+              >
+                <span>
+                  <MoneyCashSVG className="!w-6 !h-6" />
+                </span>
+                <span>Bayar dengan Tunai</span>
+              </Button>
+              <Button
+                variant={"default"}
+                onClick={() => {
+                  setIsModalProses(true);
+                }}
+                className="justify-center text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
+              >
+                <span>
+                  <MoneyCardSVG className="!w-6 !h-6" />
+                </span>
+                <span>Bayar dengan Kartu</span>
+              </Button>
+
+              {/* Modal Proses */}
+              <ProcessModal
+                isOpen={isModalProses}
+                onClose={() => {
+                  setIsModalProses(false);
+                }}
+                closeButton={false}
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative w-20 h-20 grid grid-cols-3 gap-1">
+                      {Array.from({ length: 9 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-full h-full ${
+                            index === 4 ? "bg-white" : "bg-emerald-800"
+                          }`}
+                          style={{
+                            animation:
+                              index !== 4
+                                ? "squareLoader 1.5s ease infinite"
+                                : "",
+                            animationDelay: animationLoadingProcess(index),
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <style jsx>{`
+                      @keyframes squareLoader {
+                        0%,
+                        50%,
+                        100% {
+                          background-color: rgb(6, 78, 59);
+                        }
+                        25%,
+                        35% {
+                          background-color: rgb(251, 146, 60);
+                        }
+                      }
+                    `}</style>
+                  </div>
+                  <div className="font-bold text-xl text-center">
+                    Pembayaran melalui Kartu sedang di proses ...
+                  </div>
+                </div>
+              </ProcessModal>
+              {/* Modal Proses */}
+              <Button
+                variant={"default"}
+                className="justify-start text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
+              >
+                <span>
+                  <MoneyQrisSVG className="!w-6 !h-6" />
+                </span>
+                <span>QRIS</span>
+              </Button>
+            </div>
+          </div>
+        </>
+      </PaymentModal>
+      {/* Modal Payment Take Away */}
 
       {/* Modal Payment Cash */}
       <PaymentModal
@@ -730,7 +1056,7 @@ function SelectTable() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setConfirmationDialogOpen(true)}
+                  onClick={() => setIsValidationModal(true)}
                   className="col-span-1 h-9 sm:h-9 md:h-10 font-semibold text-white rounded-md bg-secondaryColor hover:bg-secondaryColor flex items-center justify-center text-sm"
                 >
                   OK
@@ -751,48 +1077,47 @@ function SelectTable() {
               />
             </div>
 
-            {/* Modal Validation Cash Payment */}
-            <Dialog
-              open={isConfirmationDialogOpen}
-              onOpenChange={setConfirmationDialogOpen}
+            <button
+              onClick={() => {
+                setIsValidationModal(true);
+              }}
+              type="button"
+              className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base"
             >
-              <DialogTrigger asChild>
-                <button className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base">
-                  Selesai
-                </button>
-              </DialogTrigger>
-              <DialogContent className="w-[392px]">
-                <DialogHeader className="relative p-4 rounded-lg">
-                  <DialogTitle className="font-semibold text-black dark:text-white m-auto flex mb-4">
-                    <WarningSVG />
-                  </DialogTitle>
-                  <DialogDescription className="text-lg font-bold text-center">
-                    Apakah Pembayaran Selesai?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="w-full pb-4 pl-4 pr-4 flex gap-2">
-                  <DialogClose asChild>
-                    <Button
-                      className="w-full dark:text-white border-[#114F44] text-[#114F44]"
-                      variant="outline"
-                      type="button"
-                    >
-                      Gagal
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      variant="default"
-                      form="paymentForm"
-                    >
-                      Selesai
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+              Selesai
+            </button>
+
+            {/* Modal Validation Cash Payment */}
+            <ValidationModal
+              isOpen={isValidationModal}
+              onClose={() => {
+                setIsValidationModal(false);
+              }}
+              onSubmitTrigger={() => {
+                const paymentForm = document.getElementById(
+                  "paymentForm"
+                ) as HTMLFormElement;
+                if (paymentForm) {
+                  paymentForm.requestSubmit();
+                }
+                setIsValidationModal(false);
+              }}
+              title=""
+              classNameDialogFooter="flex md:justify-center"
+              showKeluarButton={true}
+              showSubmitButton={true}
+              classNameDialogHeader=""
+              classNameButton="w-full rounded-lg text-sm"
+              classNameDialogTitle=""
+              closeButton={false}
+            >
+              <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
+                <WarningSVG />
+              </div>
+              <div className="text-lg font-bold text-center mt-4">
+                Apakah Pembayaran Selesai?
+              </div>
+            </ValidationModal>
             {/* Modal Validation Cash Payment */}
           </form>
         </>
