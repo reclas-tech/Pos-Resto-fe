@@ -6,7 +6,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { ProductOne } from "./interface";
-import { ProductValues } from "./validation";
 
 // Get Product
 const useGetProduct = (currentPage: number, search: string, limit: number) => {
@@ -93,7 +92,7 @@ const postSubmitProduct = () => {
 
 // Update Product
 const putSubmitProduct = (slug: string) => {
-  const navigate = useRouter(); 
+  const navigate = useRouter();
   const axiosPrivate = useAxiosPrivateInstance();
 
 

@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -78,7 +79,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
               Kode Pin
             </DialogTitle>
           </DialogHeader>
-          <div>
+          <>
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="space-y-4 sm:space-y-5 md:space-y-6"
@@ -143,7 +144,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                 </button>
               </div>
             </form>
-          </div>
+          </>
+          <DialogDescription className="hidden"></DialogDescription>
           <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>

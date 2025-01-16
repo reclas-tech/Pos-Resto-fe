@@ -17,10 +17,8 @@ interface ValidationModalProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmitTrigger: (data: any) => void;
   title?: string;
-  cancelButtonText?: string;
   keluarButtonText?: string;
-  SubmitButtonText?: string;
-  showCancelButton?: boolean;
+  submitButtonText?: string;
   showKeluarButton?: boolean;
   showSubmitButton?: boolean;
   closeButton?: boolean;
@@ -36,10 +34,8 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
   onClose,
   onSubmitTrigger,
   title = "Detail",
-  cancelButtonText = "Tutup",
   keluarButtonText = "Gagal",
-  SubmitButtonText = "Selesai",
-  showCancelButton = false,
+  submitButtonText = "Selesai",
   showKeluarButton = false,
   showSubmitButton = false,
   closeButton = false,
@@ -67,21 +63,9 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
             )}
             <DialogTitle className={classNameDialogTitle}>{title}</DialogTitle>
           </DialogHeader>
-          <div className="ml-6 mr-6">{children}</div>
+          <div>{children}</div>
           <DialogDescription className="hidden"></DialogDescription>
           <DialogFooter className={classNameDialogFooter}>
-            {showCancelButton && (
-              <Button
-                className={cn(
-                  "w-full dark:text-white border-[#114F44] text-black",
-                  classNameButton
-                )}
-                variant="outline"
-                onClick={onClose}
-              >
-                {cancelButtonText}
-              </Button>
-            )}
             {showKeluarButton && (
               <Button
                 className={cn(
@@ -100,7 +84,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
                 variant="default"
                 onClick={handleSubmit}
               >
-                {SubmitButtonText}
+                {submitButtonText}
               </Button>
             )}
           </DialogFooter>

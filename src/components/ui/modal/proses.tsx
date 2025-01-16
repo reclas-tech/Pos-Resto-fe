@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CloseModalSVG } from "@/constants/svgIcons";
-import { cn } from "@/lib/utils";
 
 interface ProcessModalProps {
   isOpen: boolean;
