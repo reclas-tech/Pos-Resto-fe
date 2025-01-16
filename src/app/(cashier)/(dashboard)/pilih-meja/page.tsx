@@ -31,14 +31,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
-import {
-  Dialog,
-  DialogPortal,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import ProcessModal from "@/components/ui/modal/proses";
 import ValidationModal from "@/components/ui/modal/validation";
+import { useGetTableList } from "@/components/parts/cashier/pilih-meja/api";
+import DataTableList from "@/components/parts/cashier/pilih-meja/DataTableList";
 
 interface DetailInvoice {
   id: number;
@@ -76,6 +74,23 @@ function SelectTable() {
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
   const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
 
+  // Handle filter status state
+  const status =
+    activeFilter === "Semua Meja" ? "" : activeFilter.toLowerCase();
+
+  // Data fetching
+  const { data } = useGetTableList(status);
+
+  // Handle count available and filled
+  const availableCount =
+    data?.data?.tables?.filter(
+      (table: { status: string }) => table.status === "tersedia"
+    ).length || 0;
+  const filledCount =
+    data?.data?.tables?.filter(
+      (table: { status: string }) => table.status === "terisi"
+    ).length || 0;
+
   const handleFilterClick = (filter: React.SetStateAction<string>) => {
     setActiveFilter(filter);
     console.log(`Filter aktif: ${filter}`);
@@ -85,17 +100,6 @@ function SelectTable() {
     setActiveFilterTakeAway(filter);
     console.log(`Filter aktif: ${filter}`);
   };
-
-  const mejaData = [
-    { id: 1, status: "tersedia" },
-    { id: 2, status: "terisi" },
-    { id: 3, status: "tersedia" },
-    { id: 4, status: "tersedia" },
-    { id: 5, status: "terisi" },
-    { id: 6, status: "terisi" },
-    { id: 7, status: "tersedia" },
-    { id: 8, status: "terisi" },
-  ];
 
   const transaksi: DetailInvoice[] = [
     {
@@ -201,7 +205,6 @@ function SelectTable() {
       return () => clearTimeout(timer);
     }
   }, [isModalProsesCard, isModalProsesQris]);
-  // Handle Modal Process Payment
 
   return (
     <>
@@ -211,19 +214,14 @@ function SelectTable() {
             <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#3395F0]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
               <div className="h-2.5 w-2.5 bg-[#3395F0]/90 rounded-full" />
             </div>
-            <div className="">
-              Tersedia ({mejaData.filter((m) => m.status === "tersedia").length}
-              )
-            </div>
+            <div>Tersedia ({availableCount})</div>
           </div>
 
           <div className="flex gap-2">
             <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#FEA026]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
               <div className="h-2.5 w-2.5 bg-primaryColor rounded-full" />
             </div>
-            <div className="">
-              Terisi ({mejaData.filter((m) => m.status === "terisi").length})
-            </div>
+            <div>Terisi ({filledCount})</div>
           </div>
 
           {/* Sidebar Modal Take Away */}
@@ -264,28 +262,31 @@ function SelectTable() {
                   <div className="p-4 text-sm">
                     <div className="flex gap-2 pb-4">
                       <button
-                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${activeFilterTakeAway === "Semua"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : ""
-                          }`}
+                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
+                          activeFilterTakeAway === "Semua"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : ""
+                        }`}
                         onClick={() => handleFilterClickTakeAway("Semua")}
                       >
                         Semua
                       </button>
                       <button
-                        className={`rounded-3xl text-sm p-1 px-2 border ${activeFilterTakeAway === "BelumBayar"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : ""
-                          }`}
+                        className={`rounded-3xl text-sm p-1 px-2 border ${
+                          activeFilterTakeAway === "BelumBayar"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : ""
+                        }`}
                         onClick={() => handleFilterClickTakeAway("BelumBayar")}
                       >
                         Belum Bayar
                       </button>
                       <button
-                        className={`rounded-3xl text-sm p-1 px-2 border ${activeFilterTakeAway === "SudahBayar"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : ""
-                          }`}
+                        className={`rounded-3xl text-sm p-1 px-2 border ${
+                          activeFilterTakeAway === "SudahBayar"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : ""
+                        }`}
                         onClick={() => handleFilterClickTakeAway("SudahBayar")}
                       >
                         Sudah Bayar
@@ -379,100 +380,32 @@ function SelectTable() {
               </motion.div>
             </DialogPortal>
           </Dialog>
-          {/* Sidebar Modal Take Away */}
         </div>
 
+        {/* Handle Filter Status */}
         <div className="flex gap-2 items-center">
-          <button
-            className={`rounded-3xl text-sm p-1.5 px-3 h-fit border ${activeFilter === "Semua Meja"
-              ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-              : ""
+          {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
+            <button
+              key={filter}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${
+                activeFilter === filter
+                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                  : ""
               }`}
-            onClick={() => handleFilterClick("Semua Meja")}
-          >
-            Semua Meja
-          </button>
-          <button
-            className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === "Tersedia"
-              ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-              : ""
-              }`}
-            onClick={() => handleFilterClick("Tersedia")}
-          >
-            Tersedia
-          </button>
-          <button
-            className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === "Terisi"
-              ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-              : ""
-              }`}
-            onClick={() => handleFilterClick("Terisi")}
-          >
-            Terisi
-          </button>
+              onClick={() => handleFilterClick(filter)}
+            >
+              {filter}
+            </button>
+          ))}
         </div>
       </section>
 
-      <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
-        <button
-          className={`rounded-lg border p-3 border-[#FEA026]`}
-          onClick={() => setIsDetailModalOpenDineIn(true)}
-        >
-          <div
-            className={`p-3 rounded-full bg-[#FEA026]/10 flex items-center justify-center w-12 h-12`}
-          >
-            <span
-              className={`font-bold text-xs text-[#FEA026]
-                `}
-            >
-              7-1
-            </span>
-          </div>
-        </button>
-        <button
-          className={`rounded-lg border p-3 border-[#3395F0]`}
-          onClick={() => setIsDetailModalOpenTakeAway(true)}
-        >
-          <div
-            className={`p-3 rounded-full bg-[#3395F0]/10 flex items-center justify-center w-12 h-12`}
-          >
-            <span
-              className={`font-bold text-xs text-[#3395F0]
-                `}
-            >
-              7-1
-            </span>
-          </div>
-        </button>
-        {mejaData.map((meja) => (
-          <button
-            key={meja.id}
-            className={`rounded-lg border p-3 ${meja.status === "tersedia"
-              ? "border-[#3395F0]"
-              : "border-[#FEA026]"
-              }`}
-            onClick={() =>
-              meja.status !== "tersedia" && setIsDetailModalOpenDineIn(true)
-            }
-          >
-            <div
-              className={`p-3 rounded-full ${meja.status === "tersedia"
-                ? "bg-[#3395F0]/10"
-                : "bg-[#FEA026]/10"
-                } flex items-center justify-center w-12 h-12`}
-            >
-              <span
-                className={`font-bold text-xs ${meja.status === "tersedia"
-                  ? "text-[#3395F0]"
-                  : "text-[#FEA026]"
-                  }`}
-              >
-                7-1
-              </span>
-            </div>
-          </button>
-        ))}
-      </section>
+      {/* Data Table List */}
+      <DataTableList
+        data={data?.data}
+        statusCode={200}
+        message={"Daftar Meja Berhasil Didapatkan"}
+      />
 
       {/* Handle Dine In */}
       <>
@@ -566,7 +499,6 @@ function SelectTable() {
             </div>
           </div>
         </DetailModal>
-        {/* Modal Detail Order Dine In */}
 
         {/* Modal Payment Dine In */}
         <PaymentModal
@@ -621,7 +553,10 @@ function SelectTable() {
                     </TableHeader>
                     <TableBody>
                       {transaksi.map((transaksiItem) => (
-                        <TableRow key={transaksiItem.id} className="border-none">
+                        <TableRow
+                          key={transaksiItem.id}
+                          className="border-none"
+                        >
                           <TableCell className="text-start border-b text-[#19191C]">
                             {transaksiItem.name}
                           </TableCell>
@@ -691,11 +626,9 @@ function SelectTable() {
             </div>
           </>
         </PaymentModal>
-        {/* Modal Payment Dine In */}
       </>
-      {/* Handle Dine In */}
 
-      {/* THandle ake Away */}
+      {/* Handle take Away */}
       <>
         {/* Modal Detail Order Take Away */}
         <DetailModal
@@ -786,7 +719,7 @@ function SelectTable() {
             </div>
           </div>
         </DetailModal>
-        {/* Modal Detail Order Take Away */}
+
         {/* Modal Payment Take Away */}
         <PaymentModal
           isOpen={isPaymentModalOpenTakeAway}
@@ -806,7 +739,9 @@ function SelectTable() {
           <>
             <div className="p-4 flex w-full text-sm">
               <div className="w-[75%] space-y-2">
-                <div className="text-secondaryColor font-semibold">Take Away</div>
+                <div className="text-secondaryColor font-semibold">
+                  Take Away
+                </div>
                 <div className="w-full text-start">
                   <div>#INV1231, #INV1231, #INV1231</div>
                   <div>19.35 WIB</div>
@@ -835,7 +770,10 @@ function SelectTable() {
                     </TableHeader>
                     <TableBody>
                       {transaksi.map((transaksiItem) => (
-                        <TableRow key={transaksiItem.id} className="border-none">
+                        <TableRow
+                          key={transaksiItem.id}
+                          className="border-none"
+                        >
                           <TableCell className="text-start border-b text-[#19191C]">
                             {transaksiItem.name}
                           </TableCell>
@@ -922,8 +860,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -935,18 +874,18 @@ function SelectTable() {
                         ))}
                       </div>
                       <style jsx>{`
-                      @keyframes squareLoader {
-                        0%,
-                        50%,
-                        100% {
-                          background-color: rgb(6, 78, 59);
+                        @keyframes squareLoader {
+                          0%,
+                          50%,
+                          100% {
+                            background-color: rgb(6, 78, 59);
+                          }
+                          25%,
+                          35% {
+                            background-color: rgb(251, 146, 60);
+                          }
                         }
-                        25%,
-                        35% {
-                          background-color: rgb(251, 146, 60);
-                        }
-                      }
-                    `}</style>
+                      `}</style>
                     </div>
                     <div className="font-bold text-xl text-center">
                       Pembayaran melalui Kartu sedang di proses ...
@@ -969,8 +908,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -982,18 +922,18 @@ function SelectTable() {
                         ))}
                       </div>
                       <style jsx>{`
-                      @keyframes squareLoader {
-                        0%,
-                        50%,
-                        100% {
-                          background-color: rgb(6, 78, 59);
+                        @keyframes squareLoader {
+                          0%,
+                          50%,
+                          100% {
+                            background-color: rgb(6, 78, 59);
+                          }
+                          25%,
+                          35% {
+                            background-color: rgb(251, 146, 60);
+                          }
                         }
-                        25%,
-                        35% {
-                          background-color: rgb(251, 146, 60);
-                        }
-                      }
-                    `}</style>
+                      `}</style>
                     </div>
                     <div className="font-bold text-xl text-center">
                       Pembayaran melalui QRIS sedang di proses ...
@@ -1005,9 +945,7 @@ function SelectTable() {
             </div>
           </>
         </PaymentModal>
-        {/* Modal Payment Take Away */}
       </>
-      {/* Handle Take Away */}
 
       {/* Handle Modal Payment Cash */}
       <PaymentModal
@@ -1152,7 +1090,6 @@ function SelectTable() {
           </form>
         </>
       </PaymentModal>
-      {/* Handle Modal Payment Cash */}
 
       {/* Handle Modal Validation Payment */}
       <ValidationModal
@@ -1185,7 +1122,6 @@ function SelectTable() {
           Apakah Pembayaran Selesai?
         </div>
       </ValidationModal>
-      {/* Handle Modal Validation Payment */}
 
       {/* Handle Modal Payment Success */}
       <ValidationModal
@@ -1195,9 +1131,7 @@ function SelectTable() {
           setIsValidationModal(false);
           setIsPaymentCashModalOpen(false);
         }}
-        onSubmitTrigger={() => {
-
-        }}
+        onSubmitTrigger={() => {}}
         title=""
         classNameDialogFooter="flex md:justify-center"
         showKeluarButton={true}
@@ -1216,7 +1150,6 @@ function SelectTable() {
           Pembayaran sudah diterima
         </div>
       </ValidationModal>
-      {/* Handle Modal Payment Success */}
 
       <DarkModeComponents className="hidden" />
     </>
