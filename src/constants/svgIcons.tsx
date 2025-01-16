@@ -1317,3 +1317,30 @@ export function WarningSVG({ className = "" }) {
   );
 }
 // End WarningSVG
+
+// first SuccessSVG
+export function SuccessSVG({ className = "" }) {
+  return (
+    <>
+      <svg className={className} width="126" height="125" viewBox="0 0 126 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M104.666 31.25L47.3747 88.5417L21.333 62.5" stroke="#00BF40" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </>
+  );
+}
+// End SuccessSVG
+
+// first MoneyCloseCashierSVG
+export function MoneyCloseCashierSVG({ className = "" }) {
+  return (
+    <>
+      <svg className={className} width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 17.5C14.1421 17.5 17.5 14.1421 17.5 10C17.5 5.85786 14.1421 2.5 10 2.5C5.85786 2.5 2.5 5.85786 2.5 10C2.5 14.1421 5.85786 17.5 10 17.5Z" stroke="#114F44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M22.6123 12.9629C23.7939 13.4034 24.8454 14.1348 25.6695 15.0894C26.4936 16.044 27.0636 17.1909 27.327 18.4242C27.5903 19.6575 27.5384 20.9373 27.1761 22.1452C26.8138 23.3531 26.1527 24.4502 25.2541 25.3349C24.3554 26.2196 23.2482 26.8635 22.0348 27.2069C20.8214 27.5504 19.5409 27.5823 18.3119 27.2997C17.0829 27.0172 15.945 26.4293 15.0033 25.5904C14.0617 24.7515 13.3468 23.6888 12.9248 22.5004" stroke="#114F44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M8.75 7.5H10V12.5" stroke="#114F44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M20.8873 17.3496L21.7623 18.2371L18.2373 21.7621" stroke="#114F44" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </>
+  );
+}
+// End MoneyCloseCashierSVG

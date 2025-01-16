@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { axiosPrivateInstance } from "@/utils/axios";
 import { AxiosError } from "axios";
-import { FilterSVG } from "@/constants/svgIcons";
+import { FilterSVG, SuccessSVG } from "@/constants/svgIcons";
 import {
   transactionHistorySchema,
   transactionHistoryValues,
@@ -22,83 +22,11 @@ import { Button } from "@/components/ui/button";
 import { Input, SearchInputCashier } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import DetailModal from "@/components/ui/modal/detailAndo";
+import DetailModal from "@/components/ui/modal/detailReusable";
 import DeleteModal from "@/components/ui/modal/delete";
 import EditModal from "@/components/ui/modal/edit";
 import PinModal from "@/components/ui/modal/confirmationPin";
-
-// interface InvoiceResponse {
-//   statusCode: number;
-//   message: string;
-//   data: InvoiceData;
-// }
-
-// interface InvoiceData {
-//   id: string;
-//   name: string;
-//   type: string;
-//   code: string;
-//   status: string;
-//   price_sum: number;
-//   created_at: string;
-//   payment_method: string;
-//   cashier_id: string;
-//   tax: number;
-//   invoice_tables: InvoiceTable[];
-//   employee: Employee;
-//   invoice_products: InvoiceProduct[];
-//   invoice_packets: InvoicePacket[];
-// }
-
-// interface InvoiceTable {
-//   id: string;
-//   table_id: string;
-//   invoice_id: string;
-//   table: Table;
-// }
-
-// interface Table {
-//   id: string;
-//   name: string;
-// }
-
-// interface Employee {
-//   id: string;
-//   name: string;
-// }
-
-// interface InvoiceProduct {
-//   id: string;
-//   invoice_id: string;
-//   product_id: string;
-//   product: Product;
-// }
-
-// interface Product {
-//   id: string;
-//   name: string;
-// }
-
-// interface InvoicePacket {
-//   id: string;
-//   invoice: string;
-//   packet_id: string;
-//   packet: Packet;
-// }
-
-// interface Packet {
-//   id: string;
-//   name: string;
-//   product_packets: ProductPacket[];
-// }
-
-// interface ProductPacket {
-//   id: string;
-//   packet_id: string;
-//   quantity: string;
-//   product_id: string;
-//   products: Product;
-// }
+import ValidationModal from "@/components/ui/modal/validation";
 
 function RiwayatTransaksi() {
   const [loading, setLoading] = useState(false);
@@ -109,6 +37,7 @@ function RiwayatTransaksi() {
   const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
+  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
 
   const {
     register,
@@ -122,7 +51,7 @@ function RiwayatTransaksi() {
     },
   });
 
-  // Update
+  // Handle OnSubmit Edit
   const onEditSubmit: SubmitHandler<transactionHistoryValues> = async (
     data
   ) => {
@@ -158,14 +87,17 @@ function RiwayatTransaksi() {
       setLoading(false);
     }
   };
-  // Update
 
   const handleDetail = () => {
     console.log("Data diedit");
   };
 
+  const handlePrint = () => {
+    setIsPrintSuccess(true);
+    console.log("Data Di Print");
+  };
+
   const handleDelete = () => {
-    // setIsEditModalOpenTakeaway(false);
     console.log("Data dihapus");
   };
 
@@ -322,77 +254,57 @@ function RiwayatTransaksi() {
           </DropdownMenu>
         </section>
         <section className="grid grid-cols-3 gap-4">
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-4">
-            <div className="absolute border h-[10px] w-[40px] ml-[38px] -mt-[8px] rounded-lg"></div>
-            <div className="absolute border h-[10px] w-[40px] ml-[38px] mt-[88px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[2px] mt-[22px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[98px] mt-[22px] rounded-lg"></div>
+          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-2">
             <div className="w-[40%] justify-center flex items-center">
-              <button className="rounded-lg border p-3 border-primaryColor">
-                <div className="p-2 rounded-full bg-[#FEA026]/10 flex items-center justify-center w-12 h-12">
-                  <span className="font-bold text-xs text-primaryColor">
-                    71-11
-                  </span>
-                </div>
+              <button className="rounded-lg border border-primaryColor flex items-center justify-center w-28 h-28 font-bold text-sm text-primaryColor">
+                Putri Diana
               </button>
             </div>
-            <div className="w-[60%] space-y-1 justify-center">
-              <div className="div">
-                <div>#INV0001</div>
-                <div>26/02/2023 09:46:00</div>
-                <div>Rp. 126.000</div>
-                <div className="flex justify-between gap-2">
-                  <Button
-                    variant={"ghostButton"}
-                    className="text-sm bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                  >
-                    Berhasil
-                  </Button>
-                  <Button
-                    variant={"ghostButton"}
-                    onClick={() => setIsDetailModalOpenTakeaway(true)}
-                    className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                  >
-                    Detail
-                  </Button>
-                </div>
+            <div className="w-[60%] space-y-2 justify-center">
+              <div>#INV0001</div>
+              <div>26/02/2023 09:46:00</div>
+              <div>Rp. 126.000</div>
+              <div className="flex justify-between gap-2">
+                <Button
+                  variant={"ghostButton"}
+                  className="text-sm bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
+                >
+                  Berhasil
+                </Button>
+                <Button
+                  variant={"ghostButton"}
+                  onClick={() => setIsDetailModalOpenTakeaway(true)}
+                  className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
+                >
+                  Detail
+                </Button>
               </div>
             </div>
           </div>
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-4">
-            <div className="absolute border h-[10px] w-[40px] ml-[38px] -mt-[8px] rounded-lg"></div>
-            <div className="absolute border h-[10px] w-[40px] ml-[38px] mt-[88px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[2px] mt-[22px] rounded-lg"></div>
-            <div className="absolute border h-[40px] w-[10px] ml-[98px] mt-[22px] rounded-lg"></div>
+          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-2">
             <div className="w-[40%] justify-center flex items-center">
-              <button className="rounded-lg border p-3 border-primaryColor">
-                <div className="p-2 rounded-full bg-[#FEA026]/10 flex items-center justify-center w-12 h-12">
-                  <span className="font-bold text-xs text-primaryColor">
-                    71-11
-                  </span>
-                </div>
+              <button className="rounded-lg border border-primaryColor flex items-center justify-center w-28 h-28 font-bold text-sm text-primaryColor">
+                Putri Diana
               </button>
             </div>
-            <div className="w-[60%] space-y-1 justify-center">
-              <div className="div">
-                <div>#INV0001</div>
-                <div>26/02/2023 09:46:00</div>
-                <div>Rp. 126.000</div>
-                <div className="flex justify-between gap-2">
-                  <Button
-                    variant={"ghostButton"}
-                    className="text-sm bg-primaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                  >
-                    Tertunda
-                  </Button>
-                  <Button
-                    variant={"ghostButton"}
-                    onClick={() => setIsDetailModalOpenTakeaway(true)}
-                    className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                  >
-                    Detail
-                  </Button>
-                </div>
+            <div className="w-[60%] space-y-2 justify-center">
+              <div>#INV0001</div>
+              <div>26/02/2023 09:46:00</div>
+              <div>Rp. 126.000</div>
+              <div className="flex justify-between gap-2">
+                <Button
+                  variant={"ghostButton"}
+                  className="text-sm bg-primaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
+                >
+                  Tertunda
+                </Button>
+                <Button
+                  variant={"ghostButton"}
+                  onClick={() => setIsDetailModalOpenTakeaway(true)}
+                  className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
+                >
+                  Detail
+                </Button>
               </div>
             </div>
           </div>
@@ -402,7 +314,7 @@ function RiwayatTransaksi() {
       {/* Detail Riwayat Transaksi */}
       <DetailModal
         isOpen={isDetailModalOpenDineIn}
-        onClose={() => setIsDetailModalOpenDineIn(false)}
+        onClose={() => { setIsDetailModalOpenDineIn(false) }}
         onDetail={handleDetail}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
@@ -498,8 +410,8 @@ function RiwayatTransaksi() {
 
       <DetailModal
         isOpen={isDetailModalOpenTakeaway}
-        onClose={() => setIsDetailModalOpenTakeaway(false)}
-        onDetail={handleDetail}
+        onClose={() => { setIsDetailModalOpenTakeaway(false); }}
+        onDetail={handlePrint}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
         showCancelButton={true}
@@ -603,6 +515,34 @@ function RiwayatTransaksi() {
         </>
       </DetailModal>
 
+      {/* Handle Print in Detail Riwayat Transaction */}
+      <ValidationModal
+        isOpen={isPrintSuccess}
+        onClose={() => {
+          setIsPrintSuccess(false);
+        }}
+        onSubmitTrigger={() => {
+
+        }}
+        title=""
+        classNameDialogFooter="flex md:justify-center"
+        showKeluarButton={true}
+        showSubmitButton={false}
+        classNameDialogHeader=""
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle=""
+        closeButton={false}
+        keluarButtonText="Tutup"
+      >
+        <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
+          <SuccessSVG />
+        </div>
+        <div className="text-lg font-bold text-center mt-4">
+          Struk Berhasil di Print
+        </div>
+      </ValidationModal>
+      {/* Handle Print in Detail Riwayat Transaction */}
+
       {/* Edit Detail Transaksi */}
       <EditModal
         isOpen={isEditModalOpenTakeaway}
@@ -610,6 +550,8 @@ function RiwayatTransaksi() {
         onSubmit={handleSubmit(onEditSubmit)}
         title="Detail Riwayat Transaksi"
         classNameDialogContent="sm:max-w-[704px]"
+        editButtonText="Kirim"
+        cancelButtonText="Tutup"
         loading={loading}
       >
         <>
@@ -626,7 +568,7 @@ function RiwayatTransaksi() {
             isOpen={isDeleteModalOpen}
             onClose={() => {
               setIsDeleteModalOpen(false);
-              setIsDeletePinModalOpen(true);
+              handleDelete();
             }}
             title="Hapus"
             description="Anda yakin ingin menghapus item ini ?"

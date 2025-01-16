@@ -2,14 +2,15 @@ import Swal from "sweetalert2";
 
 export const showAlert2 = (type: "success" | "error", message: string) => {
   const isSuccess = type === "success";
+  const isWrong = type === "error";
 
   Swal.fire({
     icon: isSuccess ? "success" : "error",
     title: isSuccess ? "Sukses" : "Gagal",
     text: message,
-    timer: isSuccess ? 2000 : undefined,
+    timer: isSuccess || isWrong ? 2000 : undefined,
     showConfirmButton: false,
-    timerProgressBar: isSuccess,
+    timerProgressBar: isSuccess || isWrong,
     showClass: { popup: "animate__animated animate__fadeInDown" },
     hideClass: { popup: "animate__animated animate__fadeOutUp" },
     customClass: {
