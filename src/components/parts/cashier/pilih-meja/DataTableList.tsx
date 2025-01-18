@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -24,25 +23,22 @@ const DataTableList: React.FC<TableListApiResponse> = ({ data }) => {
           <button
             key={table?.id || index}
             // onClick={() => setIsDetailModalOpenDineIn(true)}
-            className={`rounded-lg border p-3 ${
-              table?.status === "tersedia"
-                ? "border-[#3395F0]"
-                : "border-[#FEA026]"
-            }`}
+            className={`rounded-lg border p-3 ${table?.status === "tersedia"
+              ? "border-[#3395F0]"
+              : "border-[#FEA026]"
+              }`}
           >
             <div
-              className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${
-                table?.status === "tersedia"
-                  ? "bg-[#3395F0]/10"
-                  : "bg-[#FEA026]/10"
-              }`}
+              className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${table?.status === "tersedia"
+                ? "bg-[#3395F0]/10"
+                : "bg-[#FEA026]/10"
+                }`}
             >
               <span
-                className={`font-bold text-xs ${
-                  table?.status === "tersedia"
-                    ? "text-[#3395F0]"
-                    : "text-[#FEA026]"
-                }`}
+                className={`font-bold text-xs ${table?.status === "tersedia"
+                  ? "text-[#3395F0]"
+                  : "text-[#FEA026]"
+                  }`}
               >
                 {table?.name}
               </span>

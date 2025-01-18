@@ -4,7 +4,7 @@ import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import Cookies from "js-cookie";
 import useSWR from "swr";
 
-// Get Product
+// Get TableList
 const useGetTableList = (status: string) => {
   const accessToken = Cookies.get("access_token");
 
@@ -25,4 +25,25 @@ const useGetTableList = (status: string) => {
   return { data, error, mutate, isValidating, isLoading };
 };
 
-export { useGetTableList };
+// Get TakeawayList
+const useGetTakeawayList = (status: string) => {
+  const accessToken = Cookies.get("access_token");
+
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `/order/cashier/take-away/list?status=${status}`,
+    () =>
+      axiosPrivate
+        .get(`/order/cashier/take-away/list?status=${status}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
+export { useGetTableList, useGetTakeawayList };
