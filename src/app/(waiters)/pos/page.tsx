@@ -22,24 +22,28 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import Cookies from "js-cookie";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import useSWR from "swr";
 
 interface Product {
   id: string;
   name: string;
   price: number;
-  src: string;
+  image: string;
   quantity?: number;
   note?: string;
+  stock: number;
 }
 
 interface Packet {
   id: string;
   name: string;
   price: number;
-  src: string;
+  image: string;
   quantity?: number;
   note?: string;
-  product: Product[];
+  products: Product[];
 }
 
 interface CustomerOrder {
@@ -51,128 +55,6 @@ interface CustomerOrder {
 
 function PosPage() {
   // Product Dummy Data
-  const products = [
-    {
-      id: "1",
-      name: "Steak Wagyu",
-      price: 150000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "2",
-      name: "Ayam Bakar Madu",
-      price: 35000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "3",
-      name: "Sop Iga Sapi",
-      price: 45000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "4",
-      name: "Nasi Goreng Seafood",
-      price: 40000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "5",
-      name: "Sate Ayam Madura",
-      price: 25000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "6",
-      name: "Bakso Spesial",
-      price: 20000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "7",
-      name: "Mie Goreng Komplit",
-      price: 22000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "8",
-      name: "Udang Goreng Mentega",
-      price: 55000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "9",
-      name: "Ikan Bakar Padang",
-      price: 45000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "10",
-      name: "Rawon Daging Sapi",
-      price: 35000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "11",
-      name: "Gado-Gado Komplit",
-      price: 25000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "12",
-      name: "Nasi Uduk Komplit",
-      price: 30000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "13",
-      name: "Soto Ayam Lamongan",
-      price: 25000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "14",
-      name: "Kambing Guling",
-      price: 65000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "15",
-      name: "Bebek Goreng Kriuk",
-      price: 45000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "16",
-      name: "Capcay Spesial",
-      price: 30000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "17",
-      name: "Sup Jagung Seafood",
-      price: 35000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "18",
-      name: "Pisang Goreng Cokelat",
-      price: 15000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "19",
-      name: "Es Campur Spesial",
-      price: 20000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-    {
-      id: "20",
-      name: "Jus Alpukat Cokelat",
-      price: 18000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-    },
-  ];
 
   // Tables Dumy Data
   const tables = [
@@ -199,15 +81,42 @@ function PosPage() {
   ];
 
   // Packet Dummy Data
-  const packets = [
-    {
-      id: "1",
-      name: "Paket 1",
-      price: 150000,
-      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-      product: [{ id: "1", name: "Rendang", quantity: 2 }],
-    },
-  ];
+  // const packets = [
+  //   {
+  //     id: "1",
+  //     name: "Paket 1",
+  //     price: 150000,
+  //     src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
+  //     product: [{ id: "1", name: "Rendang", quantity: 2 }],
+  //   },
+  // ];
+
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+  const search = "";
+  const categoryId = "";
+
+  // Fetch Product
+  const { data: dataProducts } = useSWR(`/product/waiter/all`, () =>
+    axiosPrivate
+      .get(`/product/waiter/all`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => res.data)
+  );
+
+  // Fetch Packet
+  const { data: dataPackets } = useSWR(`/packet/waiter/all`, () =>
+    axiosPrivate
+      .get(`/packet/waiter/all`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => res.data)
+  );
 
   const [productOrder, setProductOrder] = useState<Product[]>([]);
   const [packetOrder, setPacketOrder] = useState<Packet[]>([]);
@@ -275,6 +184,7 @@ function PosPage() {
     }
   };
 
+  // Chose Table Function
   const handleTableSelect = (
     tableId: string,
     tableName: string,
@@ -380,9 +290,7 @@ function PosPage() {
 
     setPacketOrder(
       packetOrder.map((packet) =>
-        packet.id === selectedPacketId
-          ? { ...packet, note: data.note }
-          : packet
+        packet.id === selectedPacketId ? { ...packet, note: data.note } : packet
       )
     );
     // console.log(data);
@@ -566,7 +474,7 @@ function PosPage() {
         quantity: packet.quantity || 0,
         price_sum: packet.price * (packet.quantity || 0),
         note: packet.note || "",
-        products: packet.product,
+        products: packet.products,
       })),
       customer: customerOrder?.customerName || "",
       type: customerOrder?.type || "",
@@ -675,25 +583,25 @@ function PosPage() {
           <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
             {/* Data Paket dan product */}
             {isActiveFilterProduct === "Paket"
-              ? packets.map((packet) => (
+              ? dataPackets?.data.map((packet: Packet) => (
                   <CardPacket
                     key={packet.id}
                     onClick={() => addPacket(packet)}
                     id={packet.id}
                     name={packet.name}
-                    src={packet.src}
+                    src={packet.image}
                     price={packet.price}
-                    product={packet.product}
+                    product={packet.products}
                   />
                 ))
-              : products.map((product) => (
+              : dataProducts?.data.map((product: Product) => (
                   <CardProduct
                     key={product.id}
-                    onClick={() => addProduct(product)}
                     id={product.id}
                     name={product.name}
-                    src={product.src}
+                    src={product.image}
                     price={product.price}
+                    onClick={() => addProduct(product)}
                   />
                 ))}
           </div>
@@ -926,9 +834,9 @@ function PosPage() {
                   id={item.id}
                   note={item.note || ""}
                   name={item.name}
-                  src={item.src}
+                  src={item.image}
                   price={calculateItemTotal(item.price, item.quantity)}
-                  product={item.product}
+                  product={item.products}
                   quantity={item.quantity || 0}
                   onDelete={() => handleRemovePacket(item)}
                   onIncrease={() => handleIncreaseQuantityPacket(item)}
@@ -944,7 +852,7 @@ function PosPage() {
                   id={item.id}
                   note={item.note || ""}
                   name={item.name}
-                  src={item.src}
+                  src={item.image || ""}
                   price={calculateItemTotal(item.price, item.quantity)}
                   quantity={item.quantity || 0}
                   onDelete={() => handleRemoveProduct(item)}

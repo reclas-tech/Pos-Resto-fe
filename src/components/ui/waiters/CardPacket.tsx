@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 
-interface Product {
+interface Data {
   id: string;
   name: string;
   quantity: number;
@@ -13,7 +13,7 @@ interface CardPacketProps {
   name: string;
   src: string;
   price: number;
-  product: Product[];
+  product: Data[];
 }
 const CardPacket: React.FC<CardPacketProps> = ({
   id,
@@ -44,7 +44,7 @@ const CardPacket: React.FC<CardPacketProps> = ({
         <ul>
           {product.map((item) => (
             <li key={item.id} className="text-[9px] list-disc ml-4">
-              <span className="flex space-x-1">
+              <span className="flex space-x-1 text-red-500">
                 <p>{item.quantity} x </p>
                 <p>{item.name}</p>
               </span>
