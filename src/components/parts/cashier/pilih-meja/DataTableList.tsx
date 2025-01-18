@@ -31,7 +31,7 @@ const DataTableList: React.FC<TableListApiResponse> = ({ data }) => {
             }`}
           >
             <div
-              className={`p-3 rounded-full flex items-center justify-center w-12 h-12 ${
+              className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${
                 table?.status === "tersedia"
                   ? "bg-[#3395F0]/10"
                   : "bg-[#FEA026]/10"
