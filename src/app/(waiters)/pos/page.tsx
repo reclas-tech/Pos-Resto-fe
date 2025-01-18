@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
-import { NotesSVG, HistorySVG, CustomerSVG } from "@/constants/svgIcons";
+import { CustomerSVG, HistorySVG, NotesSVG } from "@/constants/svgIcons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,8 @@ import logo from "@assets/splashScreen.png";
 import { ChevronDown, Search, Trash } from "lucide-react";
 import CardProduct from "@/components/ui/waiters/CardProduct";
 import ProductOrder from "@/components/ui/waiters/ProductOrder";
+import CardPacket from "@/components/ui/waiters/CardPacket";
+import PacketOrder from "@/components/ui/waiters/PacketOrder";
 import FormModal from "@/components/ui/waiters/modal/FormModal";
 import ChoseTableModal from "@/components/ui/waiters/modal/ChoseTableModal";
 import Link from "next/link";
@@ -24,10 +26,20 @@ import { Label } from "@/components/ui/label";
 interface Product {
   id: string;
   name: string;
-  price: string;
+  price: number;
   src: string;
   quantity?: number;
   note?: string;
+}
+
+interface Packet {
+  id: string;
+  name: string;
+  price: number;
+  src: string;
+  quantity?: number;
+  note?: string;
+  product: Product[];
 }
 
 interface CustomerOrder {
@@ -43,121 +55,121 @@ function PosPage() {
     {
       id: "1",
       name: "Steak Wagyu",
-      price: "150.000",
+      price: 150000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "2",
       name: "Ayam Bakar Madu",
-      price: "35.000",
+      price: 35000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "3",
       name: "Sop Iga Sapi",
-      price: "45.000",
+      price: 45000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "4",
       name: "Nasi Goreng Seafood",
-      price: "40.000",
+      price: 40000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "5",
       name: "Sate Ayam Madura",
-      price: "25.000",
+      price: 25000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "6",
       name: "Bakso Spesial",
-      price: "20.000",
+      price: 20000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "7",
       name: "Mie Goreng Komplit",
-      price: "22.000",
+      price: 22000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "8",
       name: "Udang Goreng Mentega",
-      price: "55.000",
+      price: 55000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "9",
       name: "Ikan Bakar Padang",
-      price: "45.000",
+      price: 45000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "10",
       name: "Rawon Daging Sapi",
-      price: "35.000",
+      price: 35000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "11",
       name: "Gado-Gado Komplit",
-      price: "25.000",
+      price: 25000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "12",
       name: "Nasi Uduk Komplit",
-      price: "30.000",
+      price: 30000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "13",
       name: "Soto Ayam Lamongan",
-      price: "25.000",
+      price: 25000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "14",
       name: "Kambing Guling",
-      price: "65.000",
+      price: 65000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "15",
       name: "Bebek Goreng Kriuk",
-      price: "45.000",
+      price: 45000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "16",
       name: "Capcay Spesial",
-      price: "30.000",
+      price: 30000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "17",
       name: "Sup Jagung Seafood",
-      price: "35.000",
+      price: 35000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "18",
       name: "Pisang Goreng Cokelat",
-      price: "15.000",
+      price: 15000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "19",
       name: "Es Campur Spesial",
-      price: "20.000",
+      price: 20000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
     {
       id: "20",
       name: "Jus Alpukat Cokelat",
-      price: "18.000",
+      price: 18000,
       src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
     },
   ];
@@ -186,7 +198,20 @@ function PosPage() {
     { id: "20", status: "terisi", name: "T-20" },
   ];
 
+  // Packet Dummy Data
+  const packets = [
+    {
+      id: "1",
+      name: "Paket 1",
+      price: 150000,
+      src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
+      product: [{ id: "1", name: "Rendang", quantity: 2 }],
+    },
+  ];
+
   const [productOrder, setProductOrder] = useState<Product[]>([]);
+  const [packetOrder, setPacketOrder] = useState<Packet[]>([]);
+
   const [currentDate, setCurrentDate] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<string>("");
   const [isTakeAwayModal, setIsTakeAwayModal] = useState<boolean>(false);
@@ -195,11 +220,15 @@ function PosPage() {
     null
   );
   const [isNoteModal, setIsNoteModal] = useState<boolean>(false);
+  const [isNotePacketModal, setIsNotePacketModal] = useState<boolean>(false);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [selectedPacketId, setSelectedPacketId] = useState<string>("");
+
   const [isActiveFilterProduct, setIsActiveFilterProduct] =
     useState<string>("Semua");
   const [isActiveFilterTable, setIsActiveFilterTable] =
     useState<string>("Semua");
+
   const [filteredTables, setFilteredTables] = useState(tables);
   const [selectedTables, setSelectedTables] = useState<
     { id: string; name: string }[]
@@ -211,7 +240,7 @@ function PosPage() {
     console.log(`Filter aktif: ${filter}`);
   };
 
-  // Handle Open Note Modal
+  //  Open NoteProduct Modal
   const handleOpenNoteModal = (productId: string) => {
     setSelectedProductId(productId);
     const product = productOrder.find((p) => p.id === productId);
@@ -219,6 +248,16 @@ function PosPage() {
       setNoteValue("note", product.note);
     }
     setIsNoteModal(true);
+  };
+
+  // Open NotePacket Modal
+  const handleOpenNotePacketModal = (packetId: string) => {
+    setSelectedPacketId(packetId);
+    const data = packetOrder.find((p) => p.id === packetId);
+    if (data?.note) {
+      setNoteValuePacket("note", data.note);
+    }
+    setIsNotePacketModal(true);
   };
 
   // Handle Filter Table
@@ -270,12 +309,20 @@ function PosPage() {
     reset: resetTakeAway,
   } = useForm();
 
-  // Note Submit Modal useForm
+  // Note Product  useForm
   const {
     register: registerNote,
     handleSubmit: handleSubmitNote,
     reset: resetNote,
     setValue: setNoteValue,
+  } = useForm();
+
+  // Note Packet  useForm
+  const {
+    register: registerNotePacket,
+    handleSubmit: handleSubmitNotePacket,
+    reset: resetNotePacket,
+    setValue: setNoteValuePacket,
   } = useForm();
 
   //  Order Submit useForm
@@ -311,8 +358,8 @@ function PosPage() {
     setSelectedTables([]); // Reset selected tables after submission
   };
 
-  // Note Submit
-  const noteSubmit = (data) => {
+  // Note Product Submit
+  const noteSubmit = (data: Product) => {
     if (!selectedProductId) return;
 
     setProductOrder(
@@ -327,18 +374,38 @@ function PosPage() {
     setIsNoteModal(false);
   };
 
+  // Note Packet Submit
+  const notePacketSubmit = (data: Packet) => {
+    if (!selectedPacketId) return;
+
+    setPacketOrder(
+      packetOrder.map((packet) =>
+        packet.id === selectedPacketId
+          ? { ...packet, note: data.note }
+          : packet
+      )
+    );
+    // console.log(data);
+    resetNotePacket();
+    setIsNotePacketModal(false);
+  };
+
   // Calculate Item TotalS
-  const calculateItemTotal = (price: string, quantity: number = 0) => {
-    const numericPrice = parseInt(price.replace(/\./g, ""), 10);
-    return formatCurrency(numericPrice * quantity);
+  const calculateItemTotal = (price: number, quantity: number = 0) => {
+    return formatCurrency(price * quantity);
   };
 
   // Calculate Order Total
   const calculateSubTotal = () => {
-    return productOrder.reduce((total, item) => {
-      const price = parseInt(item.price.replace(/\./g, ""), 10);
-      return total + price * (item.quantity || 0);
+    const productTotal = productOrder.reduce((total, item) => {
+      return total + item.price * (item.quantity || 0);
     }, 0);
+
+    const packetTotal = packetOrder.reduce((total, item) => {
+      return total + item.price * (item.quantity || 0);
+    }, 0);
+
+    return productTotal + packetTotal;
   };
 
   // Calculate Order Tax
@@ -432,6 +499,55 @@ function PosPage() {
     setProductOrder(productOrder.filter((product) => product.id !== item.id));
   };
 
+  const addPacket = (item: Packet) => {
+    if (packetOrder.some((packetItem) => packetItem.id === item.id)) {
+      setPacketOrder((prevPacketOrder) =>
+        prevPacketOrder.map((packetItem) =>
+          packetItem.id === item.id
+            ? {
+                ...packetItem,
+                quantity: (packetItem.quantity || 0) + 1,
+                note: "",
+              }
+            : packetItem
+        )
+      );
+      return;
+    }
+    setPacketOrder((prevPacketOrder) => [
+      ...prevPacketOrder,
+      { ...item, quantity: 1, note: "" },
+    ]);
+  };
+
+  const handleIncreaseQuantityPacket = (item: Packet) => {
+    setPacketOrder(
+      packetOrder.map((packet) =>
+        packet.id === item.id
+          ? { ...packet, quantity: (packet.quantity || 0) + 1 }
+          : packet
+      )
+    );
+  };
+  const handleDecreaseQuantityPacket = (item: Packet) => {
+    setPacketOrder(
+      packetOrder.map((packet) =>
+        packet.id === item.id && (packet.quantity || 0) > 1
+          ? { ...packet, quantity: (packet.quantity || 0) - 1 }
+          : packet
+      )
+    );
+  };
+
+  const handleRemovePacket = (item: Packet) => {
+    setPacketOrder(packetOrder.filter((packet) => packet.id !== item.id));
+  };
+
+  const RemoveAll = () => {
+    setProductOrder([]);
+    setPacketOrder([]);
+  };
+
   const subTotal = calculateSubTotal();
   const tax = calculateTax(subTotal);
   const total = calculateTotal(subTotal, tax);
@@ -442,12 +558,16 @@ function PosPage() {
       products: productOrder.map((product) => ({
         id: product.id,
         quantity: product.quantity || 0,
-        price_sum:
-          parseInt(product.price.replace(/\./g, ""), 10) *
-          (product.quantity || 0),
+        price_sum: product.price * (product.quantity || 0),
         note: product.note || "",
       })),
-      packets: [],
+      packets: packetOrder.map((packet) => ({
+        id: packet.id,
+        quantity: packet.quantity || 0,
+        price_sum: packet.price * (packet.quantity || 0),
+        note: packet.note || "",
+        products: packet.product,
+      })),
       customer: customerOrder?.customerName || "",
       type: customerOrder?.type || "",
       table_id: customerOrder?.tableIds || [],
@@ -456,16 +576,13 @@ function PosPage() {
     };
 
     console.log(orderData);
-    // Reset semua state setelah submit
+    // Reset all states after submit
     setProductOrder([]);
+    setPacketOrder([]);
     setCustomerOrder(null);
     setSelectedTables([]);
     resetOrder();
   };
-
-  useEffect(() => {
-    // console.log(productOrder);
-  }, [productOrder]);
 
   return (
     <>
@@ -556,16 +673,29 @@ function PosPage() {
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
-            {products.map((product) => (
-              <CardProduct
-                key={product.id}
-                onClick={() => addProduct(product)}
-                id={product.id}
-                name={product.name}
-                src={product.src}
-                price={product.price}
-              />
-            ))}
+            {/* Data Paket dan product */}
+            {isActiveFilterProduct === "Paket"
+              ? packets.map((packet) => (
+                  <CardPacket
+                    key={packet.id}
+                    onClick={() => addPacket(packet)}
+                    id={packet.id}
+                    name={packet.name}
+                    src={packet.src}
+                    price={packet.price}
+                    product={packet.product}
+                  />
+                ))
+              : products.map((product) => (
+                  <CardProduct
+                    key={product.id}
+                    onClick={() => addProduct(product)}
+                    id={product.id}
+                    name={product.name}
+                    src={product.src}
+                    price={product.price}
+                  />
+                ))}
           </div>
         </div>
         <div className="w-[30%] h-full border-l border-[#E4E4E4] ">
@@ -782,7 +912,7 @@ function PosPage() {
           <div className="w-full h-[57%] border-y border-[#E4E4E4] px-4 ">
             <div className="flex justify-end my-2">
               <button
-                onClick={() => setProductOrder([])}
+                onClick={RemoveAll}
                 className="bg-[#FF57241A] p-1 rounded text-[#EE1616] text-xs flex items-center space-x-1"
               >
                 <Trash className="w-4 h-4" />
@@ -790,7 +920,24 @@ function PosPage() {
               </button>
             </div>
             <div className="  overflow-y-auto space-y-2 max-h-[90%]">
-              {/* Display Product Order */}
+              {packetOrder.map((item) => (
+                <PacketOrder
+                  key={item.id}
+                  id={item.id}
+                  note={item.note || ""}
+                  name={item.name}
+                  src={item.src}
+                  price={calculateItemTotal(item.price, item.quantity)}
+                  product={item.product}
+                  quantity={item.quantity || 0}
+                  onDelete={() => handleRemovePacket(item)}
+                  onIncrease={() => handleIncreaseQuantityPacket(item)}
+                  onDecrease={() => handleDecreaseQuantityPacket(item)}
+                  onNote={() => handleOpenNotePacketModal(item.id)}
+                />
+              ))}
+
+              {/* Display product orders */}
               {productOrder.map((item) => (
                 <ProductOrder
                   key={item.id}
@@ -806,7 +953,7 @@ function PosPage() {
                   onNote={() => handleOpenNoteModal(item.id)}
                 />
               ))}
-              {/* Note Modal */}
+              {/* Note Product Modal */}
               <FormModal
                 isOpen={isNoteModal}
                 onClose={() => {
@@ -827,10 +974,33 @@ function PosPage() {
                   {...registerNote("note")}
                 ></textarea>
               </FormModal>
+
+              {/* Note Packet Modal */}
+              <FormModal
+                isOpen={isNotePacketModal}
+                onClose={() => {
+                  setIsNotePacketModal(false);
+                  resetNotePacket();
+                  setSelectedProductId("");
+                }}
+                onSubmit={handleSubmitNotePacket(notePacketSubmit)}
+                title="Catatan"
+              >
+                <Label className="text-xs text-[#828487] font-medium">
+                  Masukkan Catatan
+                </Label>
+                <textarea
+                  id="note"
+                  className="flex mt-1 h-[147px] w-full rounded-xl border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-sm placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+                  placeholder="Catatan"
+                  {...registerNotePacket("note")}
+                ></textarea>
+              </FormModal>
             </div>
           </div>
           <div className="w-full mt-1">
             <form onSubmit={handleSubmitOrder(orderSubmit)}>
+              {/* Sesuaikan sub total, pajak, dan total berdasarkan jumlah data packetOrder dan productOrder yang ditampilkan */}
               <div className="w-full  py-4 px-6 space-y-3">
                 <div className="w-full text-sm  flex items-center justify-between">
                   <p className="text-[#828487] font-normal">Sub Total</p>

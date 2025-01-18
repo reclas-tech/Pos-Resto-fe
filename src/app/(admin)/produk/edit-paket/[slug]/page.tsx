@@ -204,7 +204,6 @@ function EditPacketPage() {
         );
       });
 
-
       formData.append("_method", "PUT");
 
       await handlePostSubmit(formData, setLoading);
