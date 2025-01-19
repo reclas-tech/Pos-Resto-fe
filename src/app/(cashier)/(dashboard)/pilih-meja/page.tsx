@@ -221,22 +221,33 @@ function SelectTable() {
   // Handle Open TakeAway
   const handleOpenDetailTakeAway = (invoiceId: string | number, status: string) => {
     console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+    setSelectedId(invoiceId); // Menyimpan id yang dipilih
     setIsDetailModalOpenTakeAway(true);
   };
 
-  // GET ONE SLUG
+  // GET ONE SLUG DineIn
   const { data: dataInvoiceDineIn } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
-  console.log("ini data invoice: ", dataInvoiceDineIn);
-
+  console.log("ini data dinein: ", dataInvoiceDineIn);
   const tablesDineIn = dataInvoiceDineIn?.data?.tables || [];
   const formattedTablesDineIn = tablesDineIn.map((_, index) => `T-${index + 1}`).join(", ");
+  console.log("ini data Dine IN: ", formattedTablesDineIn)
 
-  // GET ONE SLUG
+  // GET ONE SLUG Takeaway
   const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
-  console.log("ini data invoice: ", dataInvoiceTakeAway);
-
+  console.log("ini data takeaway: ", dataInvoiceTakeAway);
   const tablesTakeAway = dataInvoiceTakeAway?.data?.tables || [];
   const formattedTablesTakeAway = tablesTakeAway.map((_, index) => `T-${index + 1}`).join(", ");
+  console.log("ini data Takeaway: ", formattedTablesTakeAway)
+
+  // const convertToDecimalHours = (date: Date) => {
+  //   const hours = date.getHours();
+  //   const minutes = date.getMinutes();
+  //   const decimalMinutes = minutes / 60;
+  //   return (hours + decimalMinutes).toFixed(2);
+  // };
+  // const createdAt = new Date(data?.created_at);
+  // const decimalHours = convertToDecimalHours(createdAt);
+  // console.log(createdAt, decimalHours)
 
   return (
     <>
@@ -362,7 +373,14 @@ function SelectTable() {
                 <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
                   {dataInvoiceDineIn?.data?.codes?.map(code => `#${code}`).join(', ')}
                 </div>
-                <div className="text-[#989898]">19.35 WIB</div>
+                <div className="text-[#989898]">
+                  {dataInvoiceDineIn?.data?.created_at
+                    ? new Date(dataInvoiceDineIn.data.created_at).toLocaleTimeString('id-ID', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }) + ' WIB'
+                    : '-'}
+                </div>
               </div>
             </div>
 
@@ -385,24 +403,6 @@ function SelectTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* Products */}
-                  {dataInvoiceDineIn?.data?.products.map(product => (
-                    <TableRow key={product.id} className="border-none">
-                      <TableCell className="text-start border-b text-[#6D6D6D]">
-                        {product.name}
-                      </TableCell>
-                      <TableCell className="text-center border-b text-[#6D6D6D]">
-                        {product.quantity}
-                      </TableCell>
-                      <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {product.price.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {product.price_sum.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-
                   {/* Packets */}
                   {dataInvoiceDineIn?.data?.packets.map(packet => (
                     <TableRow key={packet.id} className="border-none">
@@ -417,6 +417,24 @@ function SelectTable() {
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
                         Rp. {packet.price_sum.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {/* Products */}
+                  {dataInvoiceDineIn?.data?.products.map(product => (
+                    <TableRow key={product.id} className="border-none">
+                      <TableCell className="text-start border-b text-[#6D6D6D]">
+                        {product.name}
+                      </TableCell>
+                      <TableCell className="text-center border-b text-[#6D6D6D]">
+                        {product.quantity}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {product.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {product.price_sum.toLocaleString()}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -700,7 +718,7 @@ function SelectTable() {
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
               <div className="text-start">
-                <div className="text-secondaryColor font-bold capitalize">{dataInvoiceTakeAway?.data?.type} / {formattedTablesTakeAway}</div>
+                <div className="text-secondaryColor font-bold capitalize">{dataInvoiceTakeAway?.data?.type}</div>
                 <div className="text-black">{dataInvoiceTakeAway?.data?.customer}</div>
               </div>
               <div className="text-end">
@@ -708,7 +726,14 @@ function SelectTable() {
                   {dataInvoiceTakeAway?.data?.codes?.map(code => `#${code}`).join(', ')}
                 </div>
 
-                <div className="text-[#989898]">19.35 WIB</div>
+                <div className="text-[#989898]">
+                  {dataInvoiceTakeAway?.data?.created_at
+                    ? new Date(dataInvoiceTakeAway.data.created_at).toLocaleTimeString('id-ID', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }) + ' WIB'
+                    : '-'}
+                </div>
               </div>
             </div>
 
@@ -731,24 +756,6 @@ function SelectTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* Products */}
-                  {dataInvoiceTakeAway?.data?.products.map(product => (
-                    <TableRow key={product.id} className="border-none">
-                      <TableCell className="text-start border-b text-[#6D6D6D]">
-                        {product.name}
-                      </TableCell>
-                      <TableCell className="text-center border-b text-[#6D6D6D]">
-                        {product.quantity}
-                      </TableCell>
-                      <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {product.price.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {product.price_sum.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-
                   {/* Packets */}
                   {dataInvoiceTakeAway?.data?.packets.map(packet => (
                     <TableRow key={packet.id} className="border-none">
@@ -763,6 +770,24 @@ function SelectTable() {
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
                         Rp. {packet.price_sum.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {/* Products */}
+                  {dataInvoiceTakeAway?.data?.products.map(product => (
+                    <TableRow key={product.id} className="border-none">
+                      <TableCell className="text-start border-b text-[#6D6D6D]">
+                        {product.name}
+                      </TableCell>
+                      <TableCell className="text-center border-b text-[#6D6D6D]">
+                        {product.quantity}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {product.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {product.price_sum.toLocaleString()}
                       </TableCell>
                     </TableRow>
                   ))}

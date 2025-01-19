@@ -45,6 +45,7 @@ export interface InvoiceDetailData {
   tax: number;
   type: string;
   customer: string;
+  created_at: string;
   price_sum: number;
   price: number;
   cashier: string;
