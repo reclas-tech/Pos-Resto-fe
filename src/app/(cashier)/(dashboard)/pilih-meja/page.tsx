@@ -8,13 +8,11 @@ import clear from "@assets/clearIcon.png";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
 import {
   BackSVGKasir,
   MoneyCardSVG,
   MoneyCashSVG,
   MoneyQrisSVG,
-  RiwayatSVG,
   SuccessSVG,
   WarningSVG,
 } from "@/constants/svgIcons";
@@ -31,12 +29,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
-import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import ProcessModal from "@/components/ui/modal/proses";
 import ValidationModal from "@/components/ui/modal/validation";
-import { useGetTableList } from "@/components/parts/cashier/pilih-meja/api";
+import { useGetInvoiceDetail, useGetTableList, useGetTakeawayList } from "@/components/parts/cashier/pilih-meja/api";
 import DataTableList from "@/components/parts/cashier/pilih-meja/DataTableList";
+import DataTakeawayList from "@/components/parts/cashier/pilih-meja/DataTakeawayList";
+import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
+import { useParams } from "next/navigation";
 
 interface DetailInvoice {
   id: number;
@@ -72,7 +73,6 @@ function SelectTable() {
   const [isPaymentSuccessModal, setIsPaymentSuccessModal] = useState(false);
   const [pinValue, setPinValue] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
-  const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
 
   // Handle filter status state
   const status =
@@ -84,11 +84,11 @@ function SelectTable() {
   // Handle count available and filled
   const availableCount =
     data?.data?.tables?.filter(
-      (table: { status: string }) => table.status === "tersedia"
+      (table: { status: string }) => table?.status === "tersedia"
     ).length || 0;
   const filledCount =
     data?.data?.tables?.filter(
-      (table: { status: string }) => table.status === "terisi"
+      (table: { status: string }) => table?.status === "terisi"
     ).length || 0;
 
   const handleFilterClick = (filter: React.SetStateAction<string>) => {
@@ -96,10 +96,13 @@ function SelectTable() {
     console.log(`Filter aktif: ${filter}`);
   };
 
-  const handleFilterClickTakeAway = (filter: React.SetStateAction<string>) => {
-    setActiveFilterTakeAway(filter);
-    console.log(`Filter aktif: ${filter}`);
-  };
+  // Data fetching
+  const { data: takeawayLIst } = useGetTakeawayList(status);
+
+  // Handle count Takeaway
+  const availableCountTakeawayList =
+    takeawayLIst?.data?.length || 0;
+  console.log("Test", availableCountTakeawayList);
 
   const transaksi: DetailInvoice[] = [
     {
@@ -206,6 +209,35 @@ function SelectTable() {
     }
   }, [isModalProsesCard, isModalProsesQris]);
 
+  const [selectedId, setSelectedId] = useState<string | number | null>(null);
+
+  // Handle Open Detail DineIn
+  const handleOpenDetailDineIn = (invoiceId: string | number, status: string) => {
+    console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+    setSelectedId(invoiceId); // Menyimpan id yang dipilih
+    setIsDetailModalOpenDineIn(true);
+  };
+
+  // Handle Open TakeAway
+  const handleOpenDetailTakeAway = (invoiceId: string | number, status: string) => {
+    console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+    setIsDetailModalOpenTakeAway(true);
+  };
+
+  // GET ONE SLUG
+  const { data: dataInvoiceDineIn } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
+  console.log("ini data invoice: ", dataInvoiceDineIn);
+
+  const tablesDineIn = dataInvoiceDineIn?.data?.tables || [];
+  const formattedTablesDineIn = tablesDineIn.map((_, index) => `T-${index + 1}`).join(", ");
+
+  // GET ONE SLUG
+  const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
+  console.log("ini data invoice: ", dataInvoiceTakeAway);
+
+  const tablesTakeAway = dataInvoiceTakeAway?.data?.tables || [];
+  const formattedTablesTakeAway = tablesTakeAway.map((_, index) => `T-${index + 1}`).join(", ");
+
   return (
     <>
       <section className="text-sm border border-b pt-4 pb-4 pl-8 pr-8 flex justify-between">
@@ -224,7 +256,6 @@ function SelectTable() {
             <div>Terisi ({filledCount})</div>
           </div>
 
-          {/* Sidebar Modal Take Away */}
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <button className="rounded-3xl text-sm bg-secondaryColor text-white p-1.5 px-3">
@@ -237,7 +268,7 @@ function SelectTable() {
                 animate={{ x: isOpen ? 0 : "100%" }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="fixed top-0 right-0 h-full max-w-xs w-full bg-white shadow-lg border-l z-50"
+                className="fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg border-l z-50"
               >
                 <div className="flex flex-col h-full text-sm">
                   <div className="flex justify-between w-full border-b pl-4 pr-4 pt-2 pb-2">
@@ -254,132 +285,25 @@ function SelectTable() {
                       </div>
                       <div className="rounded-full bg-[#114F44]/10 flex items-center h-fit justify-center m-auto">
                         <span className="text-[#114F44] font-bold text-xs p-2">
-                          10
+                          {availableCountTakeawayList}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="p-4 text-sm">
-                    <div className="flex gap-2 pb-4">
-                      <button
-                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
-                          activeFilterTakeAway === "Semua"
-                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                            : ""
-                        }`}
-                        onClick={() => handleFilterClickTakeAway("Semua")}
-                      >
-                        Semua
-                      </button>
-                      <button
-                        className={`rounded-3xl text-sm p-1 px-2 border ${
-                          activeFilterTakeAway === "BelumBayar"
-                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                            : ""
-                        }`}
-                        onClick={() => handleFilterClickTakeAway("BelumBayar")}
-                      >
-                        Belum Bayar
-                      </button>
-                      <button
-                        className={`rounded-3xl text-sm p-1 px-2 border ${
-                          activeFilterTakeAway === "SudahBayar"
-                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                            : ""
-                        }`}
-                        onClick={() => handleFilterClickTakeAway("SudahBayar")}
-                      >
-                        Sudah Bayar
-                      </button>
-                    </div>
-                    <div className="overflow-auto h-screen space-y-2 scroll-container">
-                      <div className="border rounded-xl text-xs">
-                        <div className="flex justify-between border-b p-2">
-                          <div className="space-y-0">
-                            <div className="flex gap-2">
-                              <span className="flex items-center text-[#828487]">
-                                #INV873
-                              </span>
-                              <div className="rounded-3xl text-[10px] p-1.5 text-primaryColor bg-[#FEA026]/10">
-                                Belum Bayar
-                              </div>
-                            </div>
-                            <div className="text-black font-bold text-sm">
-                              Putri Diana
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setIsDetailModalOpenTakeAway(true)}
-                              className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
-                            >
-                              Detail
-                            </button>
-                            <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
-                              Bayar
-                            </button>
-                          </div>
-                        </div>
-                        <div className="flex justify-between border-b p-2">
-                          <div className="text-[#828487] flex items-center">
-                            7 Pesanan
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="text-black bg-[#F8F9FD] pl-2 pr-2 pt-1 pb-1 rounded-lg">
-                              Rp. 120.000
-                            </div>
-                            <div className="flex gap-1 text-black bg-[#F8F9FD] pl-2 pr-2 pt-1 pb-1 rounded-lg">
-                              <RiwayatSVG className="w-4 h-4" />
-                              <div className="div">10.92</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="border rounded-xl text-xs">
-                        <div className="flex justify-between border-b p-2">
-                          <div className="space-y-0">
-                            <div className="flex gap-2">
-                              <span className="flex items-center text-[#828487]">
-                                #INV873
-                              </span>
-                              <div className="rounded-3xl text-[10px] p-1.5 text-[#35C335] bg-[#35C335]/10">
-                                Sudah Bayar
-                              </div>
-                            </div>
-                            <div className="text-black font-bold text-sm">
-                              Putri Diana
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setIsDetailModalOpenTakeAway(true)}
-                              className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
-                            >
-                              Detail
-                            </button>
-                          </div>
-                        </div>
-                        <div className="flex justify-between border-b p-2">
-                          <div className="text-[#828487] flex items-center">
-                            7 Pesanan
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="text-black bg-[#F8F9FD] pl-2 pr-2 pt-1 pb-1 rounded-lg">
-                              Rp. 120.000
-                            </div>
-                            <div className="flex gap-1 text-black bg-[#F8F9FD] pl-2 pr-2 pt-1 pb-1 rounded-lg">
-                              <RiwayatSVG className="w-4 h-4" />
-                              <div className="div">10.92</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    {/* Data Table List */}
+                    <DataTakeawayList
+                      data={takeawayLIst?.data}
+                      statusCode={200}
+                      message={"Daftar TakeawayList Berhasil Didapatkan"}
+                      onDetailModal={handleOpenDetailTakeAway}
+                    />
                   </div>
                 </div>
               </motion.div>
             </DialogPortal>
           </Dialog>
+
         </div>
 
         {/* Handle Filter Status */}
@@ -387,11 +311,10 @@ function SelectTable() {
           {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
             <button
               key={filter}
-              className={`rounded-3xl text-sm p-1.5 px-3 border ${
-                activeFilter === filter
-                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                  : ""
-              }`}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === filter
+                ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                : ""
+                }`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -405,13 +328,14 @@ function SelectTable() {
         data={data?.data}
         statusCode={200}
         message={"Daftar Meja Berhasil Didapatkan"}
+        onDetailModal={handleOpenDetailDineIn}
       />
 
       {/* Handle Dine In */}
       <>
         {/* Modal Detail Order Dine In */}
         <DetailModal
-          isOpen={isDetailModalOpenDineIn}
+          isOpen={isDetailModalOpenDineIn && dataInvoiceDineIn?.statusCode === 200}
           onClose={() => {
             setIsDetailModalOpenDineIn(false);
           }}
@@ -429,14 +353,14 @@ function SelectTable() {
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
               <div className="text-start">
-                <div className="text-primaryColor font-bold truncate max-w-[255px]">
-                  Dine In / T-1, T-2, T-3
+                <div className="text-primaryColor font-bold truncate max-w-[255px] capitalize">
+                  {dataInvoiceDineIn?.data?.type} / {formattedTablesDineIn}
                 </div>
-                <div className="text-black">Putri Diana</div>
+                <div className="text-black">{dataInvoiceDineIn?.data?.customer}</div>
               </div>
               <div className="text-end">
                 <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
-                  #INV1231, #INV234
+                  {dataInvoiceDineIn?.data?.codes?.map(code => `#${code}`).join(', ')}
                 </div>
                 <div className="text-[#989898]">19.35 WIB</div>
               </div>
@@ -461,39 +385,64 @@ function SelectTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transaksi.map((transaksiItem) => (
-                    <TableRow key={transaksiItem.id} className="border-none">
+                  {/* Products */}
+                  {dataInvoiceDineIn?.data?.products.map(product => (
+                    <TableRow key={product.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
-                        {transaksiItem.name}
+                        {product.name}
                       </TableCell>
                       <TableCell className="text-center border-b text-[#6D6D6D]">
-                        {transaksiItem.quantity}
+                        {product.quantity}
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {transaksiItem.price.toLocaleString()}
+                        Rp. {product.price.toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {transaksiItem.subTotal}
+                        Rp. {product.price_sum.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {/* Packets */}
+                  {dataInvoiceDineIn?.data?.packets.map(packet => (
+                    <TableRow key={packet.id} className="border-none">
+                      <TableCell className="text-start border-b text-[#6D6D6D]">
+                        {packet.name}
+                      </TableCell>
+                      <TableCell className="text-center border-b text-[#6D6D6D]">
+                        {packet.quantity}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {packet.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {packet.price_sum.toLocaleString()}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-
+            {/* Total Section */}
             <div className="flex justify-end items-end text-sm">
               <div className="text-end space-y-2">
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                  <span className="text-[#19191C]">Rp. 95000</span>
+                  <span className="text-[#19191C]">
+                    Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
+                  </span>
                 </div>
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">PAJAK</span>
-                  <span className="text-[#19191C]">Rp. 10000</span>
+                  <span className="text-[#19191C]">
+                    Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}
+                  </span>
                 </div>
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">TOTAL</span>
-                  <span className="text-primaryColor">Rp. 85000</span>
+                  <span className="text-primaryColor">
+                    Rp. {((dataInvoiceDineIn?.data?.price_sum ?? 0) + (dataInvoiceDineIn?.data?.tax ?? 0)).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>
@@ -606,6 +555,9 @@ function SelectTable() {
                 </Button>
                 <Button
                   variant={"default"}
+                  onClick={() => {
+                    setIsModalProsesCard(true);
+                  }}
                   className="justify-center text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
                 >
                   <span>
@@ -615,6 +567,9 @@ function SelectTable() {
                 </Button>
                 <Button
                   variant={"default"}
+                  onClick={() => {
+                    setIsModalProsesQris(true);
+                  }}
                   className="justify-start text-sm p-2 h-fit w-full bg-primaryColor hover:bg-[#ce8b33]"
                 >
                   <span>
@@ -622,6 +577,101 @@ function SelectTable() {
                   </span>
                   <span>QRIS</span>
                 </Button>
+
+
+                {/* Modal Proses Card */}
+                <ProcessModal
+                  isOpen={isModalProsesCard}
+                  onClose={() => {
+                    setIsModalProsesCard(false);
+                  }}
+                  closeButton={false}
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="relative w-20 h-20 grid grid-cols-3 gap-1">
+                        {Array.from({ length: 9 }).map((_, index) => (
+                          <div
+                            key={index}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
+                            style={{
+                              animation:
+                                index !== 4
+                                  ? "squareLoader 1.5s ease infinite"
+                                  : "",
+                              animationDelay: animationLoadingProcess(index),
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <style jsx>{`
+                        @keyframes squareLoader {
+                          0%,
+                          50%,
+                          100% {
+                            background-color: rgb(6, 78, 59);
+                          }
+                          25%,
+                          35% {
+                            background-color: rgb(251, 146, 60);
+                          }
+                        }
+                      `}</style>
+                    </div>
+                    <div className="font-bold text-xl text-center">
+                      Pembayaran melalui Kartu sedang di proses ...
+                    </div>
+                  </div>
+                </ProcessModal>
+                {/* Modal Proses Card */}
+
+                {/* Modal Proses Qris */}
+                <ProcessModal
+                  isOpen={isModalProsesQris}
+                  onClose={() => {
+                    setIsModalProsesQris(false);
+                  }}
+                  closeButton={false}
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="relative w-20 h-20 grid grid-cols-3 gap-1">
+                        {Array.from({ length: 9 }).map((_, index) => (
+                          <div
+                            key={index}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
+                            style={{
+                              animation:
+                                index !== 4
+                                  ? "squareLoader 1.5s ease infinite"
+                                  : "",
+                              animationDelay: animationLoadingProcess(index),
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <style jsx>{`
+                        @keyframes squareLoader {
+                          0%,
+                          50%,
+                          100% {
+                            background-color: rgb(6, 78, 59);
+                          }
+                          25%,
+                          35% {
+                            background-color: rgb(251, 146, 60);
+                          }
+                        }
+                      `}</style>
+                    </div>
+                    <div className="font-bold text-xl text-center">
+                      Pembayaran melalui QRIS sedang di proses ...
+                    </div>
+                  </div>
+                </ProcessModal>
+                {/* Modal Proses Qris */}
               </div>
             </div>
           </>
@@ -632,7 +682,7 @@ function SelectTable() {
       <>
         {/* Modal Detail Order Take Away */}
         <DetailModal
-          isOpen={isDetailModalOpenTakeAway}
+          isOpen={isDetailModalOpenTakeAway && dataInvoiceTakeAway?.statusCode === 200}
           onClose={() => {
             setIsDetailModalOpenTakeAway(false);
           }}
@@ -650,12 +700,12 @@ function SelectTable() {
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
               <div className="text-start">
-                <div className="text-secondaryColor font-bold">Take Away</div>
-                <div className="text-black">Putri Diana</div>
+                <div className="text-secondaryColor font-bold capitalize">{dataInvoiceTakeAway?.data?.type} / {formattedTablesTakeAway}</div>
+                <div className="text-black">{dataInvoiceTakeAway?.data?.customer}</div>
               </div>
               <div className="text-end">
                 <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
-                  #Inv1231, #Inv1231, #Inv1231
+                  {dataInvoiceTakeAway?.data?.codes?.map(code => `#${code}`).join(', ')}
                 </div>
 
                 <div className="text-[#989898]">19.35 WIB</div>
@@ -681,19 +731,38 @@ function SelectTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transaksi.map((transaksiItem) => (
-                    <TableRow key={transaksiItem.id} className="border-none">
+                  {/* Products */}
+                  {dataInvoiceTakeAway?.data?.products.map(product => (
+                    <TableRow key={product.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
-                        {transaksiItem.name}
+                        {product.name}
                       </TableCell>
                       <TableCell className="text-center border-b text-[#6D6D6D]">
-                        {transaksiItem.quantity}
+                        {product.quantity}
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {transaksiItem.price.toLocaleString()}
+                        Rp. {product.price.toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right border-b text-[#6D6D6D]">
-                        Rp. {transaksiItem.subTotal}
+                        Rp. {product.price_sum.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+
+                  {/* Packets */}
+                  {dataInvoiceTakeAway?.data?.packets.map(packet => (
+                    <TableRow key={packet.id} className="border-none">
+                      <TableCell className="text-start border-b text-[#6D6D6D]">
+                        {packet.name}
+                      </TableCell>
+                      <TableCell className="text-center border-b text-[#6D6D6D]">
+                        {packet.quantity}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {packet.price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right border-b text-[#6D6D6D]">
+                        Rp. {packet.price_sum.toLocaleString()}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -701,19 +770,26 @@ function SelectTable() {
               </Table>
             </div>
 
+            {/* Total Section */}
             <div className="flex justify-end items-end text-sm">
               <div className="text-end space-y-2">
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                  <span className="text-[#19191C]">Rp. 95000</span>
+                  <span className="text-[#19191C]">
+                    Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
+                  </span>
                 </div>
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">PAJAK</span>
-                  <span className="text-[#19191C]">Rp. 10000</span>
+                  <span className="text-[#19191C]">
+                    Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}
+                  </span>
                 </div>
                 <div className="space-x-4">
                   <span className="text-[#9C9C9C]">TOTAL</span>
-                  <span className="text-primaryColor">Rp. 85000</span>
+                  <span className="text-primaryColor">
+                    Rp. {((dataInvoiceTakeAway?.data?.price_sum ?? 0) + (dataInvoiceTakeAway?.data?.tax ?? 0)).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>
@@ -860,9 +936,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -908,9 +983,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1131,7 +1205,7 @@ function SelectTable() {
           setIsValidationModal(false);
           setIsPaymentCashModalOpen(false);
         }}
-        onSubmitTrigger={() => {}}
+        onSubmitTrigger={() => { }}
         title=""
         classNameDialogFooter="flex md:justify-center"
         showKeluarButton={true}
