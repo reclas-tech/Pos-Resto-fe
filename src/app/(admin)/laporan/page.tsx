@@ -38,6 +38,7 @@ import {
   TotalIncomeSVG,
   TotalTransactionsSVG,
 } from "@/constants/svgIcons";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function LaporanAdminPage() {
   const [date, setDate] = useState<Date>();
@@ -492,7 +493,7 @@ function LaporanAdminPage() {
 
         <section className="space-y-8 text-sm">
           <div className="p-10 rounded-lg bg-[#F8F9FA]">
-            <div className="flex justify-between mb-8">
+            <div className="flex justify-between mb-4">
               <div className="w-fit justify-start flex gap-2">
                 <div className="fit">
                   <Popover>
@@ -594,7 +595,21 @@ function LaporanAdminPage() {
                 </Button>
               </div>
             </div>
-            <div className="m-10 shadow-lg border">
+            <div className="border-2 rounded-lg border-black/10 flex p-2 gap-2 w-fit">
+              <Checkbox
+                className="text-black/30 border-2 border-black/30"
+                id="terms1"
+              />
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="terms1"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 items-center flex"
+                >
+                  Potongan Anak Yatim
+                </label>
+              </div>
+            </div>
+            <div className="m-10 mt-4 shadow-lg border">
               <div className="p-10 space-y-10 text-sm">
                 <div className="space-y-4">
                   <div className="text-center font-semibold text-xl mb-2">
@@ -612,13 +627,34 @@ function LaporanAdminPage() {
                     <div>Rp. 10.000.000</div>
                   </div>
                   <div className="flex justify-between text-[#707275]">
+                    <div>Potongan PPN/PB 10%</div>
+                    <div>Rp. 1.000.000</div>
+                  </div>
+                  <div className="flex justify-between text-[#707275]">
                     <div>Potongan 2.5% Anak Yatim (Bulan)</div>
                     <div>Rp. 250.000</div>
                   </div>
                   <div className="border border-dashed border-black/50 mt-8"></div>
                   <div className="flex justify-between text-black font-bold text-lg">
                     <div>TOTAL</div>
-                    <div>Rp. 9.750.000</div>
+                    <div>Rp. 8.750.000</div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="border border-dashed border-black/50 mt-8"></div>
+                  <div className="flex justify-between text-[#707275]">
+                    <div>Total Penjualan</div>
+                    <div>Rp. 10.000.000</div>
+                  </div>
+                  <div className="flex justify-between text-[#707275]">
+                    <div>Total Harga Pokok Penjualan (HPP)</div>
+                    <div>Rp. 1.000.000</div>
+                  </div>
+                  <div className="border border-dashed border-black/50 mt-8"></div>
+                  <div className="flex justify-between text-black font-bold text-lg">
+                    <div>TOTAL LABA BERSIH</div>
+                    <div>Rp. 9.000.000</div>
                   </div>
                 </div>
 

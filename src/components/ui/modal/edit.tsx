@@ -56,7 +56,7 @@ const EditModal: React.FC<EditModalProps> = ({
           <DialogFooter className="w-full p-4 pt-3 flex gap-2">
             <Button
               type="button"
-              className="w-full dark:text-white border-secondaryColor"
+              className="w-full dark:text-white border-secondaryColor text-secondaryColor"
               variant="outline"
               onClick={onClose}
             >

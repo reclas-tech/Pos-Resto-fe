@@ -96,8 +96,8 @@ export const transactionHistorySchema = z.object({
   status: z.string().min(1, { message: "Status harus diisi" }),
   price_sum: z.string().min(1, { message: "Total Harga harus diisi" }),
   created_at: z.string().min(1, { message: "Tanggal Waktu harus diisi" }),
-  payment_method: z.string().min(1, { message: "Nama Produk harus diisi" }),
-  cashier_id: z.string().min(1, { message: "Nama Produk harus diisi" }),
-  invoice_tables: z.string().min(1, { message: "Nama Produk harus diisi" }),
+  payment_method: z.string().min(1, { message: "harus diisi" }),
+  cashier_id: z.string().min(1, { message: "harus diisi" }),
+  invoice_tables: z.string().min(1, { message: "harus diisi" }),
 });
 export type transactionHistoryValues = z.infer<typeof transactionHistorySchema>;
