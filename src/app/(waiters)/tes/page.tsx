@@ -3,7 +3,6 @@ import KitchenReceipt from "@/components/ui/struk/KitchenReceipt";
 import TableReceipt from "@/components/ui/struk/TableReceipt";
 import PaymentReceipt from "@/components/ui/struk/PaymentReceipt";
 import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
-import TableTest from "@/components/ui/struk/Test";
 export default function TesPage() {
   const dataKitchenReceipt = [
     {
@@ -108,39 +107,14 @@ export default function TesPage() {
       total: "2,984,000",
     },
   ];
-
-  const dataTest = [
-    {
-      id: "1",
-      no_transaksi: "INV1232134",
-      time: "21 Des 24 15: 21",
-      customer: "Andika Jaya",
-      table: "Meja 2",
-
-      products: [
-        {
-          id: "1",
-          name: "Kopi Hitam",
-          quantity: 1,
-          note: "Tanpa gula",
-        },
-        {
-          id: "2",
-          quantity: 1,
-          name: "Es Teh",
-        },
-      ],
-    },
-  ];
   return (
     <>
-      {/* <div className="w-full min-h-screen p-2 bg-red-200 space-x-2 flex justify-center"> */}
-        {/* <KitchenReceipt data={dataKitchenReceipt[0]} /> */}
+      <div className="w-full min-h-screen p-2 bg-red-200 space-x-2 flex justify-center">
+        <KitchenReceipt data={dataKitchenReceipt[0]} />
         <TableReceipt data={dataTableReceipt[0]} />
-        {/* <PaymentReceipt data={dataPaymentReceipt[0]} /> */}
-        {/* <CloseCashierReceipt data={dataCloseCashierReceipt[0]} /> */}
-        <TableTest data={dataTest[0]} />
-      {/* </div> */}
+        <PaymentReceipt data={dataPaymentReceipt[0]} />
+        <CloseCashierReceipt data={dataCloseCashierReceipt[0]} />
+      </div>
     </>
   );
 }
