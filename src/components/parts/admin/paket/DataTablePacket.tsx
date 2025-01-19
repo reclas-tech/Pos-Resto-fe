@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteModal from "@/components/ui/modal/delete2";
-import DetailModal from "@/components/ui/modal/detail";
 import {
   Table,
   TableBody,
@@ -18,30 +17,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ActionSVG } from "@/constants/svgIcons";
-import { Label } from "@radix-ui/react-label";
 import Link from "next/link";
 import React, { useState } from "react";
-import { EmployeeInterface } from "./interface";
+import { PacketInterface } from "./interface";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { mutate } from "swr";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import Cookies from "js-cookie";
 
-const DataTable: React.FC<EmployeeInterface> = ({
+const DataTablePacket: React.FC<PacketInterface> = ({
   data,
   currentPage,
   limit,
   search,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const accessToken = Cookies.get("access_token"); // Ambil token langsung
   const axiosPrivate = useAxiosPrivateInstance();
   const handleDelete = async (id: string | number) => {
     try {
       const response = await axiosPrivate.delete(
-        `/employee/admin/delete/${id}`,
+        `/product/admin/packet/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -62,7 +59,7 @@ const DataTable: React.FC<EmployeeInterface> = ({
       //   alert
     }
     mutate(
-      `/employee/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
+      `/product/packet/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
     );
   };
 
@@ -74,9 +71,9 @@ const DataTable: React.FC<EmployeeInterface> = ({
           <TableHeader className="bg-primaryColor">
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
-              <TableHead className="w-[260px]">Nama Karyawan</TableHead>
-              <TableHead className="w-[260px]">Pin</TableHead>
-              <TableHead className="w-[260px]">Role</TableHead>
+              <TableHead className="w-[260px]">Nama Menu</TableHead>
+              <TableHead className="w-[260px]">Harga</TableHead>
+              <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -94,10 +91,10 @@ const DataTable: React.FC<EmployeeInterface> = ({
                     {item?.name ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {item?.pin ?? "-"}
+                    {item?.price ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {item?.role ?? "-"}
+                    {item?.stock ?? "-"}
                   </TableCell>
                   <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                     <DropdownMenu>
@@ -111,61 +108,17 @@ const DataTable: React.FC<EmployeeInterface> = ({
                           Pilih Aksi
                         </DropdownMenuLabel>
                         <div className="p-2 text-sm space-y-1">
-                          <Link href={`/karyawan/edit/${item?.id}`}>
+                          <Link href={`/produk/edit-paket/${item?.id}`}>
                             <div className="w-full hover:text-primaryColor">
                               Edit
                             </div>
                           </Link>
-                          <button
-                            onClick={() => setIsDetailModalOpen(true)}
-                            className="text-black  hover:text-primaryColor dark:text-white w-full text-left"
-                          >
-                            Detail
-                          </button>
                           <button
                             className="text-black hover:text-primaryColor  dark:text-white w-full text-left"
                             onClick={() => setIsDeleteModalOpen(true)}
                           >
                             Hapus
                           </button>
-                          <DetailModal
-                            isOpen={isDetailModalOpen}
-                            onClose={() => setIsDetailModalOpen(false)}
-                            title="Detail Karyawan"
-                          >
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-1">
-                                <Label className="text-[#114F44] font-semibold">
-                                  Nama Karyawan
-                                </Label>
-                                <p className="">{item?.name ?? "-"}</p>
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-[#114F44] font-semibold">
-                                  Peran
-                                </Label>
-                                <p className="">{item?.role ?? "-"}</p>
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-[#114F44] font-semibold">
-                                  Pin
-                                </Label>
-                                <p className="">{item?.pin ?? "-"}</p>
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-[#114F44] font-semibold">
-                                  Nomor Telepon
-                                </Label>
-                                <p className="">{item?.phone ?? "-"}</p>
-                              </div>
-                              <div className="space-y-1">
-                                <Label className="text-[#114F44] font-semibold">
-                                  Alamat
-                                </Label>
-                                <p className="">{item?.address ?? "-"}</p>
-                              </div>
-                            </div>
-                          </DetailModal>
                           <DeleteModal
                             isOpen={isDeleteModalOpen}
                             onClose={() => setIsDeleteModalOpen(false)}
@@ -193,4 +146,4 @@ const DataTable: React.FC<EmployeeInterface> = ({
   );
 };
 
-export default DataTable;
+export default DataTablePacket;
