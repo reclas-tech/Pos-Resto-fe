@@ -235,7 +235,7 @@ function BerandaAdminPage() {
               <TableHeader className="bg-primaryColor">
                 <TableRow>
                   <TableHead className="w-[60px]">No</TableHead>
-                  <TableHead className="w-[200px]">Pesanan</TableHead>
+                  <TableHead className="w-[200px]">Transaksi</TableHead>
                   <TableHead className="w-[150px]">Jumlah Pesanan</TableHead>
                 </TableRow>
               </TableHeader>
