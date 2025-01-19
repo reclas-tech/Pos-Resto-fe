@@ -6,8 +6,11 @@ import {
     RiwayatSVG,
 } from "@/constants/svgIcons";
 
+interface DataTakeawayListProps extends TakeawayListApiResponse {
+    onDetailModal: (id: string | number, status: string) => void;
+}
 
-const DataTakeawayLIst: React.FC<TakeawayListApiResponse> = ({ data }) => {
+const DataTakeawayLIst: React.FC<DataTakeawayListProps> = ({ data, onDetailModal }) => {
     const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
 
     const handleFilterClickTakeAway = (filter: React.SetStateAction<string>) => {
@@ -75,6 +78,7 @@ const DataTakeawayLIst: React.FC<TakeawayListApiResponse> = ({ data }) => {
                                 <div className="flex gap-2">
                                     <button
                                         // onClick={() => setIsDetailModalOpenTakeAway(true)}
+                                        onClick={() => onDetailModal(takeawayList?.id || index, takeawayList?.status)}
                                         className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-primaryColor bg-white border border-primaryColor h-fit justify-center m-auto"
                                     >
                                         Detail

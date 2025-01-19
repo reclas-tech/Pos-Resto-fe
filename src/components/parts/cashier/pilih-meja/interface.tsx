@@ -32,3 +32,40 @@ export interface TakeawayListApiResponse {
   message: string;
   data: DataTakeawayList[];
 }
+
+
+export interface InvoiceDetailApiResponse {
+  statusCode: number;
+  message: string;
+  data: InvoiceDetailData;
+}
+
+export interface InvoiceDetailData {
+  id: string;
+  tax: number;
+  type: string;
+  customer: string;
+  price_sum: number;
+  price: number;
+  cashier: string;
+  codes: string[];
+  tables: string[];
+  products: Product[];
+  packets: Packet[];
+}
+
+interface Product {
+  id: string;
+  quantity: number;
+  price_sum: number;
+  name: string;
+  price: number;
+}
+
+interface Packet {
+  id: string;
+  quantity: number;
+  price_sum: number;
+  name: string;
+  price: number;
+}

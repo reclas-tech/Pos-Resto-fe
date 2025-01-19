@@ -3,8 +3,12 @@
 import React from "react";
 import { TableListApiResponse } from "./interface";
 
-const DataTableList: React.FC<TableListApiResponse> = ({ data }) => {
-  if (!data?.tables || data.tables.length === 0) {
+interface DataTableListProps extends TableListApiResponse {
+  onDetailModal: (id: string | number, status: string) => void;
+}
+
+const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) => {
+  if (!data?.tables || data?.tables.length === 0) {
     return (
       <>
         <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
@@ -15,36 +19,37 @@ const DataTableList: React.FC<TableListApiResponse> = ({ data }) => {
       </>
     );
   }
-
   return (
     <>
       <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
-        {data.tables.map((table, index) => (
-          <button
-            key={table?.id || index}
-            // onClick={() => setIsDetailModalOpenDineIn(true)}
-            className={`rounded-lg border p-3 ${table?.status === "tersedia"
-              ? "border-[#3395F0]"
-              : "border-[#FEA026]"
-              }`}
-          >
-            <div
-              className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${table?.status === "tersedia"
-                ? "bg-[#3395F0]/10"
-                : "bg-[#FEA026]/10"
+        {data.tables.map((table, index) => {
+          return (
+            <button
+              key={table?.id || index}
+              onClick={() => onDetailModal(table?.invoice || "", table?.status)}
+              className={`rounded-lg border p-3 ${table?.status === "tersedia"
+                ? "border-[#3395F0]"
+                : "border-[#FEA026]"
                 }`}
             >
-              <span
-                className={`font-bold text-xs ${table?.status === "tersedia"
-                  ? "text-[#3395F0]"
-                  : "text-[#FEA026]"
+              <div
+                className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${table?.status === "tersedia"
+                  ? "bg-[#3395F0]/10"
+                  : "bg-[#FEA026]/10"
                   }`}
               >
-                {table?.name}
-              </span>
-            </div>
-          </button>
-        ))}
+                <span
+                  className={`font-bold text-xs ${table?.status === "tersedia"
+                    ? "text-[#3395F0]"
+                    : "text-[#FEA026]"
+                    }`}
+                >
+                  {table?.name}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </section>
     </>
   );
