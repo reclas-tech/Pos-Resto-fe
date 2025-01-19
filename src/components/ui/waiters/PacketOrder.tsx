@@ -6,7 +6,14 @@ import Image from "next/image";
 interface Product {
   id: string;
   name: string;
+}
+
+interface ProductInPacket {
+  id: string;
+  packet_id: string;
+  product_id: string;
   quantity: number;
+  product: Product;
 }
 
 interface PacketOrderProps {
@@ -20,7 +27,7 @@ interface PacketOrderProps {
   onDecrease: () => void;
   onNote: () => void;
   note: string;
-  product: Product[];
+  product: ProductInPacket[];
 }
 
 const PacketOrder: React.FC<PacketOrderProps> = ({
@@ -75,7 +82,7 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
             <p className="font-bold text-[#19191C]">{name}</p>
             <ul className="text-[9px] list-disc ml-5">
               {product.map((item) => (
-                <li key={item.id}>{item.name}</li>
+                <li key={item.id}>{item.product.name}</li>
               ))}
             </ul>
             <p className="font-bold text-primaryColor">{price}</p>

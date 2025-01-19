@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 
-interface Data {
+interface Product {
   id: string;
   name: string;
+}
+
+interface ProductInPacket {
+  id: string;
+  packet_id: string;
+  product_id: string;
   quantity: number;
+  product: Product;
 }
 
 interface CardPacketProps {
@@ -13,15 +20,16 @@ interface CardPacketProps {
   name: string;
   src: string;
   price: number;
-  product: Data[];
+  products: ProductInPacket[];
 }
+
 const CardPacket: React.FC<CardPacketProps> = ({
   id,
   onClick,
   name,
   src,
   price,
-  product,
+  products,
 }) => {
   return (
     <>
@@ -42,12 +50,9 @@ const CardPacket: React.FC<CardPacketProps> = ({
         </div>
         <p className="font-semibold text-sm mt-2">{name}</p>
         <ul>
-          {product.map((item) => (
+          {products.map((item) => (
             <li key={item.id} className="text-[9px] list-disc ml-4">
-              <span className="flex space-x-1 text-red-500">
-                <p>{item.quantity} x </p>
-                <p>{item.name}</p>
-              </span>
+              {item.quantity} x {item.product.name}
             </li>
           ))}
         </ul>

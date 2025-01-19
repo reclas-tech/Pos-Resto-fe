@@ -49,13 +49,11 @@ interface Packet {
 interface CustomerOrder {
   type: "takeaway" | "dineIn";
   customerName: string;
-  tableIds?: string[]; // Add tableIds for dineIn orders
-  tableNames?: string[]; // Add tableNames for display
+  tableIds?: string[]; 
+  tableNames?: string[]; 
 }
 
 function PosPage() {
-  // Product Dummy Data
-
   // Tables Dumy Data
   const tables = [
     { id: "1", status: "tersedia", name: "T-1" },
@@ -80,43 +78,75 @@ function PosPage() {
     { id: "20", status: "terisi", name: "T-20" },
   ];
 
-  // Packet Dummy Data
-  // const packets = [
-  //   {
-  //     id: "1",
-  //     name: "Paket 1",
-  //     price: 150000,
-  //     src: "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
-  //     product: [{ id: "1", name: "Rendang", quantity: 2 }],
-  //   },
-  // ];
-
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
-  const search = "";
-  const categoryId = "";
+  const [categoryId, setCategoryId] = useState<string>("");
+  // variable untuk pencarian
+  const [search, setSearch]= useState<string>("")
 
-  // Fetch Product
-  const { data: dataProducts } = useSWR(`/product/waiter/all`, () =>
-    axiosPrivate
-      .get(`/product/waiter/all`, {
+  // Fetch Category
+  const { data: dataCategory } = useSWR(`/category/waiter/all`, () => {
+    setIsLoadingCategories(true);
+    return axiosPrivate
+      .get(`/category/waiter/all`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then((res) => res.data)
+      .then((res) => {
+        setIsLoadingCategories(false);
+        return res.data;
+      })
+      .catch((error) => {
+        setIsLoadingCategories(false);
+        throw error;
+      });
+  });
+
+  // Fetch Product
+  const { data: dataProducts } = useSWR(
+    `/product/waiter/all?category_id=${categoryId}`, //param search untuk perncarian
+    () => {
+      setIsLoadingProducts(true);
+      return axiosPrivate
+        .get(`/product/waiter/all?category_id=${categoryId}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          setIsLoadingProducts(false);
+          return res.data;
+        })
+        .catch((error) => {
+          setIsLoadingProducts(false);
+          throw error;
+        });
+    }
   );
 
   // Fetch Packet
-  const { data: dataPackets } = useSWR(`/packet/waiter/all`, () =>
-    axiosPrivate
+  const { data: dataPackets } = useSWR(`/packet/waiter/all`, () => { //param search untuk pencarian
+    setIsLoadingPackets(true);
+    return axiosPrivate
       .get(`/packet/waiter/all`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then((res) => res.data)
-  );
+      .then((res) => {
+        setIsLoadingPackets(false);
+        return res.data;
+      })
+      .catch((error) => {
+        setIsLoadingPackets(false);
+        throw error;
+      });
+  });
+
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [isLoadingPackets, setIsLoadingPackets] = useState(true);
 
   const [productOrder, setProductOrder] = useState<Product[]>([]);
   const [packetOrder, setPacketOrder] = useState<Packet[]>([]);
@@ -143,10 +173,14 @@ function PosPage() {
     { id: string; name: string }[]
   >([]);
 
-  // Handle Filter Product
-  const handleFilterProductClick = (filter: React.SetStateAction<string>) => {
+  // Fungsi Filter Product
+  const handleFilterProductClick = (
+    filter: string,
+    categoryId: string = ""
+  ) => {
     setIsActiveFilterProduct(filter);
-    console.log(`Filter aktif: ${filter}`);
+    setCategoryId(categoryId); // Set the category ID for filtering
+    console.log(`Filter aktif: ${filter}, Category ID: ${categoryId}`);
   };
 
   //  Open NoteProduct Modal
@@ -547,6 +581,7 @@ function PosPage() {
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <Search className="h-4 w-4 text-primaryColor" />
                 </div>
+                {/* Pencarian data produk dan packet */}
                 <Input
                   placeholder="Pencarian"
                   className="rounded-full pl-8 text-xs h-8 border-primaryColor"
@@ -565,45 +600,70 @@ function PosPage() {
             </div>
 
             <div className="flex items-center space-x-3 max-w-[45%] overflow-x-auto">
-              {["Semua", "Makanan", "Minuman", "Snack"].map((filter) => (
-                <button
-                  key={filter}
-                  className={`rounded-full text-xs py-1 px-2 border ${
-                    isActiveFilterProduct === filter
-                      ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                      : ""
-                  }`}
-                  onClick={() => handleFilterProductClick(filter)}
-                >
-                  {filter}
-                </button>
-              ))}
+              {/* Filter Category Produk */}
+              {isLoadingCategories ? (
+                <p className="text-xs">....</p>
+              ) : (
+                <>
+                  <button
+                    className={`rounded-full text-xs py-1 px-2 border ${
+                      isActiveFilterProduct === "Semua"
+                        ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                        : ""
+                    }`}
+                    onClick={() => handleFilterProductClick("Semua", "")}
+                  >
+                    Semua
+                  </button>
+                  {dataCategory?.data.map((category) => (
+                    <button
+                      key={category.id}
+                      className={`rounded-full text-xs py-1 px-2 border ${
+                        isActiveFilterProduct === category.name
+                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        handleFilterProductClick(category.name, category.id)
+                      }
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
             {/* Data Paket dan product */}
-            {isActiveFilterProduct === "Paket"
-              ? dataPackets?.data.map((packet: Packet) => (
-                  <CardPacket
-                    key={packet.id}
-                    onClick={() => addPacket(packet)}
-                    id={packet.id}
-                    name={packet.name}
-                    src={packet.image}
-                    price={packet.price}
-                    product={packet.products}
-                  />
-                ))
-              : dataProducts?.data.map((product: Product) => (
-                  <CardProduct
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    src={product.image}
-                    price={product.price}
-                    onClick={() => addProduct(product)}
-                  />
-                ))}
+            {isLoadingProducts || isLoadingPackets ? (
+              <div className="col-span-4 flex justify-center items-center">
+                <p className="text-xs">Memuat data...</p>
+              </div>
+            ) : isActiveFilterProduct === "Paket" ? (
+              dataPackets?.data.map((packet: Packet) => (
+                <CardPacket
+                  key={packet.id}
+                  onClick={() => addPacket(packet)}
+                  id={packet.id}
+                  name={packet.name}
+                  src={packet.image}
+                  price={packet.price}
+                  products={packet.products}
+                />
+              ))
+            ) : (
+              dataProducts?.data.map((product: Product) => (
+                <CardProduct
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  src={product.image}
+                  price={product.price}
+                  onClick={() => addProduct(product)}
+                />
+              ))
+            )}
           </div>
         </div>
         <div className="w-[30%] h-full border-l border-[#E4E4E4] ">
@@ -908,7 +968,6 @@ function PosPage() {
           </div>
           <div className="w-full mt-1">
             <form onSubmit={handleSubmitOrder(orderSubmit)}>
-              {/* Sesuaikan sub total, pajak, dan total berdasarkan jumlah data packetOrder dan productOrder yang ditampilkan */}
               <div className="w-full  py-4 px-6 space-y-3">
                 <div className="w-full text-sm  flex items-center justify-between">
                   <p className="text-[#828487] font-normal">Sub Total</p>
