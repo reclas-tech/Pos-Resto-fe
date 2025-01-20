@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Image from "next/image";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
@@ -25,6 +26,8 @@ import { Label } from "@/components/ui/label";
 import Cookies from "js-cookie";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import useSWR from "swr";
+import { showAlert2 } from "@/lib/sweetalert2";
+import { LoadingSVG } from "@/constants/svgIcons";
 
 interface Product {
   id: string;
@@ -47,14 +50,32 @@ interface Packet {
 }
 
 interface CustomerOrder {
-  type: "takeaway" | "dineIn";
+  type: "take away" | "dine in";
   customerName: string;
   tableIds?: string[];
   tableNames?: string[];
 }
 
-function PosPage() {
+interface TableData {
+  id: string;
+  name: string;
+  status: "tersedia" | "terisi";
+}
 
+// For form data types
+interface TakeAwayFormData {
+  name: string;
+}
+
+interface DineInFormData {
+  name: string;
+}
+
+interface NoteFormData {
+  note: string;
+}
+
+function PosPage() {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
   const [userName, setUserName] = useState("");
@@ -144,8 +165,12 @@ function PosPage() {
     useState<string>("Semua");
 
   const [selectedTables, setSelectedTables] = useState<
-    { id: string; name: string }[]
+    Array<{
+      id: string;
+      name: string;
+    }>
   >([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Search Packet & Product
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,7 +227,7 @@ function PosPage() {
   const handleTableSelect = (
     tableId: string,
     tableName: string,
-    status: string,
+    status: "tersedia" | "terisi",
     e: React.MouseEvent
   ) => {
     e.preventDefault();
@@ -253,9 +278,9 @@ function PosPage() {
   const { handleSubmit: handleSubmitOrder, reset: resetOrder } = useForm();
 
   // Take Away Submit
-  const takeAwaySubmit = (data) => {
+  const takeAwaySubmit = (data: TakeAwayFormData) => {
     setCustomerOrder({
-      type: "takeaway",
+      type: "take away",
       customerName: data.name,
     });
     // console.log(data);
@@ -264,13 +289,13 @@ function PosPage() {
   };
 
   // Dine In Submit
-  const dineInSubmit = (data) => {
+  const dineInSubmit = (data: DineInFormData) => {
     if (selectedTables.length === 0) {
       return;
     }
 
     setCustomerOrder({
-      type: "dineIn",
+      type: "dine in",
       customerName: data.name,
       tableIds: selectedTables.map((table) => table.id),
       tableNames: selectedTables.map((table) => table.name),
@@ -282,7 +307,7 @@ function PosPage() {
   };
 
   // Note Product Submit
-  const noteSubmit = (data: Product) => {
+  const noteSubmit = (data: NoteFormData) => {
     if (!selectedProductId) return;
 
     setProductOrder(
@@ -298,7 +323,7 @@ function PosPage() {
   };
 
   // Note Packet Submit
-  const notePacketSubmit = (data: Packet) => {
+  const notePacketSubmit = (data: NoteFormData) => {
     if (!selectedPacketId) return;
 
     setPacketOrder(
@@ -474,35 +499,49 @@ function PosPage() {
   const total = calculateTotal(subTotal, tax);
 
   //  Order Submit
-  const orderSubmit = () => {
-    const orderData = {
-      products: productOrder.map((product) => ({
-        id: product.id,
-        quantity: product.quantity || 0,
-        price_sum: product.price * (product.quantity || 0),
-        note: product.note || "",
-      })),
-      packets: packetOrder.map((packet) => ({
-        id: packet.id,
-        quantity: packet.quantity || 0,
-        price_sum: packet.price * (packet.quantity || 0),
-        note: packet.note || "",
-        products: packet.products,
-      })),
-      customer: customerOrder?.customerName || "",
-      type: customerOrder?.type || "",
-      table_id: customerOrder?.tableIds || [],
-      tax: calculateTax(calculateSubTotal()),
-      price_sum: calculateSubTotal(),
-    };
+  const orderSubmit = async () => {
+    try {
+      const orderData = {
+        products: productOrder.map((product) => ({
+          id: product.id,
+          quantity: product.quantity || 0,
+          note: product.note || "",
+        })),
+        packets: packetOrder.map((packet) => ({
+          id: packet.id,
+          quantity: packet.quantity || 0,
+          note: packet.note || "",
+        })),
+        customer: customerOrder?.customerName || "",
+        type: customerOrder?.type || "",
+        tables: customerOrder?.tableIds || [],
+      };
+      setLoading(true);
+      const response = await axiosPrivate.post(
+        "/order/waiter/create",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
-    console.log(orderData);
-    // Reset all states after submit
-    setProductOrder([]);
-    setPacketOrder([]);
-    setCustomerOrder(null);
-    setSelectedTables([]);
-    resetOrder();
+      showAlert2("success", response?.data?.message);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal menambahkan data!";
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
+      setProductOrder([]);
+      setPacketOrder([]);
+      setCustomerOrder(null);
+      setSelectedTables([]);
+      resetOrder();
+    }
   };
 
   return (
@@ -548,7 +587,7 @@ function PosPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white border border-gray-300 shadow-lg rounded-md">
                     <DropdownMenuLabel className="text-xs text-[#737791]">
-                      <Link href="">Keluar</Link>
+                      <Link href="/login-waiters">Keluar</Link>
                     </DropdownMenuLabel>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -584,7 +623,7 @@ function PosPage() {
             <div className="flex items-center space-x-3 max-w-[45%] overflow-x-auto">
               {/* Filter Category Produk */}
               {isLoadingCategories ? (
-                <p className="text-xs">Memuat kategori....</p>
+                <p className="text-xs">Memuat....</p>
               ) : (
                 <>
                   <button
@@ -597,7 +636,7 @@ function PosPage() {
                   >
                     Semua
                   </button>
-                  {dataCategory?.data.map((category) => (
+                  {dataCategory?.data.map((category: any) => (
                     <button
                       key={category.id}
                       className={`rounded-full text-xs py-1 px-2 border ${
@@ -620,7 +659,7 @@ function PosPage() {
             {/* Data Paket dan product */}
             {isLoadingProducts || isLoadingPackets ? (
               <div className="col-span-4 flex justify-center items-center">
-                <p className="text-xs">Memuat data...</p>
+                <p className="text-xs">Memuat...</p>
               </div>
             ) : isActiveFilterProduct === "Paket" ? (
               dataPackets?.data.length > 0 ? (
@@ -686,12 +725,12 @@ function PosPage() {
                 <div className="space-y-1">
                   <p
                     className={`font-semibold text-xs ${
-                      customerOrder.type === "takeaway"
+                      customerOrder.type === "take away"
                         ? "text-secondaryColor"
                         : "text-primaryColor"
                     }`}
                   >
-                    {customerOrder.type === "takeaway"
+                    {customerOrder.type === "take away"
                       ? "Take Away"
                       : `${customerOrder.tableNames?.join(" / ") || ""}`}
                   </p>
@@ -711,7 +750,8 @@ function PosPage() {
               <ChoseTableModal
                 isOpen={isDineInModal}
                 onClose={() => setIsDineInModal(false)}
-                onSubmit={handleSubmitDineIn(dineInSubmit)}
+                handleSubmit={handleSubmitDineIn}
+                onSubmit={dineInSubmit}
                 title="Pilih Meja"
               >
                 <div className="relative px-2 pb-2 border-b-[1px] border-[#E4E4E4] my-0 flex justify-between items-center">
@@ -724,7 +764,7 @@ function PosPage() {
                         Tersedia (
                         {
                           dataTables?.data.tables.filter(
-                            (table) => table.status === "tersedia"
+                            (table: TableData) => table.status === "tersedia"
                           ).length
                         }
                         )
@@ -739,7 +779,7 @@ function PosPage() {
                         Terisi (
                         {
                           dataTables?.data?.tables.filter(
-                            (table) => table.status === "terisi"
+                            (table: TableData) => table.status === "terisi"
                           ).length
                         }
                         )
@@ -806,10 +846,10 @@ function PosPage() {
                   <div className="grid grid-cols-5 gap-5 pt-4  max-h-[400px] w-full">
                     {loadingTables ? (
                       <div className="col-span-5 flex justify-center items-center ">
-                        <p className="text-xs">Memuat data...</p>
+                        <p className="text-xs">Memuat...</p>
                       </div>
                     ) : dataTables?.data.tables.length > 0 ? (
-                      dataTables?.data?.tables.map((data) => (
+                      dataTables?.data?.tables.map((data: TableData) => (
                         <button
                           key={data.id}
                           onClick={(e) =>
@@ -859,9 +899,7 @@ function PosPage() {
                       ))
                     ) : (
                       <div className="col-span-5 flex justify-center items-center">
-                        <p className="text-sm text-gray-500">
-                          Tidak ada meja
-                        </p>
+                        <p className="text-sm text-gray-500">Tidak ada meja</p>
                       </div>
                     )}
                     {}
@@ -873,7 +911,8 @@ function PosPage() {
               <FormModal
                 isOpen={isTakeAwayModal}
                 onClose={() => setIsTakeAwayModal(false)}
-                onSubmit={handleSubmitTakeAway(takeAwaySubmit)}
+                handleSubmit={handleSubmitTakeAway}
+                onSubmit={takeAwaySubmit}
                 title="Pelanggan Take Away"
               >
                 <Label className="text-xs text-[#828487] font-medium">
@@ -941,7 +980,8 @@ function PosPage() {
                   resetNote();
                   setSelectedProductId("");
                 }}
-                onSubmit={handleSubmitNote(noteSubmit)}
+                handleSubmit={handleSubmitNote}
+                onSubmit={noteSubmit}
                 title="Catatan"
               >
                 <Label className="text-xs text-[#828487] font-medium">
@@ -963,7 +1003,8 @@ function PosPage() {
                   resetNotePacket();
                   setSelectedProductId("");
                 }}
-                onSubmit={handleSubmitNotePacket(notePacketSubmit)}
+                handleSubmit={handleSubmitNotePacket}
+                onSubmit={notePacketSubmit}
                 title="Catatan"
               >
                 <Label className="text-xs text-[#828487] font-medium">
@@ -1002,8 +1043,9 @@ function PosPage() {
                 <Button
                   type="submit"
                   className="w-full rounded-full  font-semibold bg-primaryColor text-sm h-9  hover:bg-primaryColor"
+                  disabled={loading}
                 >
-                  Buat Pesanan
+                  {loading ? <LoadingSVG /> : "Buat Pesanan"}
                 </Button>
               </div>
             </form>

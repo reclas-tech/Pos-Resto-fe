@@ -8,9 +8,10 @@ import {
 
 interface DataTakeawayListProps extends TakeawayListApiResponse {
     onDetailModal: (id: string | number, status: string) => void;
+    onPaymentModal: (id: string | number, status: string) => void;
 }
 
-const DataTakeawayLIst: React.FC<DataTakeawayListProps> = ({ data, onDetailModal }) => {
+const DataTakeawayLIst: React.FC<DataTakeawayListProps> = ({ data, onDetailModal, onPaymentModal }) => {
     const [activeFilterTakeAway, setActiveFilterTakeAway] = useState("Semua");
 
     const handleFilterClickTakeAway = (filter: React.SetStateAction<string>) => {
@@ -84,7 +85,7 @@ const DataTakeawayLIst: React.FC<DataTakeawayListProps> = ({ data, onDetailModal
                                         Detail
                                     </button>
                                     {takeawayList?.status === "belum bayar" && (
-                                        <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
+                                        <button onClick={() => onPaymentModal(takeawayList?.id || index, takeawayList?.status)} className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
                                             Bayar
                                         </button>
                                     )}
