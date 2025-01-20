@@ -1,26 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 
-interface CardProductProps {
+interface Product {
+  id: string;
+  name: string;
+}
+
+interface ProductInPacket {
+  id: string;
+  packet_id: string;
+  product_id: string;
+  quantity: number;
+  product: Product;
+}
+
+interface CardPacketProps {
   id?: string;
   onClick: any;
   name: string;
   src: string;
   price: number;
+  products: ProductInPacket[];
 }
-const CardProduct: React.FC<CardProductProps> = ({
+
+const CardPacket: React.FC<CardPacketProps> = ({
   id,
   onClick,
   name,
   src,
   price,
+  products,
 }) => {
   return (
     <>
       <div
         key={id}
         onClick={onClick}
-        className="w-full max-w-[180px] h-[192px] bg-white rounded-md p-2 cursor-pointer"
+        className="w-full max-w-[180px] min-h-[192px] bg-white rounded-md p-2 cursor-pointer"
       >
         <div className="w-full h-[120px] rounded-md flex items-center justify-center overflow-hidden">
           <Image
@@ -33,6 +49,13 @@ const CardProduct: React.FC<CardProductProps> = ({
           />
         </div>
         <p className="font-semibold text-sm mt-2">{name}</p>
+        <ul>
+          {products.map((item) => (
+            <li key={item.id} className="text-[9px] list-disc ml-4">
+              {item.quantity} x {item.product.name}
+            </li>
+          ))}
+        </ul>
         <p className="font-semibold text-primaryColor text-sm text-end">
           Rp. {price}
         </p>
@@ -41,4 +64,4 @@ const CardProduct: React.FC<CardProductProps> = ({
   );
 };
 
-export default CardProduct;
+export default CardPacket;

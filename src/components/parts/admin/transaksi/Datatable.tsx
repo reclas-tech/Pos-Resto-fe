@@ -206,7 +206,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center">Tidak ada data</TableCell>
+                                <TableCell colSpan={6} className="text-center">Tidak ada data</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
