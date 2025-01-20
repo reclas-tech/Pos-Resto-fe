@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   Dialog,
@@ -10,11 +11,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { CloseModalSVG } from "@/constants/svgIcons";
 import LoadingForm from "../../LoadingForm";
+import { UseFormHandleSubmit } from "react-hook-form";
 
 interface ChoseTableModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+ onClose: () => void;
+   handleSubmit: UseFormHandleSubmit<any>;
+   // The actual submit handler
+   onSubmit: (data: any) => void;
   title?: string;
   addButtonText?: string;
   cancelButtonText?: string;
@@ -31,11 +35,12 @@ const ChoseTableModal: React.FC<ChoseTableModalProps> = ({
   cancelButtonText = "Batal",
   children,
   loading = false,
+  handleSubmit,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[640px]">
-        <form onSubmit={onSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <DialogHeader className="relative p-4  rounded-lg border-b">
             <Button type="button" variant="closeModal" onClick={onClose}>
               <CloseModalSVG />
