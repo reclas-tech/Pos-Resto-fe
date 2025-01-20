@@ -26,6 +26,9 @@ import {
   putSubmitPacket,
   useGetPacketOne,
 } from "@/components/parts/admin/paket/api";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import Cookies from "js-cookie";
+import { showAlert2 } from "@/lib/sweetalert2";
 
 interface SelectedProduct {
   id: string;
@@ -40,6 +43,8 @@ interface Product {
 }
 
 function EditPacketPage() {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
   const { data: products } = useGetProduct(1, "", 10);
   const { slug } = useParams();
 
@@ -180,58 +185,140 @@ function EditPacketPage() {
     }
   };
 
+  // const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
+  //   try {
+  //     console.log("Form Data:", data);
+  //     console.log("Selected Products:", selectedProducts);
+  //     const productsList = selectedProducts.map((product) => ({
+  //       id: product.id,
+  //       quantity: product.quantity,
+  //     }));
+  //     const formData = new FormData();
+  //     formData.append("name", data.name);
+  //     formData.append("price", data.price.toString());
+  //     formData.append("cogp", data.cogp.toString());
+  //     formData.append("stock", data.stock.toString());
+  //     formData.append("products", JSON.stringify(productsList));
+
+  //     if (data.image instanceof File) {
+  //       formData.append("image", data.image);
+  //     } else if (existingImage) {
+  //       formData.append("existing_image", existingImage);
+  //     }
+
+  //     selectedProducts.forEach((item, index) => {
+  //       formData.append("products[" + index.toString() + "][id]", item.id);
+  //       formData.append(
+  //         "products[" + index.toString() + "][quantity]",
+  //         item.quantity
+  //       );
+  //     });
+
+  //     formData.append("_method", "PUT");
+
+  //     for (let [key, value] of formData.entries()) {
+  //       console.log(`${key}:`, value);
+  //     }
+
+  //     await handlePostSubmit(formData, setLoading);
+  //     reset();
+  //     setSelectedProducts([]);
+  //     setImagePreview(null);
+  //   } catch (error) {
+  //     console.error("Error submitting packet:", error);
+  //   }
+  // };
+
+  if (isLoadingPacket) {
+    return <div>Loading...</div>;
+  }
+
   const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
     try {
+      // Validasi produk
+      if (!selectedProducts || selectedProducts.length === 0) {
+        showAlert2("error", "Pilih minimal satu produk!");
+        return;
+      }
+
+      setLoading(true);
+
       console.log("Form Data:", data);
       console.log("Selected Products:", selectedProducts);
+
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("price", data.price.toString());
       formData.append("cogp", data.cogp.toString());
       formData.append("stock", data.stock.toString());
 
+      // Pastikan products dalam format array yang benar
+      const productsArray = selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      }));
+
+      // Tambahkan products sebagai JSON string, pastikan tetap dalam format array
+      formData.append("products", JSON.stringify(productsArray));
+
+      // Tambahan: append ulang products dalam format array
+      productsArray.forEach((product, index) => {
+        formData.append(`products[${index}][id]`, product.id);
+        formData.append(
+          `products[${index}][quantity]`,
+          product.quantity.toString()
+        );
+      });
+
+      // Handle gambar
       if (data.image instanceof File) {
         formData.append("image", data.image);
       } else if (existingImage) {
         formData.append("existing_image", existingImage);
       }
-
-      selectedProducts.forEach((item, index) => {
-        formData.append(`products[${index}][id]`, item.id);
-        formData.append(
-          `products[${index}][quantity]`,
-          item.quantity.toString()
-        );
-      });
-
       formData.append("_method", "PUT");
 
-      await handlePostSubmit(formData, setLoading);
-      reset();
-      setSelectedProducts([]);
-      setImagePreview(null);
-    } catch (error) {
-      console.error("Error submitting packet:", error);
+      // Debug: Log semua data FormData
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      // Kirim request
+      const response = await axiosPrivate.post(
+        `/product/admin/packet/edit/${slug}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      // Handle success
+      if (response.data?.message) {
+        showAlert2("success", response.data.message);
+
+        // Reset form
+        reset();
+        setSelectedProducts([]);
+        setImagePreview(null);
+        setExistingImage(null);
+      }
+    } catch (error: any) {
+      // Error handling
+      console.error("Error full response:", error.response);
+
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal mengubah data!";
+
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (isLoadingPacket) {
-    return <div>Loading...</div>;
-  }
-
-  // const onEditSubmit: SubmitHandler<PacketValues> = (data) => {
-  //   setLoading(true);
-  //   const packetData = {
-  //     ...data,
-  //     products: selectedProducts,
-  //   };
-  //   console.log("Updated data:", packetData);
-  //   showAlert2("success", "Berhasil memperbarui data");
-  //   setLoading(false);
-  //   reset();
-  //   setSelectedProducts([]);
-  //   navigate.push("/produk/menu-paket");
-  // };
 
   return (
     <form

@@ -27,6 +27,7 @@ interface Packet {
   price: number;
   stock: number;
   cogp: number;
+  category_id:string;
   products: Product[];
   image: string;
   created_at: string;
