@@ -70,3 +70,7 @@ interface Packet {
   name: string;
   price: number;
 }
+
+export interface PaymentApiResponse {
+  method: string;
+}

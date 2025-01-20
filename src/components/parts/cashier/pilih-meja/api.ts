@@ -73,4 +73,31 @@ const useGetInvoiceDetail = (
   return { data, error, mutate, isValidating, isLoading };
 };
 
-export { useGetTableList, useGetTakeawayList, useGetInvoiceDetail };
+// Created Payments
+const usePostPayment = (invoiceId: string) => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const postPayment = async (method: 'cash' | 'debit' | 'qris') => {
+    if (!accessToken) {
+      throw new Error("Access token is missing");
+    }
+
+    const response = await axiosPrivate.post(
+      `/order/cashier/payment/${invoiceId}`,
+      { method },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json', 
+        },
+      }
+    );
+    return response.data;
+  };
+
+  return { postPayment };
+};
+
+
+export { useGetTableList, useGetTakeawayList, useGetInvoiceDetail, usePostPayment };
