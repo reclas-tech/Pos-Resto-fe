@@ -4,7 +4,7 @@ import Image from "next/image";
 import img from "@assets/bgLoginKasir.png";
 import logo from "@assets/splashScreen.png";
 import clear from "@assets/clearIcon.png";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { axiosInstance } from "@/utils/axios";
 import { showAlert2 } from "@/lib/sweetalert2";
@@ -24,29 +24,30 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRupiah } from "@/hooks/useRupiah";
 import { Label } from "@/components/ui/label";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
+import { useInputRp } from "@/hooks/useRupiah";
+
+
+type PinFormData = z.infer<typeof pinSchema>;
+type CashFormData = z.infer<typeof cashSchema>;
 
 const pinSchema = z.object({
   pin: z.string().length(6, "Pin harus 6 digit"),
 });
 
 const cashSchema = z.object({
-  cash: z.string().min(1, "Cash On Hand Tidak Boleh Kosong"),
+  cash: z.number().min(1, { message: "Cash On Hand Tidak Boleh Kosong" }),
 });
-
-type PinFormData = z.infer<typeof pinSchema>;
-type CashFormData = z.infer<typeof cashSchema>;
 
 const LoginKasirPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isModal, setIsModal] = useState<boolean>(false);
-  const rupiahInput = useRupiah();
   const [pinValue, setPinValue] = useState<string>("");
 
+  // Hook form dengan react-hook-form
   const {
     handleSubmit,
     formState: { errors },
@@ -60,30 +61,16 @@ const LoginKasirPage = () => {
     },
   });
 
+  // Hook form dengan react-hook-form
   const {
-    control,
     handleSubmit: handleCashOnHandSubmit,
     formState: { errors: errorCashOnHand },
+    setValue: setValueCashOnHand,
     reset: resetCashOnHand,
+    watch: watchCashOnHand
   } = useForm<CashFormData>({
     resolver: zodResolver(cashSchema),
   });
-
-  const handleButtonClick = (num: number) => {
-    if (pinValue.length < 6) {
-      const newValue = pinValue + num;
-      setPinValue(newValue);
-      setValue("pin", newValue);
-      trigger("pin");
-    }
-  };
-
-  const handleDelete = () => {
-    const newValue = pinValue.slice(0, -1);
-    setPinValue(newValue);
-    setValue("pin", newValue);
-    trigger("pin");
-  };
 
   /* eslint-disable */
   const onSubmit: SubmitHandler<PinFormData> = async (data) => {
@@ -100,7 +87,6 @@ const LoginKasirPage = () => {
         setPinValue("");
         reset();
         setIsModal(true);
-        // showAlert2("success", "Berhasil Login.");
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
@@ -116,9 +102,6 @@ const LoginKasirPage = () => {
           secure: true,
           httpOnly: false,
         });
-        setTimeout(() => {
-          // router.push("/");
-        }, 10);
       }
     } catch (error: any) {
       showAlert2("error", "Gagal Login.");
@@ -137,26 +120,133 @@ const LoginKasirPage = () => {
     }
   };
 
-  const onCashSubmit = (data: CashFormData) => {
+  const onCashSubmit: SubmitHandler<CashFormData> = async (data) => {
+    setLoading(true);
     const access_token = Cookies.get("access_token");
     const refresh_token = Cookies.get("refresh_token");
     const role = Cookies.get("role");
-    const handleCookiesCheck = () => {
-      router.push("/pilih-meja");
-      console.log("test", role);
-      if (access_token && refresh_token && role) {
-      } else {
+
+    try {
+      // Check Token
+      if (!access_token || !refresh_token || !role) {
         Cookies.remove("access_token");
         Cookies.remove("refresh_token");
         Cookies.remove("role");
         router.push("/login-kasir");
+        return;
       }
-    };
-    handleCookiesCheck();
-    console.log("Form Submitted: ", data);
-    resetCashOnHand();
-    setIsModal(false);
+
+      // Get API 
+      const response = await axiosInstance.post("/cashier/open", data, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+
+      // Cookie Send
+      const result = response.data;
+      if (result.statusCode === 201) {
+        console.log("Form submitted:", data);
+        setPinValue("");
+        reset();
+        setIsModal(true);
+        Cookies.set("cash_on_hand_start", result?.data?.cash_on_hand_start, {
+          expires: 1,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("started_at", result?.data?.started_at, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("cashier_id", result?.data?.cashier_id, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("id", result?.data?.id, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("updated_at", result?.data?.updated_at, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        Cookies.set("created_at", result?.data?.created_at, {
+          expires: 7,
+          secure: true,
+          httpOnly: false,
+        });
+        setTimeout(() => {
+        }, 10);
+      }
+
+      // Response API
+      if (response.data.statusCode === 201) {
+        console.log("Cash On Hand Submitted: ", response.data);
+        showAlert2("success", "Cash on Hand berhasil!");
+        resetCashOnHand();
+        setIsModal(false);
+        router.push("/pilih-meja");
+      } else {
+        console.log(data)
+        showAlert2("error", response.data.message || "Terjadi kesalahan!");
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "Terjadi kesalahan saat membuka cash!";
+      showAlert2("error", errorMessage);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleButtonClick = (num: number) => {
+    if (pinValue.length < 6) {
+      const newValue = pinValue + num;
+      setPinValue(newValue);
+      setValue("pin", newValue);
+      trigger("pin");
+    }
+  };
+
+  const handleDelete = () => {
+    const newValue = pinValue.slice(0, -1);
+    setPinValue(newValue);
+    setValue("pin", newValue);
+    trigger("pin");
+  };
+
+  const access_token = Cookies.get("access_token");
+  const refresh_token = Cookies.get("refresh_token");
+  const role = Cookies.get("role");
+  const cash_on_hand_start = Cookies.get("cash_on_hand_start");
+  const cash_on_hand_end = Cookies.get("cash_on_hand_end");
+  const started_at = Cookies.get("started_at");
+  const ended_at = Cookies.get("ended_at");
+  const cashier_id = Cookies.get("cashier_id");
+  const id = Cookies.get("id");
+  const updated_at = Cookies.get("updated_at");
+  const created_at = Cookies.get("created_at");
+  const deleted_at = Cookies.get("deleted_at");
+
+  console.log("Access Token:", access_token);
+  console.log("Refresh Token:", refresh_token);
+  console.log("Role:", role);
+  console.log("Cash on Hand Start:", cash_on_hand_start);
+  console.log("Cash on Hand End:", cash_on_hand_end);
+  console.log("Started At:", started_at);
+  console.log("Ended At:", ended_at);
+  console.log("Cashier ID:", cashier_id);
+  console.log("ID:", id);
+  console.log("Updated At:", updated_at);
+  console.log("Created At:", created_at);
+  console.log("Delete At:", deleted_at);
+
   return (
     <div className="w-full h-screen flex flex-col sm:flex-row">
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full">
@@ -294,25 +384,18 @@ const LoginKasirPage = () => {
                 <Label htmlFor="cash" className="text-sm sm:text-base">
                   Masukkan Uang Tunai di Tangan
                 </Label>
-                <Controller
-                  name="cash"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <Input
-                      id="cash"
-                      type="text"
-                      placeholder="Rp.0"
-                      className="w-full text-sm sm:text-base h-9 sm:h-10"
-                      value={rupiahInput.value}
-                      onChange={(e) => {
-                        rupiahInput.onChange(e);
-                        field.onChange(e);
-                      }}
-                    />
-                  )}
+                <Input
+                  type="text"
+                  id="cash"
+                  placeholder="Rp."
+                  value={useInputRp(watchCashOnHand("cash"))}
+                  onChange={(e) => {
+                    const numericValue =
+                      parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+                    setValueCashOnHand("cash", numericValue);
+                  }}
                 />
-                {errorCashOnHand.cash && (
+                {errorCashOnHand?.cash && (
                   <span className="text-xs sm:text-sm text-red-500">
                     {errorCashOnHand.cash.message}
                   </span>

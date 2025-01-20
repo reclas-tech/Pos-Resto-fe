@@ -39,6 +39,7 @@ import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { PaymentApiResponse } from "@/components/parts/cashier/pilih-meja/interface";
+import Cookies from "js-cookie";
 
 // Handle validation input
 const pinCashPaymentSchema = z.object({
@@ -212,7 +213,6 @@ function SelectTable() {
       }
     }
   };
-
   return (
     <>
       <section className="text-sm border border-b pt-4 pb-4 pl-8 pr-8 flex justify-between">
