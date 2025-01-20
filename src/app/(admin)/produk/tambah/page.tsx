@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from "react";
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 type FormValues = z.infer<typeof productSchema>;
 
@@ -227,12 +227,12 @@ function CreateProductPage() {
           onClick={() => document.getElementById("image-upload")?.click()}
         >
           {imagePreview ? (
-            <img
-              src={imagePreview}
+            <Image
+              src={imagePreview || 'waroeng aceh garuda'}
+              alt="Preview"
               width={200}
               height={170}
-              alt="Preview"
-              className="h-full w-[200px] object-cover"
+              className="object-cover h-full w-[200px] "
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>
