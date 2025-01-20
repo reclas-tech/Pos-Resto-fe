@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
@@ -14,17 +15,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PacketValues, packetSchema } from "@/validations";
 // import { showAlert2 } from "@/lib/sweetalert2";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useGetProduct } from "@/components/parts/admin/produk/api";
 import {
-  putSubmitPacket,
   useGetPacketOne,
+  useGetListProduct,
 } from "@/components/parts/admin/paket/api";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import Cookies from "js-cookie";
@@ -45,13 +45,13 @@ interface Product {
 function EditPacketPage() {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
-  const { data: products } = useGetProduct(1, "", 10);
+  const { data: products } = useGetListProduct("");
   const { slug } = useParams();
 
   const { data: packetData, isLoading: isLoadingPacket } = useGetPacketOne(
     slug as string
   );
-  const { handlePostSubmit } = putSubmitPacket(slug as string);
+  // const { handlePostSubmit } = putSubmitPacket(slug as string);
 
   const [loading, setLoading] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
@@ -78,29 +78,9 @@ function EditPacketPage() {
     },
   });
 
-  // useEffect(() => {
-  //   if (packetData?.data) {
-  //     setValue("name", packetData.data.name);
-  //     setValue("price", packetData.data.price);
-  //     setValue("cogp", packetData.data.cogp);
-  //     setValue("stock", packetData.data.stock);
-  //     setSelectedProducts(
-  //       packetData.data.products.map((product: SelectedProduct) => ({
-  //         id: product.id,
-  //         name: product.name,
-  //         quantity: product.quantity,
-  //       }))
-  //     );
-  //     if (packetData.data.image) {
-  //       setImagePreview(packetData.data.image);
-  //       setExistingImage(packetData.data.image);
-  //       setValue("image", packetData.data.image);
-  //     }
-  //   }
-  // }, [packetData, setValue]);
 
   useEffect(() => {
-    console.log("Packet Data:", packetData); // Tambahkan console.log untuk melihat data yang diterima
+    console.log("Packet Data:", packetData); 
 
     if (packetData?.data) {
       // Pastikan semua field diisi dengan nilai yang benar
@@ -128,15 +108,6 @@ function EditPacketPage() {
     }
   }, [packetData, setValue]);
 
-  // const handleAddProduct = (product: Product) => {
-  //   const existingProduct = selectedProducts.find((p) => p.id === product.id);
-  //   if (!existingProduct) {
-  //     setSelectedProducts([
-  //       ...selectedProducts,
-  //       { id: product.id, name: product.name, quantity: 1 },
-  //     ]);
-  //   }
-  // };
 
   const handleAddProduct = (product: Product) => {
     const existingProduct = selectedProducts.find((p) => p.id === product.id);
@@ -185,55 +156,13 @@ function EditPacketPage() {
     }
   };
 
-  // const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
-  //   try {
-  //     console.log("Form Data:", data);
-  //     console.log("Selected Products:", selectedProducts);
-  //     const productsList = selectedProducts.map((product) => ({
-  //       id: product.id,
-  //       quantity: product.quantity,
-  //     }));
-  //     const formData = new FormData();
-  //     formData.append("name", data.name);
-  //     formData.append("price", data.price.toString());
-  //     formData.append("cogp", data.cogp.toString());
-  //     formData.append("stock", data.stock.toString());
-  //     formData.append("products", JSON.stringify(productsList));
-
-  //     if (data.image instanceof File) {
-  //       formData.append("image", data.image);
-  //     } else if (existingImage) {
-  //       formData.append("existing_image", existingImage);
-  //     }
-
-  //     selectedProducts.forEach((item, index) => {
-  //       formData.append("products[" + index.toString() + "][id]", item.id);
-  //       formData.append(
-  //         "products[" + index.toString() + "][quantity]",
-  //         item.quantity
-  //       );
-  //     });
-
-  //     formData.append("_method", "PUT");
-
-  //     for (let [key, value] of formData.entries()) {
-  //       console.log(`${key}:`, value);
-  //     }
-
-  //     await handlePostSubmit(formData, setLoading);
-  //     reset();
-  //     setSelectedProducts([]);
-  //     setImagePreview(null);
-  //   } catch (error) {
-  //     console.error("Error submitting packet:", error);
-  //   }
-  // };
 
   if (isLoadingPacket) {
-    return <div>Loading...</div>;
+    return <div>Memuat...</div>;
   }
 
   const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
+     const navigate = useRouter();
     try {
       // Validasi produk
       if (!selectedProducts || selectedProducts.length === 0) {
@@ -252,16 +181,13 @@ function EditPacketPage() {
       formData.append("cogp", data.cogp.toString());
       formData.append("stock", data.stock.toString());
 
-      // Pastikan products dalam format array yang benar
       const productsArray = selectedProducts.map((product) => ({
         id: product.id,
         quantity: product.quantity,
       }));
 
-      // Tambahkan products sebagai JSON string, pastikan tetap dalam format array
       formData.append("products", JSON.stringify(productsArray));
 
-      // Tambahan: append ulang products dalam format array
       productsArray.forEach((product, index) => {
         formData.append(`products[${index}][id]`, product.id);
         formData.append(
@@ -270,18 +196,12 @@ function EditPacketPage() {
         );
       });
 
-      // Handle gambar
       if (data.image instanceof File) {
         formData.append("image", data.image);
       } else if (existingImage) {
         formData.append("existing_image", existingImage);
       }
       formData.append("_method", "PUT");
-
-      // Debug: Log semua data FormData
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
 
       // Kirim request
       const response = await axiosPrivate.post(
@@ -294,19 +214,15 @@ function EditPacketPage() {
           },
         }
       );
-
-      // Handle success
       if (response.data?.message) {
         showAlert2("success", response.data.message);
-
-        // Reset form
         reset();
         setSelectedProducts([]);
         setImagePreview(null);
         setExistingImage(null);
+        navigate.push("/produk/menu-paket");
       }
     } catch (error: any) {
-      // Error handling
       console.error("Error full response:", error.response);
 
       const errorMessage =

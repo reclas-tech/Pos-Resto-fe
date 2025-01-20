@@ -51,6 +51,26 @@ const useGetPacketOne = (slug: string) => {
   return { data, error, mutate, isValidating, isLoading };
 };
 
+// Get Opsion Product
+const useGetListProduct = (search: string) => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `/product/admin/list?}&limit=9999999&search=${search}`,
+    () =>
+      axiosPrivate
+        .get(`/product/admin/list?&limit=9999999&search=${search}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
 // Create packet
 const postSubmitPacket = () => {
   const navigate = useRouter();
@@ -131,4 +151,4 @@ const putSubmitPacket = (slug: string) => {
   return { handlePostSubmit };
 };
 
-export { postSubmitPacket, putSubmitPacket, useGetPacket, useGetPacketOne };
+export { postSubmitPacket, putSubmitPacket, useGetPacket, useGetPacketOne, useGetListProduct };
