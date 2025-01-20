@@ -47,6 +47,7 @@ function EditPacketPage() {
   const axiosPrivate = useAxiosPrivateInstance();
   const { data: products } = useGetListProduct("");
   const { slug } = useParams();
+  const navigate = useRouter();
 
   const { data: packetData, isLoading: isLoadingPacket } = useGetPacketOne(
     slug as string
@@ -78,9 +79,8 @@ function EditPacketPage() {
     },
   });
 
-
   useEffect(() => {
-    console.log("Packet Data:", packetData); 
+    console.log("Packet Data:", packetData);
 
     if (packetData?.data) {
       // Pastikan semua field diisi dengan nilai yang benar
@@ -107,7 +107,6 @@ function EditPacketPage() {
       }
     }
   }, [packetData, setValue]);
-
 
   const handleAddProduct = (product: Product) => {
     const existingProduct = selectedProducts.find((p) => p.id === product.id);
@@ -156,13 +155,11 @@ function EditPacketPage() {
     }
   };
 
-
   if (isLoadingPacket) {
     return <div>Memuat...</div>;
   }
 
   const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
-     const navigate = useRouter();
     try {
       // Validasi produk
       if (!selectedProducts || selectedProducts.length === 0) {
@@ -220,7 +217,6 @@ function EditPacketPage() {
         setSelectedProducts([]);
         setImagePreview(null);
         setExistingImage(null);
-        navigate.push("/produk/menu-paket");
       }
     } catch (error: any) {
       console.error("Error full response:", error.response);
@@ -233,6 +229,7 @@ function EditPacketPage() {
       showAlert2("error", errorMessage);
     } finally {
       setLoading(false);
+      navigate.push("/produk/menu-paket");
     }
   };
 
