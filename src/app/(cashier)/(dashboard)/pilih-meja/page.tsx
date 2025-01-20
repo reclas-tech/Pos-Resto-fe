@@ -179,6 +179,13 @@ function SelectTable() {
     setIsDetailModalOpenTakeAway(true);
   };
 
+  // Handle Open Payment TakeAway
+  const handleOpenPaymentTakeAway = (invoiceId: string | number, status: string) => {
+    // console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+    setSelectedId(invoiceId); // Menyimpan id
+    setIsPaymentModalOpenTakeAway(true)
+  };
+
   // GET ONE SLUG DineIn
   const { data: dataInvoiceDineIn } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
   const tablesDineIn = dataInvoiceDineIn?.data?.tables || [];
@@ -265,6 +272,7 @@ function SelectTable() {
                       statusCode={200}
                       message={"Daftar TakeawayList Berhasil Didapatkan"}
                       onDetailModal={handleOpenDetailTakeAway}
+                      onPaymentModal={handleOpenPaymentTakeAway}
                     />
                   </div>
                 </div>
