@@ -26,7 +26,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
   return (
     <div
       id="struk"
-      className="bg-white p-[2%] text-[10px] w-full  shadow-md"
+      className="bg-white p-[2%] text-[10px] w-full "
     >
       <p className="text-center uppercase"> Tutup Kasir</p>
       <div className="text-left mt-6 grid grid-cols-2 py-2 gap-1 ">

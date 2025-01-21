@@ -30,7 +30,7 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
   return (
     <div
       id="struk"
-      className="bg-white p-[2%] text-[10px] w-full max-w-[380px] shadow-md"
+      className="bg-white p-[2%] text-[10px] w-full "
     >
       <div className="flex justify-center">
         <div className="w-[25%] h-[25%]">

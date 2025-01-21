@@ -22,10 +22,7 @@ type KitchenReceiptProps = {
 const KitchenReceipt: React.FC<KitchenReceiptProps> = ({ data }) => {
   if (!data) return null;
   return (
-    <div
-      id="struk"
-      className="bg-white p-[2%] text-[10px] w-full max-w-[380px] shadow-md"
-    >
+    <div id="struk" className="bg-white p-[2%] text-[10px] w-full">
       <p className="uppercase text-center font-medium">Checker</p>
       <p className="uppercase text-center">{data.kitchen}</p>
 
