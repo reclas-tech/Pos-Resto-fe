@@ -22,7 +22,7 @@ export default function AuthGuardPOS({ children }: AuthGuardEmployeeProps) {
     console.log("Role:", role);
     console.log("Nama:", name);
 
-    if (!access_token || !refresh_token || !role) {
+    if (!access_token || !refresh_token || !role || role != "waiter") {
       router.push("/login-waiters");
     } else {
       setLoading(false);
