@@ -24,7 +24,7 @@ const KitchenReceipt: React.FC<KitchenReceiptProps> = ({ data }) => {
   return (
     <div
       id="struk"
-      className="bg-white p-4 text-[13.5px] w-80 min-w-[320px] max-w-[380px] shadow-md"
+      className="bg-white p-[2%] text-[10px] w-full max-w-[380px] shadow-md"
     >
       <p className="uppercase text-center font-medium">Checker</p>
       <p className="uppercase text-center">{data.kitchen}</p>
@@ -43,7 +43,7 @@ const KitchenReceipt: React.FC<KitchenReceiptProps> = ({ data }) => {
       <div className="mt-2 space-y-2 border-b border-dashed border-black pb-2">
         {data.products.map((product) => (
           <div key={product.id}>
-            <span className="flex space-x-2">
+            <span className="flex space-x-[2%]">
               <p>{product.quantity}x</p>
               <p>{product.name}</p>
             </span>
@@ -63,35 +63,3 @@ const KitchenReceipt: React.FC<KitchenReceiptProps> = ({ data }) => {
 };
 
 export default KitchenReceipt;
-
-
-// Example  Use
-
-//  const dataKitchenReceipt = [
-//    {
-//      id: "1",
-//      kitchen: "Dapur 1",
-//      no_transaksi: "INV1232134",
-//      time: "21 Des 24 15: 21",
-//      customer: "Andika Jaya",
-//      table: "Meja 2",
-
-//      products: [
-//        {
-//          id: "1",
-//          name: "Kopi Hitam",
-//          quantity: 1,
-//          note: "Tanpa gula",
-//        },
-//        {
-//          id: "2",
-//          name: "Teh Manis",
-//          quantity: 1,
-//          note: "Gulanya Sedikit",
-//        },
-//      ],
-//    },
-//  ];
-
-
-//  <KitchenReceipt data={dataKitchenReceipt[0]} />;

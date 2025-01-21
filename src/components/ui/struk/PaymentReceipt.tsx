@@ -30,10 +30,10 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
   return (
     <div
       id="struk"
-      className="bg-white p-4 text-[13.5px] w-80 min-w-[320px] max-w-[380px] shadow-md"
+      className="bg-white p-[2%] text-[10px] w-full max-w-[380px] shadow-md"
     >
       <div className="flex justify-center">
-        <div className="w-16 h-[70px]">
+        <div className="w-[25%] h-[25%]">
           <Image
             src={logo}
             alt="logo"
@@ -42,12 +42,12 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
           />
         </div>
       </div>
-      <p className="text-center px-6 my-4">
+      <p className="text-center px-[10%] my-[10%]">
         Waroeng Aceh Garuda Jl. Tebet barat no 25 RT 014/ RW 04, kel. Tebet
         Barat, Kec. Tebet, Kota Jakarta Selatan
       </p>
 
-      <div className="text-left mt-6 grid grid-cols-2 py-2 gap-1 border-y border-dashed border-black">
+      <div className="text-left grid grid-cols-2 py-2 gap-[1%]  border-y border-dashed border-black">
         <p>No Transaksi</p>
         <p>: {data.no_transaksi}</p>
         <p>Waktu</p>
@@ -77,13 +77,13 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
         ))}
       </div>
 
-      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-1 border-b border-dashed border-black">
+      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-[1%] border-b border-dashed border-black">
         <p>Sub Total {data.quantity} Produk</p>
         <p>: {data.sub_total}</p>
         <p>Total Tagihan</p>
         <p>: {data.total_tagihan}</p>
       </div>
-      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-1 border-b border-dashed border-black">
+      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-[1%] border-b border-dashed border-black">
         <p>Tunai</p>
         <p>: {data.cash}</p>
         <p>Total Bayar</p>
