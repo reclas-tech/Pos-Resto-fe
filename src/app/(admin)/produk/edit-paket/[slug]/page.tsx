@@ -399,7 +399,7 @@ function EditPacketPage() {
         >
           {imagePreview ? (
             <Image
-              src={imagePreview}
+              src={imagePreview || "waroeng aceh garuda"}
               width={100}
               height={100}
               alt="Preview"
