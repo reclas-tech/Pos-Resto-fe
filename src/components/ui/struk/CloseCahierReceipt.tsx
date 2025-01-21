@@ -26,7 +26,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
   return (
     <div
       id="struk"
-      className="bg-white p-4 text-[13.5px] w-80 min-w-[320px] max-w-[380px] shadow-md"
+      className="bg-white p-[2%] text-[10px] w-full "
     >
       <p className="text-center uppercase"> Tutup Kasir</p>
       <div className="text-left mt-6 grid grid-cols-2 py-2 gap-1 ">
@@ -44,7 +44,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.start_cashier}</p>
           </span>
         </div>
@@ -54,7 +54,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.end_cashier}</p>
           </span>
         </div>
@@ -64,7 +64,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.saldo_awal}</p>
           </span>
         </div>
@@ -74,7 +74,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.pemasukan}</p>
           </span>
         </div>
@@ -84,7 +84,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.saldo_akhir}</p>
           </span>
         </div>
@@ -107,7 +107,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.saldo_akhir_tunai}</p>
           </span>
         </div>
@@ -117,7 +117,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.nota_succes}</p>
           </span>
         </div>
@@ -127,7 +127,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.nota_fail}</p>
           </span>
         </div>
@@ -137,7 +137,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.nota_exit}</p>
           </span>
         </div>
@@ -151,7 +151,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.cash}</p>
           </span>
         </div>
@@ -161,7 +161,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.debit}</p>
           </span>
         </div>
@@ -171,7 +171,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.qris}</p>
           </span>
         </div>
@@ -184,7 +184,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
-            <p className="ml-3">Rp</p>
+            <p className="ml-[3%]">Rp</p>
             <p>{data.total}</p>
           </span>
         </div>
@@ -194,28 +194,3 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({ data }) => {
 };
 
 export default CloseCashierReceipt;
-
-// Example Use
-//   const dataCloseCashierReceipt = [
-//     {
-//       id: "1",
-//       tanggal: "19/10/2024",
-//       name_cashier: "Putri Amelia",
-//       start_cashier: "19/10/2024 00:08:42",
-//       end_cashier: "19/10/2024 22:04:28",
-//       saldo_awal: "2,000,000",
-//       pemasukan: "984.000",
-//       saldo_akhir: "2,984,000",
-//       jumlah_transaksi: 41,
-//       saldo_akhir_tunai: "2,000,000",
-//       nota_succes: "984.000",
-//       nota_fail: "0",
-//       nota_exit: "2,984,000",
-//       cash: "2,000,000",
-//       debit: "984.000",
-//       qris: "0",
-//       total: "2,984,000",
-//     },
-//   ];
-
-//  <CloseCashierReceipt data={dataCloseCashierReceipt[0]} />
