@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kitchen Receipt</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+        <div id="struk" class="bg-white p-[2%] text-[10px] w-full">
+            <p class="uppercase text-center font-medium">Checker</p>
+            <p id="kitchen" class="uppercase text-center">Bar</p>
+
+            <div
+                class="text-left mt-6 grid grid-cols-2 pb-2 border-b border-dashed border-black">
+                <p>No Transaksi</p>
+                <p>: <span id="no_transaksi">TRX001</span></p>
+                <p>Waktu</p>
+                <p>: <span id="time">12:00</span></p>
+                <p>Nama Pemesan</p>
+                <p>: <span id="customer">John Doe</span></p>
+                <p>Nomor Meja</p>
+                <p>: <span id="table">A1</span></p>
+            </div>
+
+            <div id="products"
+                class="mt-2 space-y-2 border-b border-dashed border-black pb-2">
+                <!-- Product template -->
+                <div class="product">
+                    <span class="flex space-x-[2%]">
+                        <p><span class="quantity">1</span>x</p>
+                        <p class="name">Nasi Goreng</p>
+                    </span>
+                    <ul class="list-disc ml-6">
+                        <li class="note">Pedas Extra</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p id="time-footer" class="text-center mt-4">12:00</p>
+            <p class="text-center">Cetak : Waroeng Aceh Garuda</p>
+        </div>
+
+        <script>
+        function populateReceipt(data) {
+            document.getElementById('kitchen').textContent = data.kitchen;
+            document.getElementById('no_transaksi').textContent = data.no_transaksi;
+            document.getElementById('time').textContent = data.time;
+            document.getElementById('customer').textContent = data.customer;
+            document.getElementById('table').textContent = data.table;
+            document.getElementById('time-footer').textContent = data.time;
+
+            const productsContainer = document.getElementById('products');
+            productsContainer.innerHTML = '';
+
+            data.products.forEach(product => {
+                const div = document.createElement('div');
+                
+                const span = document.createElement('span');
+                span.className = 'flex space-x-[2%]';
+                span.innerHTML = `
+                    <p>${product.quantity}x</p>
+                    <p>${product.name}</p>
+                `;
+                div.appendChild(span);
+
+                if (product.note && product.note.trim() !== '') {
+                    const ul = document.createElement('ul');
+                    ul.className = 'list-disc ml-6';
+                    const li = document.createElement('li');
+                    li.textContent = product.note;
+                    ul.appendChild(li);
+                    div.appendChild(ul);
+                }
+
+                productsContainer.appendChild(div);
+            });
+        }
+
+        // Example data
+        const sampleData = {
+            kitchen: "Bar",
+            no_transaksi: "TRX001",
+            time: "12:00",
+            customer: "John Doe",
+            table: "A1",
+            products: [
+                {
+                    id: "1",
+                    name: "Nasi Goreng",
+                    quantity: 1,
+                    note: "Pedas Extra"
+                }
+            ]
+        };
+
+        // Populate the receipt with sample data
+        populateReceipt(sampleData);
+    </script>
+    </body>
+</html>
