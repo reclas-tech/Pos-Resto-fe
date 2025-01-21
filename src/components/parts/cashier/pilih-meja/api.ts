@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import Cookies from "js-cookie";
@@ -48,27 +47,32 @@ const useGetTakeawayList = (status: string) => {
 };
 
 // Get Invoice Detail
-const useGetInvoiceDetail = (
-  invoiceId: string) => {
+const useGetInvoiceDetail = (invoiceId: string) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
 
   // Pastikan accessToken ada sebelum melakukan pemanggilan API
   if (!accessToken) {
-    return { data: null, error: new Error("Access token is missing"), isLoading: false, isValidating: false };
+    return {
+      data: null,
+      error: new Error("Access token is missing"),
+      isLoading: false,
+      isValidating: false,
+    };
   }
 
-  const { data, error, mutate, isValidating, isLoading } = useSWR<InvoiceDetailApiResponse>(
-    `/order/cashier/detail/${invoiceId}`,
-    () =>
-      axiosPrivate
-        .get(`/order/cashier/detail/${invoiceId}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((res) => res.data) // Menjamin data dari response
-  );
+  const { data, error, mutate, isValidating, isLoading } =
+    useSWR<InvoiceDetailApiResponse>(
+      `/order/cashier/detail/${invoiceId}`,
+      () =>
+        axiosPrivate
+          .get(`/order/cashier/detail/${invoiceId}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then((res) => res.data) // Menjamin data dari response
+    );
 
   return { data, error, mutate, isValidating, isLoading };
 };
@@ -78,7 +82,7 @@ const usePostPayment = (invoiceId: string) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
 
-  const postPayment = async (method: 'cash' | 'debit' | 'qris') => {
+  const postPayment = async (method: "cash" | "debit" | "qris") => {
     if (!accessToken) {
       throw new Error("Access token is missing");
     }
@@ -89,7 +93,7 @@ const usePostPayment = (invoiceId: string) => {
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json', 
+          "Content-Type": "application/json",
         },
       }
     );
@@ -99,5 +103,9 @@ const usePostPayment = (invoiceId: string) => {
   return { postPayment };
 };
 
-
-export { useGetTableList, useGetTakeawayList, useGetInvoiceDetail, usePostPayment };
+export {
+  useGetTableList,
+  useGetTakeawayList,
+  useGetInvoiceDetail,
+  usePostPayment,
+};

@@ -52,6 +52,10 @@ export default function RootLayoutDashboardCashier({
   const [isValidationSuccessModal, setIsValidationSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const access_token = Cookies.get("access_token");
+  const refresh_token = Cookies.get("refresh_token");
+  const role = Cookies.get("role");
+
   // cek berdasarkan cookies
   const handleLogout = () => {
     setTimeout(() => {
@@ -79,20 +83,10 @@ export default function RootLayoutDashboardCashier({
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
     console.log(data);
     setLoading(true);
-    const access_token = Cookies.get("access_token");
-    const refresh_token = Cookies.get("refresh_token");
-    const role = Cookies.get("role");
-
+    console.log(access_token)
+    console.log(refresh_token)
+    console.log(role)
     try {
-      // Check Token
-      if (!access_token || !refresh_token || !role) {
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
-        Cookies.remove("role");
-        router.push("/login-kasir");
-        return;
-      }
-
       // Get API 
       const response = await axiosInstance.post("/cashier/close", data, {
         headers: {
@@ -155,9 +149,10 @@ export default function RootLayoutDashboardCashier({
       // Response API
       if (response.data.statusCode === 200) {
         console.log("Cash On Hand Submitted: ", response.data);
-        showAlert2("success", "Cash on Hand berhasil!");
-        reset();
-        router.push("/login-kasir");
+        setIsValidationSuccessModal(true);
+        // showAlert2("success", "Cash on Hand berhasil!");
+        // reset();
+        // console.log("testtt");
       } else {
         console.log(data)
         showAlert2("error", response.data.message || "Terjadi kesalahan!");
@@ -278,7 +273,7 @@ export default function RootLayoutDashboardCashier({
                 <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
                   <WarningSVG />
                 </div>
-                <div className="text-lg font-bold text-center mt-4">
+                <div className="text-lg font-bold text-center mt-4 p-2">
                   Yakin untuk tutup kasir ?
                 </div>
               </ValidationModal>
@@ -344,11 +339,13 @@ export default function RootLayoutDashboardCashier({
                   handleLogout()
                 }}
                 onSubmitTrigger={() => {
+                  // handleLogout()
+                  // router.push("/login-kasir");
                 }}
                 title=""
                 classNameDialogFooter="flex md:justify-center"
                 showKeluarButton={true}
-                showSubmitButton={false}
+                showSubmitButton={true}
                 classNameDialogHeader=""
                 classNameButton="w-full rounded-lg text-sm"
                 classNameDialogTitle=""

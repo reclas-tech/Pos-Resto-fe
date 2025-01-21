@@ -234,7 +234,7 @@ function CreateProductPage() {
               alt="Preview"
               width={200}
               height={170}
-              className="object-cover h-full w-[200px] "
+              className="object-contain h-full w-[200px] "
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>

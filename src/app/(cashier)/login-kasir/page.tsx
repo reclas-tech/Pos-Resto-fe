@@ -86,7 +86,6 @@ const LoginKasirPage = () => {
         console.log("Form submitted:", data);
         setPinValue("");
         reset();
-        setIsModal(true);
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
@@ -102,6 +101,12 @@ const LoginKasirPage = () => {
           secure: true,
           httpOnly: false,
         });
+
+        if (result?.data?.any_active_shift === true) {
+          router.push("/pilih-meja");
+        } else if (result?.data?.any_active_shift === false) {
+          setIsModal(true);
+        }
       }
     } catch (error: any) {
       showAlert2("error", "Gagal Login.");
