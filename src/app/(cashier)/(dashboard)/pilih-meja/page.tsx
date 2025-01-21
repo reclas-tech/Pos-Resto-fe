@@ -699,17 +699,17 @@ function SelectTable() {
           classNameDialogFooter="p-4 border-t flex md:justify-end"
           showKeluarButton={true}
           showCetakButton={true}
-          showBuyyButton={true}
+          showBuyyButton={!(dataInvoiceTakeAway?.data?.status === "success")}
           classNameDialogHeader="border-none mt-8"
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
         >
-          {/* {dataInvoiceTakeAway?.data?.status === "sudah bayar" && (
+          {dataInvoiceTakeAway?.data?.status === "sudah bayar" && (
             <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
               Bayar
             </button>
-          )} */}
+          )}
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
               <div className="text-start">
