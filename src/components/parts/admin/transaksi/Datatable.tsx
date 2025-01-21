@@ -21,6 +21,7 @@ import React, { useState } from "react";
 import { TransaksiInterface } from "./interface";
 import { useGetTransaksiOne } from "./api";
 import { Label } from "@/components/ui/label";
+import { showAlert2 } from "@/lib/sweetalert2";
 
 const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -31,6 +32,11 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
     const handleDetail = (id: string) => {
         setSelectedTransactionId(id);
         setIsDetailModalOpen(true);
+        // showAlert2("success", 'Berhasil Print Transaksi');
+    };
+
+    const handlePrint = () => {
+        showAlert2("success", 'Berhasil Print Transaksi');
     };
 
     return (
@@ -104,7 +110,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                         <DetailModal
                                                             isOpen={isDetailModalOpen}
                                                             onClose={() => setIsDetailModalOpen(false)}
-                                                            onDetail={handleDetail}
+                                                            onDetail={handlePrint}
                                                             title="Detail Riwayat Transaksi"
                                                             showCancelButton={true}
                                                             showPrintButton={true}

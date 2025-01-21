@@ -101,7 +101,7 @@ function TablePage() {
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
             onSubmit={handleSubmit(onSubmit)}
-            title="Tambah Dapur"
+            title="Tambah Meja"
             loading={loading}
           >
             <div className="flex flex-col w-full">

@@ -189,8 +189,6 @@ function SelectTable() {
 
   // GET ONE SLUG DineIn
   const { data: dataInvoiceDineIn } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
-  const tablesDineIn = dataInvoiceDineIn?.data?.tables || [];
-  const formattedTablesDineIn = tablesDineIn.map((_, index) => `T-${index + 1}`).join(", ");
 
   // GET ONE SLUG Takeaway
   const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
@@ -330,7 +328,7 @@ function SelectTable() {
             <div className="justify-between flex text-sm">
               <div className="text-start">
                 <div className="text-primaryColor font-bold truncate max-w-[255px] capitalize">
-                  {dataInvoiceDineIn?.data?.type} / {formattedTablesDineIn}
+                  {dataInvoiceDineIn?.data?.type} / {dataInvoiceDineIn?.data?.tables?.map(code => `${code}`).join(', ')}
                 </div>
                 <div className="text-black">{dataInvoiceDineIn?.data?.customer}</div>
               </div>
@@ -465,7 +463,7 @@ function SelectTable() {
                     </div>
                   </div>
                   <div className="w-[30%]">
-                    Meja : {formattedTablesDineIn}
+                    Meja : {dataInvoiceDineIn?.data?.tables?.map(code => `${code}`).join(', ')}
                   </div>
                 </div>
                 <div className="w-full">

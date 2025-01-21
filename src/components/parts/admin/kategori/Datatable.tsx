@@ -158,7 +158,7 @@ const DataTable: React.FC<CategoryInterface> = ({
                               setIsEditModalOpen(false);
                             }}
                             onSubmit={handleSubmit(onSubmit)}
-                            title="Edit Meja"
+                            title="Edit Kategori"
                             loading={loading}
                             editButtonText="Simpan"
                           >
