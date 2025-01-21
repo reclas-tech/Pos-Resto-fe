@@ -86,6 +86,7 @@ export const packetSchema = z.object({
     .refine((val) => val instanceof File || val.length > 0, {
       message: "Foto produk wajib diunggah.",
     }),
+  category_id: z.string().optional(),
 });
 export type PacketValues = z.infer<typeof packetSchema>;
 

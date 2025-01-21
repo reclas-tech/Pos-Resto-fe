@@ -18,8 +18,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PacketValues, packetSchema } from "@/validations";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { useGetProduct } from "@/components/parts/admin/produk/api";
-import { postSubmitPacket } from "@/components/parts/admin/paket/api";
+import {
+  postSubmitPacket,
+  useGetListProduct,
+} from "@/components/parts/admin/paket/api";
 
 interface SelectedProduct {
   id: string;
@@ -40,7 +42,7 @@ function CreatePacketPage() {
     []
   );
 
-  const { data: products } = useGetProduct(1, "", 10);
+  const { data: products } = useGetListProduct("");
 
   const {
     register,
@@ -121,11 +123,21 @@ function CreatePacketPage() {
         formData.append("image", data.image);
       }
 
-      selectedProducts.forEach((item, index) => {
-        formData.append("products[" + index.toString() + "][id]", item.id);
+      // Pastikan products dalam format array yang benar
+      const productsArray = selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      }));
+
+      // Tambahkan products sebagai JSON string, pastikan tetap dalam format array
+      formData.append("products", JSON.stringify(productsArray));
+
+      // Tambahan: append ulang products dalam format array
+      productsArray.forEach((product, index) => {
+        formData.append(`products[${index}][id]`, product.id);
         formData.append(
-          "products[" + index.toString() + "][quantity]",
-          item.quantity
+          `products[${index}][quantity]`,
+          product.quantity.toString()
         );
       });
 
