@@ -27,5 +27,25 @@ const useGetListCard = (
   return { data, error, mutate, isValidating, isLoading };
 };
 
+const useGetOneListCard = (id: string) => {
+  const access_token = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
 
-export { useGetListCard };
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `/order/employee/history/detail/${id}`,
+    () =>
+      axiosPrivate.get(
+        `/order/employee/history/detail/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      ).then((res) => res.data)
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+}
+
+
+export { useGetListCard , useGetOneListCard};

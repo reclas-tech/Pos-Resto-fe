@@ -30,3 +30,13 @@ export const useInputRp = (value: number | string) => {
   }).format(number).replace(/,00$/, "");
 };
 
+
+export const formatRupiah = (value: string): string => {
+  const numericValue = value.replace(/\D/g, "");
+  if (!numericValue) return "";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(Number(numericValue));
+};

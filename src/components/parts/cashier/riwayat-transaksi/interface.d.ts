@@ -6,6 +6,9 @@ interface Card {
   customer: string;
   price_sum: number;
   created_at: string;
+  payment: string;
+  products: Product[];
+  cashier: string;
 }
 
 export interface ListApiResponse {
