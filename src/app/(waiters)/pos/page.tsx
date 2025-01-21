@@ -17,7 +17,6 @@ import CardPacket from "@/components/ui/waiters/CardPacket";
 import PacketOrder from "@/components/ui/waiters/PacketOrder";
 import FormModal from "@/components/ui/waiters/modal/FormModal";
 import ChoseTableModal from "@/components/ui/waiters/modal/ChoseTableModal";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -28,6 +27,8 @@ import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import useSWR from "swr";
 import { showAlert2 } from "@/lib/sweetalert2";
 import { LoadingSVG } from "@/constants/svgIcons";
+import { useRouter } from "next/navigation";
+import AuthGuardPOS from "@/hooks/authGuardPOS";
 
 interface Product {
   id: string;
@@ -80,6 +81,7 @@ function PosPage() {
   const axiosPrivate = useAxiosPrivateInstance();
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     setUserName(Cookies.get("name"));
@@ -171,6 +173,17 @@ function PosPage() {
     }>
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleLogout = () => {
+    setTimeout(() => {
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      Cookies.remove("role");
+      Cookies.remove("name");
+      router.push("/login-waiters");
+      showAlert2("success", "Berhasil Logout.");
+    }, 10);
+  };
 
   // Search Packet & Product
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -546,322 +559,327 @@ function PosPage() {
 
   return (
     <>
-      <div className="flex w-full h-screen max-w-[1133px] max-h-[744px] ">
-        <DarkModeComponents />
-        <div className="w-[70%] h-full ">
-          {/* Header */}
-          <div className=" flex justify-between items-center px-2 py-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-[40px]">
-                <Image
-                  src={logo}
-                  alt="logo"
-                  className="w-full h-full"
-                  unoptimized
-                />
-              </div>
-              <div>
-                <p className="font-semibold text-sm">Point of Sale</p>
-                <p className="font-normal text-xs text-[#828487]">
-                  Warung Aceh Garuda
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="text-primaryColor text-sm font-semibold flex items-center space-x-1">
-                <NotesSVG /> <p>Pesanan</p>
-              </button>
-              <button className="text-[#737791] text-sm flex items-center space-x-1">
-                <HistorySVG /> <p>Riwayat</p>
-              </button>
-
-              <div className="flex items-center">
-                {/* Error Hydration Failed saat render bagian ini */}
+      <AuthGuardPOS>
+        <div className="flex w-full h-screen max-w-[1133px] max-h-[744px] ">
+          <DarkModeComponents />
+          <div className="w-[70%] h-full ">
+            {/* Header */}
+            <div className=" flex justify-between items-center px-2 py-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-[40px]">
+                  <Image
+                    src={logo}
+                    alt="logo"
+                    className="w-full h-full"
+                    unoptimized
+                  />
+                </div>
                 <div>
-                  <p className="text-sm">{userName}</p>
-                  <p className="text-xs text-[#737791]">{role}</p>
+                  <p className="font-semibold text-sm">Point of Sale</p>
+                  <p className="font-normal text-xs text-[#828487]">
+                    Warung Aceh Garuda
+                  </p>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <ChevronDown className="text-[#737791] w-5 h-5" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white border border-gray-300 shadow-lg rounded-md">
-                    <DropdownMenuLabel className="text-xs text-[#737791]">
-                      <Link href="/login-waiters">Keluar</Link>
-                    </DropdownMenuLabel>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
-            </div>
-          </div>
-          <div className="flex justify-between items-center border-y border-[#E4E4E4] px-2 py-4">
-            <div className="flex items-center space-x-3 w-[45%]">
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Search className="h-4 w-4 text-primaryColor" />
-                </div>
-                {/* Pencarian data produk dan packet */}
-                <Input
-                  placeholder="Pencarian"
-                  className="rounded-full pl-8 text-xs h-8 border-primaryColor"
-                  value={search}
-                  onChange={handleSearchChange}
-                />
-              </div>
-              <button
-                className={`rounded-full text-xs py-1 px-2 border ${
-                  isActiveFilterProduct === "Paket"
-                    ? "bg-secondaryColor text-white"
-                    : "bg-[#114F44]/10 text-secondaryColor border-secondaryColor"
-                }`}
-                onClick={() => handleFilterProductClick("Paket")}
-              >
-                Paket
-              </button>
-            </div>
+              <div className="flex items-center space-x-4">
+                <button className="text-primaryColor text-sm font-semibold flex items-center space-x-1">
+                  <NotesSVG /> <p>Pesanan</p>
+                </button>
+                <button className="text-[#737791] text-sm flex items-center space-x-1">
+                  <HistorySVG /> <p>Riwayat</p>
+                </button>
 
-            <div className="flex items-center space-x-3 max-w-[45%] overflow-x-auto">
-              {/* Filter Category Produk */}
-              {isLoadingCategories ? (
-                <p className="text-xs">Memuat....</p>
-              ) : (
-                <>
-                  <button
-                    className={`rounded-full text-xs py-1 px-2 border ${
-                      isActiveFilterProduct === "Semua"
-                        ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                        : ""
-                    }`}
-                    onClick={() => handleFilterProductClick("Semua", "")}
-                  >
-                    Semua
-                  </button>
-                  {dataCategory?.data.map((category: any) => (
+                <div className="flex items-center">
+                  {/* Error Hydration Failed saat render bagian ini */}
+                  <div>
+                    <p className="text-sm">{userName}</p>
+                    <p className="text-xs text-[#737791]">{role}</p>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <ChevronDown className="text-[#737791] w-5 h-5" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white border border-gray-300 shadow-lg rounded-md">
+                      <DropdownMenuLabel className="text-xs text-[#737791] hover:text-red-600">
+                        <button onClick={() => handleLogout()}>Keluar</button>
+                      </DropdownMenuLabel>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center border-y border-[#E4E4E4] px-2 py-4">
+              <div className="flex items-center space-x-3 w-[45%]">
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                    <Search className="h-4 w-4 text-primaryColor" />
+                  </div>
+                  {/* Pencarian data produk dan packet */}
+                  <Input
+                    placeholder="Pencarian"
+                    className="rounded-full pl-8 text-xs h-8 border-primaryColor"
+                    value={search}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+                <button
+                  className={`rounded-full text-xs py-1 px-2 border ${
+                    isActiveFilterProduct === "Paket"
+                      ? "bg-secondaryColor text-white"
+                      : "bg-[#114F44]/10 text-secondaryColor border-secondaryColor"
+                  }`}
+                  onClick={() => handleFilterProductClick("Paket")}
+                >
+                  Paket
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-3 max-w-[45%] overflow-x-auto">
+                {/* Filter Category Produk */}
+                {isLoadingCategories ? (
+                  <p className="text-xs">Memuat....</p>
+                ) : (
+                  <>
                     <button
-                      key={category.id}
                       className={`rounded-full text-xs py-1 px-2 border ${
-                        isActiveFilterProduct === category.name
+                        isActiveFilterProduct === "Semua"
                           ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                           : ""
                       }`}
-                      onClick={() =>
-                        handleFilterProductClick(category.name, category.id)
-                      }
+                      onClick={() => handleFilterProductClick("Semua", "")}
                     >
-                      {category.name}
+                      Semua
                     </button>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
-            {/* Data Paket dan product */}
-            {isLoadingProducts || isLoadingPackets ? (
-              <div className="col-span-4 flex justify-center items-center">
-                <p className="text-xs">Memuat...</p>
+                    {dataCategory?.data.map((category: any) => (
+                      <button
+                        key={category.id}
+                        className={`rounded-full text-xs py-1 px-2 border ${
+                          isActiveFilterProduct === category.name
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : ""
+                        }`}
+                        onClick={() =>
+                          handleFilterProductClick(category.name, category.id)
+                        }
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </>
+                )}
               </div>
-            ) : isActiveFilterProduct === "Paket" ? (
-              dataPackets?.data.length > 0 ? (
-                dataPackets.data.map((packet: Packet) => (
-                  <CardPacket
-                    key={packet.id}
-                    onClick={() => addPacket(packet)}
-                    id={packet.id}
-                    name={packet.name}
-                    src={packet.image}
-                    price={packet.price}
-                    products={packet.products}
+            </div>
+            <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
+              {/* Data Paket dan product */}
+              {isLoadingProducts || isLoadingPackets ? (
+                <div className="col-span-4 flex justify-center items-center">
+                  <p className="text-xs">Memuat...</p>
+                </div>
+              ) : isActiveFilterProduct === "Paket" ? (
+                dataPackets?.data.length > 0 ? (
+                  dataPackets.data.map((packet: Packet) => (
+                    <CardPacket
+                      key={packet.id}
+                      onClick={() => addPacket(packet)}
+                      id={packet.id}
+                      name={packet.name}
+                      src={packet.image}
+                      price={packet.price}
+                      products={packet.products}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-4 flex justify-center items-center">
+                    <p className="text-sm text-gray-500">
+                      Paket tidak ditemukan
+                    </p>
+                  </div>
+                )
+              ) : dataProducts?.data.length > 0 ? (
+                dataProducts.data.map((product: Product) => (
+                  <CardProduct
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    src={product.image}
+                    price={product.price}
+                    onClick={() => addProduct(product)}
                   />
                 ))
               ) : (
                 <div className="col-span-4 flex justify-center items-center">
-                  <p className="text-sm text-gray-500">Paket tidak ditemukan</p>
-                </div>
-              )
-            ) : dataProducts?.data.length > 0 ? (
-              dataProducts.data.map((product: Product) => (
-                <CardProduct
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  src={product.image}
-                  price={product.price}
-                  onClick={() => addProduct(product)}
-                />
-              ))
-            ) : (
-              <div className="col-span-4 flex justify-center items-center">
-                <p className="text-sm text-gray-500">Produk tidak ditemukan</p>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="w-[30%] h-full border-l border-[#E4E4E4] ">
-          <div className="w-full h-[14%]  px-4 space-y-1">
-            <p className="text-lg font-bold">Detail Pesanan</p>
-            <div className="flex justify-between w-full">
-              {/* Trigger DineIn Modal */}
-              <Button
-                onClick={() => setIsDineInModal(true)}
-                className="rounded-full w-[49%] text-xs h-7 bg-primaryColor hover:bg-primaryColor shadow-none"
-              >
-                Pilih Meja
-              </Button>
-              {/* Trigger TakeAway Modal */}
-              <Button
-                onClick={() => setIsTakeAwayModal(true)}
-                className="h-7 text-xs rounded-full w-[49%]"
-              >
-                Take Away
-              </Button>
-            </div>
-            <div
-              className={`flex ${
-                !customerOrder ? "justify-end" : "justify-between"
-              }`}
-            >
-              {customerOrder && (
-                <div className="space-y-1">
-                  <p
-                    className={`font-semibold text-xs ${
-                      customerOrder.type === "take away"
-                        ? "text-secondaryColor"
-                        : "text-primaryColor"
-                    }`}
-                  >
-                    {customerOrder.type === "take away"
-                      ? "Take Away"
-                      : `${customerOrder.tableNames?.join(" / ") || ""}`}
+                  <p className="text-sm text-gray-500">
+                    Produk tidak ditemukan
                   </p>
-                  <span className="flex space-x-2 items-center font-semibold text-[10px] text-[#334155]">
-                    <CustomerSVG />
-                    <p>{customerOrder.customerName}</p>
-                  </span>
                 </div>
               )}
-              <div>
-                <p className="text-[#334155] text-xs font-semibold">
-                  {currentDate}
-                </p>
-                <p className="text-[#334155] text-[10px]">{currentTime}</p>
+            </div>
+          </div>
+          <div className="w-[30%] h-full border-l border-[#E4E4E4] ">
+            <div className="w-full h-[14%]  px-4 space-y-1">
+              <p className="text-lg font-bold">Detail Pesanan</p>
+              <div className="flex justify-between w-full">
+                {/* Trigger DineIn Modal */}
+                <Button
+                  onClick={() => setIsDineInModal(true)}
+                  className="rounded-full w-[49%] text-xs h-7 bg-primaryColor hover:bg-primaryColor shadow-none"
+                >
+                  Pilih Meja
+                </Button>
+                {/* Trigger TakeAway Modal */}
+                <Button
+                  onClick={() => setIsTakeAwayModal(true)}
+                  className="h-7 text-xs rounded-full w-[49%]"
+                >
+                  Take Away
+                </Button>
               </div>
-              {/* Dine In Modal */}
-              <ChoseTableModal
-                isOpen={isDineInModal}
-                onClose={() => setIsDineInModal(false)}
-                handleSubmit={handleSubmitDineIn}
-                onSubmit={dineInSubmit}
-                title="Pilih Meja"
+              <div
+                className={`flex ${
+                  !customerOrder ? "justify-end" : "justify-between"
+                }`}
               >
-                <div className="relative px-2 pb-2 border-b-[1px] border-[#E4E4E4] my-0 flex justify-between items-center">
-                  <div className="flex space-x-3">
-                    <div className="flex space-x-1 items-center text-xs">
-                      <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#3395F0]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-                        <div className="h-2.5 w-2.5 bg-[#3395F0]/90 rounded-full" />
-                      </div>
-                      <span>
-                        Tersedia (
-                        {
-                          dataTables?.data.tables.filter(
-                            (table: TableData) => table.status === "tersedia"
-                          ).length
-                        }
-                        )
-                      </span>
-                    </div>
-
-                    <div className="flex space-x-1 items-center text-xs">
-                      <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#FEA026]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
-                        <div className="h-2.5 w-2.5 bg-primaryColor rounded-full" />
-                      </div>
-                      <span>
-                        Terisi (
-                        {
-                          dataTables?.data?.tables.filter(
-                            (table: TableData) => table.status === "terisi"
-                          ).length
-                        }
-                        )
-                      </span>
-                    </div>
+                {customerOrder && (
+                  <div className="space-y-1">
+                    <p
+                      className={`font-semibold text-xs ${
+                        customerOrder.type === "take away"
+                          ? "text-secondaryColor"
+                          : "text-primaryColor"
+                      }`}
+                    >
+                      {customerOrder.type === "take away"
+                        ? "Take Away"
+                        : `${customerOrder.tableNames?.join(" / ") || ""}`}
+                    </p>
+                    <span className="flex space-x-2 items-center font-semibold text-[10px] text-[#334155]">
+                      <CustomerSVG />
+                      <p>{customerOrder.customerName}</p>
+                    </span>
                   </div>
-
-                  <div className="space-x-2 items-center text-xs">
-                    <button
-                      className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
-                        isActiveFilterTable === "Semua"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : "border-gray-300"
-                      }`}
-                      onClick={(e) => handleFilterTableClick("Semua", e)}
-                    >
-                      Semua
-                    </button>
-                    <button
-                      className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
-                        isActiveFilterTable === "Tersedia"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : "border-gray-300"
-                      }`}
-                      onClick={(e) => handleFilterTableClick("Tersedia", e)}
-                    >
-                      Tersedia
-                    </button>
-                    <button
-                      className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
-                        isActiveFilterTable === "Terisi"
-                          ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                          : "border-gray-300"
-                      }`}
-                      onClick={(e) => handleFilterTableClick("Terisi", e)}
-                    >
-                      Terisi
-                    </button>
-                  </div>
+                )}
+                <div>
+                  <p className="text-[#334155] text-xs font-semibold">
+                    {currentDate}
+                  </p>
+                  <p className="text-[#334155] text-[10px]">{currentTime}</p>
                 </div>
+                {/* Dine In Modal */}
+                <ChoseTableModal
+                  isOpen={isDineInModal}
+                  onClose={() => setIsDineInModal(false)}
+                  handleSubmit={handleSubmitDineIn}
+                  onSubmit={dineInSubmit}
+                  title="Pilih Meja"
+                >
+                  <div className="relative px-2 pb-2 border-b-[1px] border-[#E4E4E4] my-0 flex justify-between items-center">
+                    <div className="flex space-x-3">
+                      <div className="flex space-x-1 items-center text-xs">
+                        <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#3395F0]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                          <div className="h-2.5 w-2.5 bg-[#3395F0]/90 rounded-full" />
+                        </div>
+                        <span>
+                          Tersedia (
+                          {
+                            dataTables?.data.tables.filter(
+                              (table: TableData) => table.status === "tersedia"
+                            ).length
+                          }
+                          )
+                        </span>
+                      </div>
 
-                <div className="w-full px-6 py-2">
-                  <div className="flex w-full items-center">
-                    <div className="w-1/2">
-                      <Input
-                        className="rounded-xl text-sm"
-                        type="text"
-                        id="name"
-                        placeholder="Nama "
-                        {...registerDineIn("name")}
-                      />
+                      <div className="flex space-x-1 items-center text-xs">
+                        <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#FEA026]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                          <div className="h-2.5 w-2.5 bg-primaryColor rounded-full" />
+                        </div>
+                        <span>
+                          Terisi (
+                          {
+                            dataTables?.data?.tables.filter(
+                              (table: TableData) => table.status === "terisi"
+                            ).length
+                          }
+                          )
+                        </span>
+                      </div>
                     </div>
-                    <div className="w-1/2 flex justify-end ">
-                      <p className="text-sm py-1 px-2 rounded-2xl bg-secondaryColor text-white">
-                        {selectedTables.length > 0
-                          ? selectedTables
-                              .map((table) => table.name)
-                              .join(" / ")
-                          : ""}
-                      </p>
+
+                    <div className="space-x-2 items-center text-xs">
+                      <button
+                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
+                          isActiveFilterTable === "Semua"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : "border-gray-300"
+                        }`}
+                        onClick={(e) => handleFilterTableClick("Semua", e)}
+                      >
+                        Semua
+                      </button>
+                      <button
+                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
+                          isActiveFilterTable === "Tersedia"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : "border-gray-300"
+                        }`}
+                        onClick={(e) => handleFilterTableClick("Tersedia", e)}
+                      >
+                        Tersedia
+                      </button>
+                      <button
+                        className={`rounded-3xl text-sm p-1 px-2 h-fit border ${
+                          isActiveFilterTable === "Terisi"
+                            ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                            : "border-gray-300"
+                        }`}
+                        onClick={(e) => handleFilterTableClick("Terisi", e)}
+                      >
+                        Terisi
+                      </button>
                     </div>
                   </div>
-                  {/* Display Data Table */}
-                  <div className="grid grid-cols-5 gap-5 pt-4  max-h-[400px] w-full">
-                    {loadingTables ? (
-                      <div className="col-span-5 flex justify-center items-center ">
-                        <p className="text-xs">Memuat...</p>
+
+                  <div className="w-full px-6 py-2">
+                    <div className="flex w-full items-center">
+                      <div className="w-1/2">
+                        <Input
+                          className="rounded-xl text-sm"
+                          type="text"
+                          id="name"
+                          placeholder="Nama "
+                          {...registerDineIn("name")}
+                        />
                       </div>
-                    ) : dataTables?.data.tables.length > 0 ? (
-                      dataTables?.data?.tables.map((data: TableData) => (
-                        <button
-                          key={data.id}
-                          onClick={(e) =>
-                            handleTableSelect(
-                              data.id,
-                              data.name,
-                              data.status,
-                              e
-                            )
-                          }
-                          disabled={data.status === "terisi"}
-                          className={`rounded-lg border p-1 
+                      <div className="w-1/2 flex justify-end ">
+                        <p className="text-sm py-1 px-2 rounded-2xl bg-secondaryColor text-white">
+                          {selectedTables.length > 0
+                            ? selectedTables
+                                .map((table) => table.name)
+                                .join(" / ")
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Display Data Table */}
+                    <div className="grid grid-cols-5 gap-5 pt-4  max-h-[400px] overflow-y-auto w-full">
+                      {loadingTables ? (
+                        <div className="col-span-5 flex justify-center items-center ">
+                          <p className="text-xs">Memuat...</p>
+                        </div>
+                      ) : dataTables?.data.tables.length > 0 ? (
+                        dataTables?.data?.tables.map((data: TableData) => (
+                          <button
+                            key={data.id}
+                            onClick={(e) =>
+                              handleTableSelect(
+                                data.id,
+                                data.name,
+                                data.status,
+                                e
+                              )
+                            }
+                            disabled={data.status === "terisi"}
+                            className={`rounded-lg border p-1 
         ${
           data.status === "terisi"
             ? "border-[#FEA026] cursor-not-allowed opacity-50"
@@ -870,9 +888,9 @@ function PosPage() {
             : "border-[#3395F0]"
         } 
         flex items-center justify-center w-20 h-20`}
-                        >
-                          <div
-                            className={`p-1 rounded-full 
+                          >
+                            <div
+                              className={`p-1 rounded-full 
           ${
             data.status === "terisi"
               ? "bg-[#FEA026]/10"
@@ -881,9 +899,9 @@ function PosPage() {
               : "bg-[#3395F0]/10"
           } 
           flex items-center justify-center w-10 h-10`}
-                          >
-                            <span
-                              className={`font-bold text-xs 
+                            >
+                              <span
+                                className={`font-bold text-xs 
             ${
               data.status === "terisi"
                 ? "text-[#FEA026]"
@@ -891,167 +909,170 @@ function PosPage() {
                 ? "text-[#114F44]"
                 : "text-[#3395F0]"
             }`}
-                            >
-                              {data.name}
-                            </span>
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="col-span-5 flex justify-center items-center">
-                        <p className="text-sm text-gray-500">Tidak ada meja</p>
-                      </div>
-                    )}
-                    {}
+                              >
+                                {data.name}
+                              </span>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="col-span-5 flex justify-center items-center">
+                          <p className="text-sm text-gray-500">
+                            Tidak ada meja
+                          </p>
+                        </div>
+                      )}
+                      {}
+                    </div>
                   </div>
-                </div>
-              </ChoseTableModal>
+                </ChoseTableModal>
 
-              {/* Take Away  Modal */}
-              <FormModal
-                isOpen={isTakeAwayModal}
-                onClose={() => setIsTakeAwayModal(false)}
-                handleSubmit={handleSubmitTakeAway}
-                onSubmit={takeAwaySubmit}
-                title="Pelanggan Take Away"
-              >
-                <Label className="text-xs text-[#828487] font-medium">
-                  Nama Pelanggan
-                </Label>
-                <Input
-                  className="mt-1 rounded-xl text-sm"
-                  type="text"
-                  id="name"
-                  placeholder="Nama "
-                  {...registerTakeAway("name")}
-                />
-              </FormModal>
-            </div>
-          </div>
-          <div className="w-full h-[57%] border-y border-[#E4E4E4] px-4 ">
-            <div className="flex justify-end my-2">
-              <button
-                onClick={RemoveAll}
-                className="bg-[#FF57241A] p-1 rounded text-[#EE1616] text-xs flex items-center space-x-1"
-              >
-                <Trash className="w-4 h-4" />
-                <p>Hapus Semua</p>
-              </button>
-            </div>
-            <div className="  overflow-y-auto space-y-2 max-h-[90%]">
-              {packetOrder.map((item) => (
-                <PacketOrder
-                  key={item.id}
-                  id={item.id}
-                  note={item.note || ""}
-                  name={item.name}
-                  src={item.image}
-                  price={calculateItemTotal(item.price, item.quantity)}
-                  product={item.products}
-                  quantity={item.quantity || 0}
-                  onDelete={() => handleRemovePacket(item)}
-                  onIncrease={() => handleIncreaseQuantityPacket(item)}
-                  onDecrease={() => handleDecreaseQuantityPacket(item)}
-                  onNote={() => handleOpenNotePacketModal(item.id)}
-                />
-              ))}
-
-              {/* Display product orders */}
-              {productOrder.map((item) => (
-                <ProductOrder
-                  key={item.id}
-                  id={item.id}
-                  note={item.note || ""}
-                  name={item.name}
-                  src={item.image || ""}
-                  price={calculateItemTotal(item.price, item.quantity)}
-                  quantity={item.quantity || 0}
-                  onDelete={() => handleRemoveProduct(item)}
-                  onIncrease={() => handleIncreaseQuantity(item)}
-                  onDecrease={() => handleDecreaseQuantity(item)}
-                  onNote={() => handleOpenNoteModal(item.id)}
-                />
-              ))}
-              {/* Note Product Modal */}
-              <FormModal
-                isOpen={isNoteModal}
-                onClose={() => {
-                  setIsNoteModal(false);
-                  resetNote();
-                  setSelectedProductId("");
-                }}
-                handleSubmit={handleSubmitNote}
-                onSubmit={noteSubmit}
-                title="Catatan"
-              >
-                <Label className="text-xs text-[#828487] font-medium">
-                  Masukkan Catatan
-                </Label>
-                <textarea
-                  id="note"
-                  className="flex mt-1 h-[147px] w-full rounded-xl border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-sm placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
-                  placeholder="Catatan"
-                  {...registerNote("note")}
-                ></textarea>
-              </FormModal>
-
-              {/* Note Packet Modal */}
-              <FormModal
-                isOpen={isNotePacketModal}
-                onClose={() => {
-                  setIsNotePacketModal(false);
-                  resetNotePacket();
-                  setSelectedProductId("");
-                }}
-                handleSubmit={handleSubmitNotePacket}
-                onSubmit={notePacketSubmit}
-                title="Catatan"
-              >
-                <Label className="text-xs text-[#828487] font-medium">
-                  Masukkan Catatan
-                </Label>
-                <textarea
-                  id="note"
-                  className="flex mt-1 h-[147px] w-full rounded-xl border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-sm placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
-                  placeholder="Catatan"
-                  {...registerNotePacket("note")}
-                ></textarea>
-              </FormModal>
-            </div>
-          </div>
-          <div className="w-full mt-1">
-            <form onSubmit={handleSubmitOrder(orderSubmit)}>
-              <div className="w-full  py-4 px-6 space-y-3">
-                <div className="w-full text-sm  flex items-center justify-between">
-                  <p className="text-[#828487] font-normal">Sub Total</p>
-                  {/* Sub Total */}
-                  <p className="font-semibold">{formatCurrency(subTotal)}</p>
-                </div>
-                <div className="w-full text-sm  flex items-center border-b-2 border-dashed border-[#E4E4E4] pb-3 justify-between">
-                  <p className="text-[#828487] font-normal">Pajak (10%)</p>
-                  {/* Pajak */}
-                  <p className="font-semibold">{formatCurrency(tax)}</p>
-                </div>
-                <div className="w-full flex text-sm items-center pb-3 justify-between">
-                  <p className="text-[#828487] font-normal">Total</p>
-                  {/* Total */}
-                  <p className="font-semibold text-primaryColor">
-                    {formatCurrency(total)}
-                  </p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full rounded-full  font-semibold bg-primaryColor text-sm h-9  hover:bg-primaryColor"
-                  disabled={loading}
+                {/* Take Away  Modal */}
+                <FormModal
+                  isOpen={isTakeAwayModal}
+                  onClose={() => setIsTakeAwayModal(false)}
+                  handleSubmit={handleSubmitTakeAway}
+                  onSubmit={takeAwaySubmit}
+                  title="Pelanggan Take Away"
                 >
-                  {loading ? <LoadingSVG /> : "Buat Pesanan"}
-                </Button>
+                  <Label className="text-xs text-[#828487] font-medium">
+                    Nama Pelanggan
+                  </Label>
+                  <Input
+                    className="mt-1 rounded-xl text-sm"
+                    type="text"
+                    id="name"
+                    placeholder="Nama "
+                    {...registerTakeAway("name")}
+                  />
+                </FormModal>
               </div>
-            </form>
+            </div>
+            <div className="w-full h-[57%] border-y border-[#E4E4E4] px-4 ">
+              <div className="flex justify-end my-2">
+                <button
+                  onClick={RemoveAll}
+                  className="bg-[#FF57241A] p-1 rounded text-[#EE1616] text-xs flex items-center space-x-1"
+                >
+                  <Trash className="w-4 h-4" />
+                  <p>Hapus Semua</p>
+                </button>
+              </div>
+              <div className="  overflow-y-auto space-y-2 max-h-[90%]">
+                {packetOrder.map((item) => (
+                  <PacketOrder
+                    key={item.id}
+                    id={item.id}
+                    note={item.note || ""}
+                    name={item.name}
+                    src={item.image}
+                    price={calculateItemTotal(item.price, item.quantity)}
+                    product={item.products}
+                    quantity={item.quantity || 0}
+                    onDelete={() => handleRemovePacket(item)}
+                    onIncrease={() => handleIncreaseQuantityPacket(item)}
+                    onDecrease={() => handleDecreaseQuantityPacket(item)}
+                    onNote={() => handleOpenNotePacketModal(item.id)}
+                  />
+                ))}
+
+                {/* Display product orders */}
+                {productOrder.map((item) => (
+                  <ProductOrder
+                    key={item.id}
+                    id={item.id}
+                    note={item.note || ""}
+                    name={item.name}
+                    src={item.image || ""}
+                    price={calculateItemTotal(item.price, item.quantity)}
+                    quantity={item.quantity || 0}
+                    onDelete={() => handleRemoveProduct(item)}
+                    onIncrease={() => handleIncreaseQuantity(item)}
+                    onDecrease={() => handleDecreaseQuantity(item)}
+                    onNote={() => handleOpenNoteModal(item.id)}
+                  />
+                ))}
+                {/* Note Product Modal */}
+                <FormModal
+                  isOpen={isNoteModal}
+                  onClose={() => {
+                    setIsNoteModal(false);
+                    resetNote();
+                    setSelectedProductId("");
+                  }}
+                  handleSubmit={handleSubmitNote}
+                  onSubmit={noteSubmit}
+                  title="Catatan"
+                >
+                  <Label className="text-xs text-[#828487] font-medium">
+                    Masukkan Catatan
+                  </Label>
+                  <textarea
+                    id="note"
+                    className="flex mt-1 h-[147px] w-full rounded-xl border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-sm placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+                    placeholder="Catatan"
+                    {...registerNote("note")}
+                  ></textarea>
+                </FormModal>
+
+                {/* Note Packet Modal */}
+                <FormModal
+                  isOpen={isNotePacketModal}
+                  onClose={() => {
+                    setIsNotePacketModal(false);
+                    resetNotePacket();
+                    setSelectedProductId("");
+                  }}
+                  handleSubmit={handleSubmitNotePacket}
+                  onSubmit={notePacketSubmit}
+                  title="Catatan"
+                >
+                  <Label className="text-xs text-[#828487] font-medium">
+                    Masukkan Catatan
+                  </Label>
+                  <textarea
+                    id="note"
+                    className="flex mt-1 h-[147px] w-full rounded-xl border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-sm placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+                    placeholder="Catatan"
+                    {...registerNotePacket("note")}
+                  ></textarea>
+                </FormModal>
+              </div>
+            </div>
+            <div className="w-full mt-1">
+              <form onSubmit={handleSubmitOrder(orderSubmit)}>
+                <div className="w-full  py-4 px-6 space-y-3">
+                  <div className="w-full text-sm  flex items-center justify-between">
+                    <p className="text-[#828487] font-normal">Sub Total</p>
+                    {/* Sub Total */}
+                    <p className="font-semibold">{formatCurrency(subTotal)}</p>
+                  </div>
+                  <div className="w-full text-sm  flex items-center border-b-2 border-dashed border-[#E4E4E4] pb-3 justify-between">
+                    <p className="text-[#828487] font-normal">Pajak (10%)</p>
+                    {/* Pajak */}
+                    <p className="font-semibold">{formatCurrency(tax)}</p>
+                  </div>
+                  <div className="w-full flex text-sm items-center pb-3 justify-between">
+                    <p className="text-[#828487] font-normal">Total</p>
+                    {/* Total */}
+                    <p className="font-semibold text-primaryColor">
+                      {formatCurrency(total)}
+                    </p>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full rounded-full  font-semibold bg-primaryColor text-sm h-9  hover:bg-primaryColor"
+                    disabled={loading}
+                  >
+                    {loading ? <LoadingSVG /> : "Buat Pesanan"}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
+      </AuthGuardPOS>
     </>
   );
 }
