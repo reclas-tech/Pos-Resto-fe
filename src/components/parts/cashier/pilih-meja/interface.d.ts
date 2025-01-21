@@ -33,7 +33,6 @@ export interface TakeawayListApiResponse {
   data: DataTakeawayList[];
 }
 
-
 export interface InvoiceDetailApiResponse {
   statusCode: number;
   message: string;
@@ -53,6 +52,7 @@ export interface InvoiceDetailData {
   tables: string[];
   products: Product[];
   packets: Packet[];
+  status: string;
 }
 
 interface Product {
