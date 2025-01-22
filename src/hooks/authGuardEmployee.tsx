@@ -32,12 +32,8 @@ export default function AuthGuardEmployee({ children }: AuthGuardEmployeeProps) 
     console.log("Updated At:", updated_at);
     console.log("Created At:", created_at);
 
-    if (!access_token || !refresh_token || !role || !cash_on_hand_start || !started_at || !cashier_id || !id || !updated_at || !created_at) {
-      if (role === 'cashier') {
-        router.push("/login-kasir");
-      } else if (role === 'waiter') {
-        router.push("/login-waiters");
-      }
+    if (!access_token || !refresh_token || !role || role!= "cashier" || !cash_on_hand_start || !started_at || !cashier_id || !id || !updated_at || !created_at) {
+      router.push("/login-kasir");
     } else {
       setLoading(false);
     }
