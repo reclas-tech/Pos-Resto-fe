@@ -29,6 +29,7 @@ import { showAlert2 } from "@/lib/sweetalert2";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { useRouter } from "next/navigation";
 import AuthGuardPOS from "@/hooks/authGuardPOS";
+import { showAlertDineIn } from "@/lib/sweetalertDineIn";
 
 interface Product {
   id: string;
@@ -79,18 +80,23 @@ interface NoteFormData {
 function PosPage() {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
-  const [userName, setUserName] = useState("");
-  const [role, setRole] = useState("");
-  const router = useRouter();
 
-  useEffect(() => {
-    setUserName(Cookies.get("name"));
-    setRole(Cookies.get("role"));
-  }, []);
+  const router = useRouter();
 
   const [categoryId, setCategoryId] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [search, setSearch] = useState<string>("");
+
+  // Fecth Profile
+  const { data: dataProfile, isLoading:isLoadingProfile } = useSWR(`/auth/employee/profile`, () =>
+    axiosPrivate
+      .get(`/auth/employee/profile`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => res.data)
+  );
 
   // Fetch Category
   const { data: dataCategory, isLoading: isLoadingCategories } = useSWR(
@@ -314,6 +320,13 @@ function PosPage() {
       tableNames: selectedTables.map((table) => table.name),
     });
     // console.log(customerOrder);
+    showAlertDineIn({
+      message: "Pesanan berhasil!",
+      onConfirm: () => {
+        // Handler ketika tombol confirm diklik
+        console.log("Confirmed!");
+      },
+    });
     setIsDineInModal(false);
     resetDineIn();
     setSelectedTables([]); // Reset selected tables after submission
@@ -590,10 +603,11 @@ function PosPage() {
                 </button>
 
                 <div className="flex items-center">
-                  {/* Error Hydration Failed saat render bagian ini */}
                   <div>
-                    <p className="text-sm">{userName}</p>
-                    <p className="text-xs text-[#737791]">{role}</p>
+                    <p className="text-sm">{isLoadingProfile ? "Memuat...": dataProfile.data.name}</p>
+                    <p className="text-xs text-[#737791]">
+                      {isLoadingProfile ? "Memuat..." : dataProfile.data.role}
+                    </p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -1078,3 +1092,6 @@ function PosPage() {
 }
 
 export default PosPage;
+function sweetalertDineIn(arg0: string) {
+  throw new Error("Function not implemented.");
+}
