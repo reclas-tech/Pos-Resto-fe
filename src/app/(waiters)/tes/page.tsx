@@ -110,10 +110,18 @@ export default function TesPage() {
   return (
     <>
       <div className="w-full min-h-screen p-2 bg-red-200 space-x-2 flex justify-center">
-        <KitchenReceipt data={dataKitchenReceipt[0]} />
-        <TableReceipt data={dataTableReceipt[0]} />
-        <PaymentReceipt data={dataPaymentReceipt[0]} />
-        <CloseCashierReceipt data={dataCloseCashierReceipt[0]} />
+        <div className="w-[300px]">
+          <KitchenReceipt data={dataKitchenReceipt[0]} />
+        </div>
+        <div className="w-[200px]">
+          <TableReceipt data={dataTableReceipt[0]} />
+        </div>
+        <div className="w-[300px]">
+          <PaymentReceipt data={dataPaymentReceipt[0]} />
+        </div>
+        <div className="w-[200px]">
+          <CloseCashierReceipt data={dataCloseCashierReceipt[0]} />
+        </div>
       </div>
     </>
   );

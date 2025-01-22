@@ -20,13 +20,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input, SearchInputCashier } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import DeleteModal from "@/components/ui/modal/delete";
 import EditModal from "@/components/ui/modal/edit";
 import PinModal from "@/components/ui/modal/confirmationPin";
 import ValidationModal from "@/components/ui/modal/validation";
+import DataRiwayat from "@/components/parts/cashier/riwayat-transaksi/DataRiwayat";
+import { useGetListCard } from "@/components/parts/cashier/riwayat-transaksi/api";
 
 function RiwayatTransaksi() {
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,46 @@ function RiwayatTransaksi() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
   const [isPrintSuccess, setIsPrintSuccess] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
+
+  const [filterPrice, setFilterPrice] = useState("");
+  const handleFilterPriceChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterPrice(event.target.value);
+  };
+
+  const [filterTime, setFilterTime] = useState("");
+  const handleFilterTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterTime(event.target.value);
+  };
+
+  const [filterInvoice, setFilterInvoice] = useState("");
+  const handleFilterInvoiceChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterInvoice(event.target.value);
+    console.log("Filter Invoice:", event.target.value);
+  };
+
+  const handleFilterApply = () => {
+    // Aksi yang dilakukan ketika tombol "Berhasil" ditekan
+    console.log("Filter diterapkan dengan ID Transaksi/Invoce:", filterInvoice);
+    // Anda bisa menambahkan logika untuk menerapkan filter di sini
+  };
+
+  const { data } = useGetListCard(
+    search,
+    filterPrice,
+    filterTime,
+    filterInvoice
+  );
 
   const {
     register,
@@ -150,7 +191,10 @@ function RiwayatTransaksi() {
       <main className="pl-8 pr-8 pt-4 text-sm space-y-4">
         <section className="justify-start flex gap-4">
           <div className="">
-            <SearchInputCashier className="w-[280px] text-sm h-9" />
+            <SearchInputCashier
+              className="w-[280px] text-sm h-9"
+              onChange={handleSearchChange}
+            />
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -172,18 +216,30 @@ function RiwayatTransaksi() {
                   <div className="flex justify-between gap-4 ">
                     <div className="space-y-2">
                       <span>ID Transaksi / Invoice</span>
-                      <RadioGroup defaultValue="comfortable">
+                      <div onChange={handleFilterInvoiceChange}>
                         <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="terendah" id="r1" />
+                          <input
+                            type="radio"
+                            value="asc"
+                            id="r1"
+                            checked={filterInvoice === "asc"}
+                            onChange={handleFilterInvoiceChange}
+                          />
                           <Label
                             className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
+                            htmlFor="r1"
                           >
                             Terendah
                           </Label>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="tertinggi" id="r2" />
+                          <input
+                            type="radio"
+                            value="desc"
+                            id="r2"
+                            checked={filterInvoice === "desc"}
+                            onChange={handleFilterInvoiceChange}
+                          />
                           <Label
                             className="text-sm flex items-center justify-center m-auto"
                             htmlFor="r2"
@@ -191,59 +247,108 @@ function RiwayatTransaksi() {
                             Tertinggi
                           </Label>
                         </div>
-                      </RadioGroup>
+                      </div>
+                      {/* <RadioGroup
+                      defaultValue="comfortable"
+                        // value={filterInvoice}
+                        // onChange={handleFilterInvoiceChange}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="asc" id="r1" checked={filterInvoice === 'asc'}/>
+                          <Label
+                            className="text-sm flex items-center justify-center m-auto"
+                            htmlFor="r1"
+                          >
+                            Terendah
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="desc" id="r2" />
+                          <Label
+                            className="text-sm flex items-center justify-center m-auto"
+                            htmlFor="r2"
+                          >
+                            Tertinggi
+                          </Label>
+                        </div>
+                      </RadioGroup> */}
                     </div>
-                    <div className="space-y-2">
-                      <span>Tanggal dan Waktu</span>
-                      <RadioGroup defaultValue="comfortable">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="terendah" id="r1" />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Terendah
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="tertinggi" id="r2" />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Tertinggi
-                          </Label>
-                        </div>
-                      </RadioGroup>
+                  </div>
+                  <div className="space-y-2">
+                    <span>Tanggal dan Waktu</span>
+                    <div onChange={handleFilterTimeChange}>
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          value="asc"
+                          id="r1"
+                          checked={filterTime === "asc"}
+                          onChange={handleFilterTimeChange}
+                        />
+                        <Label
+                          className="text-sm flex items-center justify-center m-auto"
+                          htmlFor="r1"
+                        >
+                          Terendah
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          value="desc"
+                          id="r2"
+                          checked={filterTime === "desc"}
+                          onChange={handleFilterTimeChange}
+                        />
+                        <Label
+                          className="text-sm flex items-center justify-center m-auto"
+                          htmlFor="r2"
+                        >
+                          Tertinggi
+                        </Label>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <span>Total Harga</span>
-                      <RadioGroup defaultValue="comfortable">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="terendah" id="r1" />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Terendah
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="tertinggi" id="r2" />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Tertinggi
-                          </Label>
-                        </div>
-                      </RadioGroup>
+                  </div>
+                  <div className="space-y-2">
+                    <span>Total Harga</span>
+                    <div onChange={handleFilterPriceChange}>
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          value="asc"
+                          id="r1"
+                          checked={filterPrice === "asc"}
+                          onChange={handleFilterPriceChange}
+                        />
+                        <Label
+                          className="text-sm flex items-center justify-center m-auto"
+                          htmlFor="r1"
+                        >
+                          Terendah
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          value="desc"
+                          id="r2"
+                          checked={filterPrice === "desc"}
+                          onChange={handleFilterPriceChange}
+                        />
+                        <Label
+                          className="text-sm flex items-center justify-center m-auto"
+                          htmlFor="r2"
+                        >
+                          Tertinggi
+                        </Label>
+                      </div>
                     </div>
                   </div>
                   <div className="flex justify-end mt-4">
                     <Button
                       variant={"ghostButton"}
                       className="text-sm bg-secondaryColor text-white p-2 h-fit"
+                      onClick={handleFilterApply}
                     >
                       Berhasil
                     </Button>
@@ -253,68 +358,15 @@ function RiwayatTransaksi() {
             </DropdownMenuContent>
           </DropdownMenu>
         </section>
-        <section className="grid grid-cols-3 gap-4">
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-2">
-            <div className="w-[40%] justify-center flex items-center">
-              <button className="rounded-lg border border-primaryColor flex items-center justify-center w-28 h-28 font-bold text-sm text-primaryColor">
-                Putri Diana
-              </button>
-            </div>
-            <div className="w-[60%] space-y-2 justify-center">
-              <div>#INV0001</div>
-              <div>26/02/2023 09:46:00</div>
-              <div>Rp. 126.000</div>
-              <div className="flex justify-between gap-2">
-                <Button
-                  variant={"ghostButton"}
-                  className="text-sm bg-secondaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Berhasil
-                </Button>
-                <Button
-                  variant={"ghostButton"}
-                  onClick={() => setIsDetailModalOpenTakeaway(true)}
-                  className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Detail
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between gap-4 w-full border-primaryColor border rounded-lg p-2">
-            <div className="w-[40%] justify-center flex items-center">
-              <button className="rounded-lg border border-primaryColor flex items-center justify-center w-28 h-28 font-bold text-sm text-primaryColor">
-                Putri Diana
-              </button>
-            </div>
-            <div className="w-[60%] space-y-2 justify-center">
-              <div>#INV0001</div>
-              <div>26/02/2023 09:46:00</div>
-              <div>Rp. 126.000</div>
-              <div className="flex justify-between gap-2">
-                <Button
-                  variant={"ghostButton"}
-                  className="text-sm bg-primaryColor text-white pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Tertunda
-                </Button>
-                <Button
-                  variant={"ghostButton"}
-                  onClick={() => setIsDetailModalOpenTakeaway(true)}
-                  className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
-                >
-                  Detail
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+        <DataRiwayat data={data?.data} statusCode={200} message="Berhasil ngambil data" />
       </main>
 
       {/* Detail Riwayat Transaksi */}
-      <DetailModal
+      {/* <DetailModal
         isOpen={isDetailModalOpenDineIn}
-        onClose={() => { setIsDetailModalOpenDineIn(false) }}
+        onClose={() => {
+          setIsDetailModalOpenDineIn(false);
+        }}
         onDetail={handleDetail}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
@@ -405,12 +457,14 @@ function RiwayatTransaksi() {
             </div>
           </div>
         </>
-      </DetailModal>
+      </DetailModal> */}
       {/* Detail Riwayat Transaksi */}
 
-      <DetailModal
+      {/* <DetailModal
         isOpen={isDetailModalOpenTakeaway}
-        onClose={() => { setIsDetailModalOpenTakeaway(false); }}
+        onClose={() => {
+          setIsDetailModalOpenTakeaway(false);
+        }}
         onDetail={handlePrint}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
@@ -513,17 +567,15 @@ function RiwayatTransaksi() {
             </div>
           </div>
         </>
-      </DetailModal>
+      </DetailModal> */}
 
       {/* Handle Print in Detail Riwayat Transaction */}
-      <ValidationModal
+      {/* <ValidationModal
         isOpen={isPrintSuccess}
         onClose={() => {
           setIsPrintSuccess(false);
         }}
-        onSubmitTrigger={() => {
-
-        }}
+        onSubmitTrigger={() => {}}
         title=""
         classNameDialogFooter="flex md:justify-center"
         showKeluarButton={true}
@@ -540,11 +592,11 @@ function RiwayatTransaksi() {
         <div className="text-lg font-bold text-center mt-4">
           Struk Berhasil di Print
         </div>
-      </ValidationModal>
+      </ValidationModal> */}
       {/* Handle Print in Detail Riwayat Transaction */}
 
       {/* Edit Detail Transaksi */}
-      <EditModal
+      {/* <EditModal
         isOpen={isEditModalOpenTakeaway}
         onClose={() => setIsEditModalOpenTakeaway(false)}
         onSubmit={handleSubmit(onEditSubmit)}
@@ -755,7 +807,7 @@ function RiwayatTransaksi() {
             </div>
           </div>
         </>
-      </EditModal>
+      </EditModal> */}
       {/* Edit Detail Transaksi */}
     </>
   );

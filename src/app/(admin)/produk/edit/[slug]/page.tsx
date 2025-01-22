@@ -271,7 +271,7 @@ function EditProductPage() {
               alt="Preview"
               width={200}
               height={200}
-              className="object-cover"
+              className="object-contain h-full"
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>

@@ -1,16 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import EditModal from "@/components/ui/modal/edit";
 import DeleteModal from "@/components/ui/modal/delete2";
 import {
   Table,
@@ -21,87 +17,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ActionSVG } from "@/constants/svgIcons";
-import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import Link from "next/link";
+import React, { useState } from "react";
+import { PacketInterface } from "./interface";
 import { showAlert2 } from "@/lib/sweetalert2";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { mutate } from "swr";
-import { putSubmitCategory, useGetCategoryOne } from "./api";
-import { CategoryEdit, CategoryInterface } from "./interface";
-import { categorySchema } from "./validation";
-import { z } from "zod";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import Cookies from "js-cookie";
 
-const DataTable: React.FC<CategoryInterface> = ({
+const DataTablePacket: React.FC<PacketInterface> = ({
   data,
   currentPage,
   limit,
   search,
 }) => {
-  type FormValues = z.infer<typeof categorySchema>;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const accessToken = Cookies.get("access_token"); // Get Token
+  const accessToken = Cookies.get("access_token"); // Ambil token langsung
   const axiosPrivate = useAxiosPrivateInstance();
   const handleDelete = async (id: string | number) => {
     try {
       const response = await axiosPrivate.delete(
-        `/category/admin/delete/${id}`,
+        `/product/admin/packet/delete/${id}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
       );
+      // alert
       showAlert2("success", response?.data?.message);
+      // alert
+      // Update the local data after successful deletion
     } catch (error: any) {
+      // Extract error message from API response
       const errorMessage =
         error.response?.data?.data?.[0]?.message ||
         error.response?.data?.message ||
         "Gagal menghapus data!";
       showAlert2("error", errorMessage);
+      //   alert
     }
     mutate(
-      `/category/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
+      `/product/packet/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
     );
-  };
-
-  // edit
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(categorySchema),
-  });
-
-  // edit
-  const [selectedItem, setSelectedItem] = useState<CategoryEdit | null>(null);
-  const id = selectedItem?.id ?? "";
-  const [loading, setLoading] = useState(false);
-
-  // GET ONE
-  const { data: dataUser } = useGetCategoryOne(id as string);
-
-  useEffect(() => {
-    if (dataUser?.data) {
-      const timer = setTimeout(() => {
-        setValue("name", dataUser?.data?.name ?? "");
-      }, 1000);
-
-      return () => clearTimeout(timer); // Clean up 
-    }
-  }, [dataUser, setValue]);
-
-  // GET ONE
-  const { handlePostSubmit } = putSubmitCategory(id);
-  const url = `/category/admin/list?page=${currentPage}&limit=${limit}&search=${search}`;
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    handlePostSubmit(data, setLoading, url, setIsEditModalOpen, reset);
   };
 
   return (
@@ -112,7 +71,9 @@ const DataTable: React.FC<CategoryInterface> = ({
           <TableHeader className="bg-primaryColor">
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
-              <TableHead className="w-[260px]">Nama Kategori</TableHead>
+              <TableHead className="w-[260px]">Nama Menu</TableHead>
+              <TableHead className="w-[260px]">Harga</TableHead>
+              <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -129,6 +90,12 @@ const DataTable: React.FC<CategoryInterface> = ({
                   <TableCell className="text-center">
                     {item?.name ?? "-"}
                   </TableCell>
+                  <TableCell className="text-center">
+                    {item?.price ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.stock ?? "-"}
+                  </TableCell>
                   <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -141,45 +108,11 @@ const DataTable: React.FC<CategoryInterface> = ({
                           Pilih Aksi
                         </DropdownMenuLabel>
                         <div className="p-2 text-sm space-y-1">
-                          {/* edit */}
-                          <button
-                            className="text-black hover:text-primaryColor dark:text-white w-full text-left"
-                            onClick={() => {
-                              setSelectedItem(item); // Simpan data item yang dipilih
-                              setIsEditModalOpen(true); // Buka modal edit
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <EditModal
-                            isOpen={isEditModalOpen}
-                            onClose={() => {
-                              setSelectedItem(null);
-                              setIsEditModalOpen(false);
-                            }}
-                            onSubmit={handleSubmit(onSubmit)}
-                            title="Edit Kategori"
-                            loading={loading}
-                            editButtonText="Simpan"
-                          >
-                            <div className="flex flex-col w-full">
-                              <Label htmlFor="name">Nama Kategori</Label>
-                              <Input
-                                type="text"
-                                id="name"
-                                placeholder="Edit Kategori"
-                                className="w-full"
-                                {...register("name")}
-                              />
-                              {errors.name && (
-                                <span className="text-sm text-red-500 mt-1">
-                                  {errors.name.message}
-                                </span>
-                              )}
+                          <Link href={`/produk/edit-paket/${item?.id}`}>
+                            <div className="w-full hover:text-primaryColor">
+                              Edit
                             </div>
-                          </EditModal>
-
-                          {/* hapus */}
+                          </Link>
                           <button
                             className="text-black hover:text-primaryColor  dark:text-white w-full text-left"
                             onClick={() => setIsDeleteModalOpen(true)}
@@ -201,7 +134,7 @@ const DataTable: React.FC<CategoryInterface> = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center">
+                <TableCell colSpan={5} className="text-center">
                   Tidak ada data
                 </TableCell>
               </TableRow>
@@ -213,4 +146,4 @@ const DataTable: React.FC<CategoryInterface> = ({
   );
 };
 
-export default DataTable;
+export default DataTablePacket;

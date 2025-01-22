@@ -33,7 +33,6 @@ export interface TakeawayListApiResponse {
   data: DataTakeawayList[];
 }
 
-
 export interface InvoiceDetailApiResponse {
   statusCode: number;
   message: string;
@@ -45,6 +44,7 @@ export interface InvoiceDetailData {
   tax: number;
   type: string;
   customer: string;
+  created_at: string;
   price_sum: number;
   price: number;
   cashier: string;
@@ -52,6 +52,7 @@ export interface InvoiceDetailData {
   tables: string[];
   products: Product[];
   packets: Packet[];
+  status: string;
 }
 
 interface Product {
@@ -68,4 +69,8 @@ interface Packet {
   price_sum: number;
   name: string;
   price: number;
+}
+
+export interface PaymentApiResponse {
+  method: string;
 }

@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRupiah } from "@/hooks/useRupiah";
+import { useInputRp } from "@/hooks/useRupiah";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,79 +15,112 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PacketValues, packetSchema } from "@/validations";
-import { showAlert2 } from "@/lib/sweetalert2";
+// import { showAlert2 } from "@/lib/sweetalert2";
 import { LoadingSVG } from "@/constants/svgIcons";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import {
+  useGetPacketOne,
+  useGetListProduct,
+} from "@/components/parts/admin/paket/api";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import Cookies from "js-cookie";
+import { showAlert2 } from "@/lib/sweetalert2";
 
 interface SelectedProduct {
-  id: number;
+  id: string;
   name: string;
   quantity: number;
 }
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
 }
 
 function EditPacketPage() {
-  const dummyProducts: Product[] = [
-    { id: 1, name: "Nasi Padang", price: 15000 },
-    { id: 2, name: "Rendang", price: 25000 },
-    { id: 3, name: "Ayam Bakar", price: 20000 },
-    { id: 4, name: "Gulai Ikan", price: 18000 },
-    { id: 5, name: "Sayur Singkong", price: 8000 },
-  ];
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+  const { data: products } = useGetListProduct("");
+  const { slug } = useParams();
+  const navigate = useRouter();
 
-  const initialSelectedProducts: SelectedProduct[] = [
-    { id: 1, name: "Nasi Padang", quantity: 2 },
-    { id: 2, name: "Rendang", quantity: 1 },
-    { id: 3, name: "Ayam Bakar", quantity: 3 },
-  ];
+  const { data: packetData, isLoading: isLoadingPacket } = useGetPacketOne(
+    slug as string
+  );
+  // const { handlePostSubmit } = putSubmitPacket(slug as string);
 
   const [loading, setLoading] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    initialSelectedProducts
+    []
   );
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png"
-  );
-  const navigate = useRouter();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     setValue,
     formState: { errors },
   } = useForm<PacketValues>({
     resolver: zodResolver(packetSchema),
     defaultValues: {
-      name: "Paket 1",
-      price: "Rp. 45.000",
-      hpp: "Rp. 3.000",
-      stock: "23",
-      image:
-        "https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/c5ff7a56-6965-4066-9a80-d09ec285b8f2/W+NIKE+P-6000.png",
+      name: "",
+      price: 0,
+      cogp: 0,
+      stock: 0,
+      image: "",
     },
   });
+
+  useEffect(() => {
+    console.log("Packet Data:", packetData);
+
+    if (packetData?.data) {
+      // Pastikan semua field diisi dengan nilai yang benar
+      setValue("name", packetData.data.name || "");
+      setValue("price", packetData.data.price || 0);
+      setValue("cogp", packetData.data.cogp || 0);
+      setValue("stock", packetData.data.stock || 0);
+
+      // Tambahkan null check dan default value
+      setSelectedProducts(
+        packetData.data.products?.map((product: SelectedProduct) => ({
+          id: product.id || "",
+          name: product.name || "",
+          quantity: product.quantity || 1,
+        })) || []
+      );
+
+      // Pastikan image handling lebih robust
+      if (packetData.data.image) {
+        const imageUrl = packetData.data.image;
+        setImagePreview(imageUrl);
+        setExistingImage(imageUrl);
+        setValue("image", imageUrl);
+      }
+    }
+  }, [packetData, setValue]);
 
   const handleAddProduct = (product: Product) => {
     const existingProduct = selectedProducts.find((p) => p.id === product.id);
     if (!existingProduct) {
-      setSelectedProducts([
-        ...selectedProducts,
-        { id: product.id, name: product.name, quantity: 1 },
-      ]);
+      const newProduct: SelectedProduct = {
+        id: product.id,
+        name: product.name,
+        quantity: 1,
+      };
+      setSelectedProducts([...selectedProducts, newProduct]);
     }
   };
 
-  const handleIncreaseQuantity = (id: number) => {
+  const handleIncreaseQuantity = (id: string) => {
     setSelectedProducts(
       selectedProducts.map((product) =>
         product.id === id
@@ -95,7 +130,7 @@ function EditPacketPage() {
     );
   };
 
-  const handleDecreaseQuantity = (id: number) => {
+  const handleDecreaseQuantity = (id: string) => {
     setSelectedProducts(
       selectedProducts.map((product) =>
         product.id === id && product.quantity > 1
@@ -105,36 +140,96 @@ function EditPacketPage() {
     );
   };
 
-  const handleRemoveProduct = (id: number) => {
+  const handleRemoveProduct = (id: string) => {
     setSelectedProducts(
       selectedProducts.filter((product) => product.id !== id)
     );
   };
 
-  const onEditSubmit: SubmitHandler<PacketValues> = (data) => {
-    setLoading(true);
-    const packetData = {
-      ...data,
-      products: selectedProducts,
-    };
-    console.log("Updated data:", packetData);
-    showAlert2("success", "Berhasil memperbarui data");
-    setLoading(false);
-    reset();
-    setSelectedProducts([]);
-    navigate.push("/produk/menu-paket");
-  };
-
-  const { value: price, onChange: handlePriceChange } = useRupiah();
-  const { value: hpp, onChange: handleHppChange } = useRupiah();
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setValue("image", file);
-      const objectUrl = URL.createObjectURL(file);
-      setImagePreview(objectUrl);
-      return () => URL.revokeObjectURL(objectUrl);
+      setImagePreview(URL.createObjectURL(file));
+      setExistingImage(null);
+    }
+  };
+
+  if (isLoadingPacket) {
+    return <div>Memuat...</div>;
+  }
+
+  const onEditSubmit: SubmitHandler<PacketValues> = async (data) => {
+    try {
+      // Validasi produk
+      if (!selectedProducts || selectedProducts.length === 0) {
+        showAlert2("error", "Pilih minimal satu produk!");
+        return;
+      }
+
+      setLoading(true);
+
+      console.log("Form Data:", data);
+      console.log("Selected Products:", selectedProducts);
+
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("price", data.price.toString());
+      formData.append("cogp", data.cogp.toString());
+      formData.append("stock", data.stock.toString());
+
+      const productsArray = selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      }));
+
+      formData.append("products", JSON.stringify(productsArray));
+
+      productsArray.forEach((product, index) => {
+        formData.append(`products[${index}][id]`, product.id);
+        formData.append(
+          `products[${index}][quantity]`,
+          product.quantity.toString()
+        );
+      });
+
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      } else if (existingImage) {
+        formData.append("existing_image", existingImage);
+      }
+      formData.append("_method", "PUT");
+
+      // Kirim request
+      const response = await axiosPrivate.post(
+        `/product/admin/packet/edit/${slug}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.data?.message) {
+        showAlert2("success", response.data.message);
+        reset();
+        setSelectedProducts([]);
+        setImagePreview(null);
+        setExistingImage(null);
+      }
+    } catch (error: any) {
+      console.error("Error full response:", error.response);
+
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal mengubah data!";
+
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
+      navigate.push("/produk/menu-paket");
     }
   };
 
@@ -142,6 +237,7 @@ function EditPacketPage() {
     <form
       className="text-black dark:text-white"
       onSubmit={handleSubmit(onEditSubmit)}
+      encType="multipart/form-data"
     >
       <div className="w-full grid grid-cols-2 gap-x-4 gap-y-5">
         <div className="flex flex-col w-full">
@@ -163,7 +259,7 @@ function EditPacketPage() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="default"
-                className="w-1/4 mb-1 bg-primaryColor hover:bg-primaryColor hover:opacity-90"
+                className="w-1/3 mb-1 bg-primaryColor hover:bg-primaryColor hover:opacity-90"
                 iconLeft={<Plus />}
               >
                 Tambah Produk
@@ -174,10 +270,11 @@ function EditPacketPage() {
                 Pilih produk
               </DropdownMenuLabel>
               <div className="p-2 text-base space-y-2 max-h-32 overflow-y-auto">
-                {dummyProducts.map((product) => (
+                {products?.data?.items?.map((product: Product) => (
                   <div
                     key={product.id}
-                    className="flex justify-between items-center hover:bg-gray-50 p-2 rounded-md"
+                    id="opsi-produk"
+                    className="flex justify-between items-center hover:bg-gray-50 p-2 rounded-md "
                   >
                     <div>
                       <p className="font-medium">{product.name}</p>
@@ -241,7 +338,9 @@ function EditPacketPage() {
             type="number"
             id="stocks"
             placeholder="Jumlah Stok"
-            {...register("stock")}
+            {...register("stock", {
+              valueAsNumber: true,
+            })}
           />
           {errors.stock && (
             <span className="text-sm text-red-500">{errors.stock.message}</span>
@@ -255,11 +354,11 @@ function EditPacketPage() {
               type="text"
               id="price"
               placeholder="Rp."
-              value={price}
-              {...register("price")}
+              value={useInputRp(watch("price"))}
               onChange={(e) => {
-                handlePriceChange(e);
-                setValue("price", e.target.value.replace(/\D/g, ""));
+                const numericValue =
+                  parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+                setValue("price", numericValue);
               }}
             />
             {errors.price && (
@@ -274,15 +373,17 @@ function EditPacketPage() {
               type="text"
               id="hpp"
               placeholder="Rp."
-              value={hpp}
-              {...register("hpp")}
+              value={useInputRp(watch("cogp"))}
               onChange={(e) => {
-                handleHppChange(e);
-                setValue("hpp", e.target.value.replace(/\D/g, ""));
+                const numericValue =
+                  parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+                setValue("price", numericValue);
               }}
             />
-            {errors.hpp && (
-              <span className="text-sm text-red-500">{errors.hpp.message}</span>
+            {errors.cogp && (
+              <span className="text-sm text-red-500">
+                {errors.cogp.message}
+              </span>
             )}
           </div>
         </div>
@@ -298,7 +399,7 @@ function EditPacketPage() {
         >
           {imagePreview ? (
             <Image
-              src={imagePreview}
+              src={imagePreview || "waroeng aceh garuda"}
               width={100}
               height={100}
               alt="Preview"
@@ -313,7 +414,7 @@ function EditPacketPage() {
             className="hidden"
             id="image-upload"
             {...register("image")}
-            onChange={handleFileChange}
+            onChange={handleImageChange}
           />
         </div>
         {errors.image && (
