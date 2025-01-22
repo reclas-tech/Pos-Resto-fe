@@ -180,7 +180,16 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                                         </ul>
                                                                     </div>
                                                                 </div>
+                                                                {/* kanan */}
                                                                 <div className="flex flex-col w-full">
+                                                                    <div
+                                                                        className={`capitalize mb-2 ${dataDetail?.data?.type === "dine in"
+                                                                            ? "bg-primaryColor"
+                                                                                : "bg-secondaryColor"
+                                                                            } rounded-lg text-xs p-2 w-fit text-white`}
+                                                                    >
+                                                                        {dataDetail?.data?.type || "-"}
+                                                                    </div>
                                                                     <Label htmlFor="statusPurchase">
                                                                         Status Pembayaran
                                                                     </Label>

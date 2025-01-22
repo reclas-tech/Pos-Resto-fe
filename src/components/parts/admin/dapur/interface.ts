@@ -17,6 +17,7 @@ interface Data {
 interface Kitchen {
   id: string;
   name: string;
+  ip: string;
 }
 export interface KitchenOne {
   statusCode: number;
@@ -27,4 +28,5 @@ export interface KitchenOne {
 export interface KitchenEdit {
   id: string;
   name: string;
+  ip: string;
 }

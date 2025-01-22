@@ -90,6 +90,7 @@ const DataTableKitchen: React.FC<KitchenInterface> = ({
     if (dataUser?.data) {
       const timer = setTimeout(() => {
         setValue("name", dataUser?.data?.name ?? "");
+        setValue("ip", dataUser?.data?.ip ?? "");
       }, 1000);
 
       return () => clearTimeout(timer); // Clean up the timeout on component unmount or data change
@@ -113,6 +114,7 @@ const DataTableKitchen: React.FC<KitchenInterface> = ({
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
               <TableHead className="w-[260px]">Nama Dapur</TableHead>
+              <TableHead className="w-[260px]">Alamat IP</TableHead>
               <TableHead className="w-[270px]">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -128,6 +130,9 @@ const DataTableKitchen: React.FC<KitchenInterface> = ({
                   </TableCell>
                   <TableCell className="text-center">
                     {item?.name ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.ip ?? "-"}
                   </TableCell>
                   <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
                     <DropdownMenu>
@@ -174,6 +179,21 @@ const DataTableKitchen: React.FC<KitchenInterface> = ({
                               {errors.name && (
                                 <span className="text-sm text-red-500 mt-1">
                                   {errors.name.message}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-col w-full mt-3">
+                              <Label htmlFor="ip">Alamat IP</Label>
+                              <Input
+                                type="text"
+                                id="ip"
+                                placeholder="Nama Dapur"
+                                className="w-full"
+                                {...register("ip")}
+                              />
+                              {errors.ip && (
+                                <span className="text-sm text-red-500 mt-1">
+                                  {errors.ip.message}
                                 </span>
                               )}
                             </div>

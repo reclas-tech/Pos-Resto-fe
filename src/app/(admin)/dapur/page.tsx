@@ -115,6 +115,21 @@ function KitchenPage() {
                 </span>
               )}
             </div>
+            <div className="flex flex-col w-full mt-3">
+              <Label htmlFor="ip">Alamat IP</Label>
+              <Input
+                type="text"
+                id="ip"
+                placeholder="Nama Dapur"
+                className="w-full"
+                {...register("ip")}
+              />
+              {errors.ip && (
+                <span className="text-sm text-red-500 mt-1">
+                  {errors.ip.message}
+                </span>
+              )}
+            </div>
           </CreateModal>
         </div>
       </div>
