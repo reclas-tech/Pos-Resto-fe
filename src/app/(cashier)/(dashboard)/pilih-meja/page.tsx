@@ -37,7 +37,7 @@ import DataTableList from "@/components/parts/cashier/pilih-meja/DataTableList";
 import DataTakeawayList from "@/components/parts/cashier/pilih-meja/DataTakeawayList";
 import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { PaymentApiResponse } from "@/components/parts/cashier/pilih-meja/interface";
 import Cookies from "js-cookie";
 
@@ -67,6 +67,19 @@ function SelectTable() {
   const [isPaymentSuccessModal, setIsPaymentSuccessModal] = useState(false);
   const [pinValue, setPinValue] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const role = Cookies.get("role");
+
+    // console.log(role);
+    if (!role) {
+      router.push("/login-kasir");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
 
   // Handle filter status state
   const status =
