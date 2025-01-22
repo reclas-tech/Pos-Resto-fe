@@ -673,7 +673,7 @@ function PosPage() {
                 ) : (
                   <>
                     <button
-                      className={`rounded-full text-xs py-1 px-2 border ${
+                      className={`rounded-full text-xs py-1 px-2 border whitespace-nowrap   ${
                         isActiveFilterProduct === "Semua"
                           ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                           : ""
@@ -685,7 +685,7 @@ function PosPage() {
                     {dataCategory?.data.map((category: any) => (
                       <button
                         key={category.id}
-                        className={`rounded-full text-xs py-1 px-2 border ${
+                        className={`rounded-full text-xs py-1 px-2 border whitespace-nowrap   ${
                           isActiveFilterProduct === category.name
                             ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
                             : ""
