@@ -39,7 +39,7 @@ function LaporanAdminPage() {
   const [selectedYear, setSelectedYear] = useState<string>();
   const [includeCharity, setIncludeCharity] = useState(false);
   const [filterType, setFilterType] = useState<'date-range' | 'month-year'>('month-year');
-  const [kitchen, setKitchen] = useState<string>("Semua");
+  const [kitchen, setKitchen] = useState<string>("");
 
   // Format dates for API
   const formattedStartDate = startDate ? format(startDate, 'yyyy-MM-dd') : '';
@@ -82,7 +82,7 @@ function LaporanAdminPage() {
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="Semua">Semua</SelectItem>
-                  <SelectItem value="Dapur1">Dapur 1</SelectItem>
+                  <SelectItem value="9e054677-6082-48a6-8757-f5fd6a9ff117">Dapur 1</SelectItem>
                   <SelectItem value="Dapur2">Dapur 2</SelectItem>
                   <SelectItem value="Dapur3">Dapur 3</SelectItem>
                   <SelectItem value="Dapur4">Dapur 4</SelectItem>
@@ -331,8 +331,20 @@ function LaporanAdminPage() {
                       Laporan Penjualan <br /> Waroeng Aceh Garuda
                     </div>
                     <div className="text-center text-sm">
-                      Periode {startDate ? format(startDate, "d MMMM yyyy") : ''} - {endDate ? format(endDate, "d MMMM yyyy") : ''}
+                      Periode{" "}
+                      {startDate
+                        ? format(new Date(startDate), "d MMMM yyyy")
+                        : dataReport?.data?.start
+                          ? format(new Date(dataReport.data.start), "d MMMM yyyy")
+                          : format(new Date(), "d MMMM yyyy")}
+                      {" - "}
+                      {endDate
+                        ? format(new Date(endDate), "d MMMM yyyy")
+                        : dataReport?.data?.end
+                          ? format(new Date(dataReport.data.end), "d MMMM yyyy")
+                          : format(new Date(), "d MMMM yyyy")}
                     </div>
+
                   </div>
 
                   {/* Financial Summary */}
@@ -360,7 +372,12 @@ function LaporanAdminPage() {
                     <div className="border border-dashed border-black/50 mt-8"></div>
                     <div className="flex justify-between text-black font-bold text-lg">
                       <div>TOTAL LABA BERSIH</div>
-                      <div>Rp. {dataReport?.data?.profit.toLocaleString()}</div>
+                      <div>Rp. {(
+                        dataReport?.data?.income -
+                        dataReport?.data?.tax -
+                        dataReport?.data?.cogp -
+                        (filterType === 'month-year' && includeCharity && dataReport?.data?.charity ? dataReport?.data?.charity : 0)
+                      ).toLocaleString()}</div>
                     </div>
                   </div>
 

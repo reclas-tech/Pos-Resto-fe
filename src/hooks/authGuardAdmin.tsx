@@ -14,12 +14,18 @@ export default function AuthGuardAdmin({ children }: AuthGuardAdminProps) {
   useEffect(() => {
     const access_token = Cookies.get("access_token");
     const refresh_token = Cookies.get("refresh_token");
-    // console.log("Access Token:", access_token);
-    // console.log("Refresh Token:", refresh_token);
+    const role = Cookies.get("role");
     if (!access_token && !refresh_token) {
       router.push("/login");
+      Cookies.remove("role");
     } else {
       setLoading(false);
+    }
+    if (role) {
+      Cookies.remove("access_token");
+      Cookies.remove("refresh_token");
+      Cookies.remove("role");
+      router.push("/login")
     }
   }, [router]);
 
