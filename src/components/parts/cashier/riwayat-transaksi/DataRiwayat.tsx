@@ -6,6 +6,12 @@ import { useGetOneListCard } from "./api";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import { Label } from "@/components/ui/label";
 import { format, parseISO } from "date-fns";
+import EditModal from "@/components/ui/modal/edit";
+import { SubmitHandler, useForm } from "react-hook-form";
+import PinModal from "@/components/ui/modal/confirmationPin";
+import DeleteModal from "@/components/ui/modal/delete";
+import { Input } from "@/components/ui/input";
+import { Minus, Plus, Trash2 } from "lucide-react";
 // import EditModal from "@/components/ui/modal/edit";
 
 interface Product {
@@ -15,30 +21,96 @@ interface Product {
   price: number;
 }
 
+interface Packet {
+  id: string;
+  quantity: number;
+  name: string;
+}
+
+interface FormInputs {
+  pin?: string;
+  products?: Product[];
+  packets?: Packet[];
+}
+
 const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
   const [isDetailModalOpenDineIn, setIsDetailModalOpenDineIn] = useState(false);
-  // const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   // const [isPrintSuccess, setIsPrintSuccess] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     string | null
   >("");
 
-  const handleDetailModal = (id: string) => {
-    setSelectedTransactionId(id);
-    setIsDetailModalOpenDineIn(true);
-    // if (dataDetail?.data?.type === "take away") {
-    //   setSelectedTransactionId(id);
-    //   setIsDetailModalOpenTakeaway(true);
-    // }
-    // if (dataDetail?.data?.type === "dine in") {
-    //   setSelectedTransactionId(id);
-    //   setIsDetailModalOpenDineIn(true);
-    // }
-  };
   const { data: dataDetail } = useGetOneListCard(
     selectedTransactionId?.toString() || ""
   );
+
+
+  const selectedPurchaseDetails = [
+    ...dataDetail?.data?.products,
+    ...dataDetail?.data?.packets,
+  ]
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInputs>();
+
+  const onSubmit: SubmitHandler<FormInputs> = async (formData) => {
+    const formatedRequest = {
+      pin: formData.pin || "",
+      products:
+        dataDetail?.data?.products.map((product: Product) => ({
+          id: product.id,
+          quantity: product.quantity,
+        })) || [],
+      packets:
+        dataDetail?.data?.packets.map((packet: Packet) => ({
+          id: packet.id,
+          quantity: packet.quantity,
+        })) || [],
+    };
+    console.log(formatedRequest);
+  };
+
+  const handleDetailModal = (id: string) => {
+    setSelectedTransactionId(id);
+    if (dataDetail?.data?.status === "pending") {
+      setIsEditModalOpen(true);
+    } else {
+      setIsDetailModalOpenDineIn(true);
+    }
+  };
+
+  const handleIncreaseQuantity = (id: number) => {
+      selectedPurchaseDetails.map((PuchaseDetails) =>
+        PuchaseDetails.id === id
+          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity + 1 }
+          : PuchaseDetails
+      )
+  };
+
+  const handleDecreaseQuantity = (id: number) => {
+      selectedPurchaseDetails.map((PuchaseDetails) =>
+        PuchaseDetails.id === id && PuchaseDetails.quantity > 1
+          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity - 1 }
+          : PuchaseDetails
+      )
+  };
+
+  const handleRemovePurchaseDetails = (id: number) => {
+      selectedPurchaseDetails.filter(
+        (PuchaseDetails) => PuchaseDetails.id !== id
+      )
+  };
+
+  const handleDelete = () => {
+    register("pin", { required: "Pin is required" })
+  }
 
   const formatedProduct = dataDetail?.data.products
     .map((product: Product) => `${product.quantity}x ${product.name}`)
@@ -58,8 +130,7 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
       </>
     );
   }
-  return (
-    <>
+  return (    <>
       <section className="grid grid-cols-3 gap-4">
         {data.map((item, index) => {
           return (
@@ -196,7 +267,15 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
-              <div className={`rounded-lg text-sm w-fit text-white ${dataDetail?.data?.type === 'dine in' ? 'bg-primaryColor' : dataDetail?.data?.type === 'take away' ? 'bg-secondaryColor' : 'bg-error'} p-1`}>
+              <div
+                className={`rounded-lg text-sm w-fit text-white ${
+                  dataDetail?.data?.type === "dine in"
+                    ? "bg-primaryColor"
+                    : dataDetail?.data?.type === "take away"
+                    ? "bg-secondaryColor"
+                    : "bg-error"
+                } p-1`}
+              >
                 {dataDetail?.data?.type === "dine in" ? "Dine In" : "Take Away"}
               </div>
               <Label htmlFor="statusPurchase" className="text-sm mt-2">
@@ -222,10 +301,10 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
         </>
       </DetailModal>
 
-      {/* <EditModal
-        isOpen={isEditModalOpenTakeaway}
-        onClose={() => setIsEditModalOpenTakeaway(false)}
-        onSubmit={handleSubmit(onEditSubmit)}
+      <EditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleSubmit(onSubmit)}
         title="Detail Riwayat Transaksi"
         classNameDialogContent="sm:max-w-[704px]"
         editButtonText="Kirim"
@@ -246,7 +325,6 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
             isOpen={isDeleteModalOpen}
             onClose={() => {
               setIsDeleteModalOpen(false);
-              handleDelete();
             }}
             title="Hapus"
             description="Anda yakin ingin menghapus item ini ?"
@@ -254,7 +332,7 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
           <PinModal
             isOpen={isDeletePinModalOpen}
             onClose={() => {
-              setIsEditModalOpenTakeaway(false);
+              setIsEditModalOpen(false);
               setIsDeleteModalOpen(false);
               setIsDeletePinModalOpen(false);
             }}
@@ -271,13 +349,15 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="idTransaction"
                   placeholder="Id Transaksi"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  value={dataDetail?.data?.code}
+                  disabled
+                  // {...register("cashier_id")}
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
               <div className="flex flex-col w-full">
                 <Label htmlFor="noTable" className="text-sm">
@@ -288,13 +368,15 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="noTable"
                   placeholder="Nomor Meja"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  value={dataDetail?.data?.tables.join(", ") || "-"}
+                  disabled
+                  // {...register("cashier_id")}
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
             <div className="flex gap-4 justify-between text-sm">
@@ -307,13 +389,22 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="dateTime"
                   placeholder="Tanggal dan Waktu Transaksi"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  disabled
+                  value={
+                    dataDetail?.data?.created_at
+                      ? format(
+                          parseISO(dataDetail?.data?.created_at),
+                          "dd/MM/yyyy HH:mm"
+                        )
+                      : "-"
+                  }
+                  // {...register("cashier_id")}
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
               <div className="flex flex-col w-full">
                 <Label htmlFor="price" className="text-sm">
@@ -324,13 +415,16 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="price"
                   placeholder="Total Harga"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  value={formatRupiah(
+                    dataDetail?.data?.price_sum.toLocaleString() || "0"
+                  )}
+                  disabled
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
             <div className="flex gap-4 justify-between text-sm">
@@ -343,13 +437,14 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="nameCashier"
                   placeholder="Nama Kasir"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  value={dataDetail?.data?.cashier || "-"}
+                  // {...register("cashier_id")}
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
               <div className="flex flex-col w-full">
                 <Label htmlFor="paymentMethod" className="text-sm">
@@ -360,13 +455,14 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                   id="paymentMethod"
                   placeholder="Metode Pembayaran"
                   className="text-sm"
-                  {...register("cashier_id")}
+                  value={dataDetail?.data?.payment || "-"}
+                  // {...register("cashier_id")}
                 />
-                {errors.cashier_id && (
+                {/* {errors.cashier_id && (
                   <span className="text-sm text-red-500">
                     {errors.cashier_id.message}
                   </span>
-                )}
+                )} */}
               </div>
             </div>
             <div className="flex gap-4">
@@ -433,7 +529,7 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
             </div>
           </div>
         </>
-      </EditModal> */}
+      </EditModal>
     </>
   );
 };
