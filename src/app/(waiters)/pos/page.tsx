@@ -88,14 +88,16 @@ function PosPage() {
   const [search, setSearch] = useState<string>("");
 
   // Fecth Profile
-  const { data: dataProfile, isLoading:isLoadingProfile } = useSWR(`/auth/employee/profile`, () =>
-    axiosPrivate
-      .get(`/auth/employee/profile`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => res.data)
+  const { data: dataProfile, isLoading: isLoadingProfile } = useSWR(
+    `/auth/employee/profile`,
+    () =>
+      axiosPrivate
+        .get(`/auth/employee/profile`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data)
   );
 
   // Fetch Category
@@ -320,13 +322,7 @@ function PosPage() {
       tableNames: selectedTables.map((table) => table.name),
     });
     // console.log(customerOrder);
-    showAlertDineIn({
-      message: "Pesanan berhasil!",
-      onConfirm: () => {
-        // Handler ketika tombol confirm diklik
-        console.log("Confirmed!");
-      },
-    });
+
     setIsDineInModal(false);
     resetDineIn();
     setSelectedTables([]); // Reset selected tables after submission
@@ -542,7 +538,9 @@ function PosPage() {
         type: customerOrder?.type || "",
         tables: customerOrder?.tableIds || [],
       };
+
       setLoading(true);
+
       const response = await axiosPrivate.post(
         "/order/waiter/create",
         orderData,
@@ -553,20 +551,38 @@ function PosPage() {
         }
       );
 
-      showAlert2("success", response?.data?.message);
+      // Show different alerts based on order type
+      if (customerOrder?.type === "dine in") {
+        showAlertDineIn({
+          message: "Pesanan berhasil!",
+          onConfirm: () => {
+            // Reset states only after confirmation for dine in
+            setProductOrder([]);
+            setPacketOrder([]);
+            setCustomerOrder(null);
+            setSelectedTables([]);
+            resetOrder();
+            console.log("Confirmed")
+          },
+        });
+      } else {
+        showAlert2("success", response?.data?.message);
+        // Reset states immediately for other types
+        setProductOrder([]);
+        setPacketOrder([]);
+        setCustomerOrder(null);
+        setSelectedTables([]);
+        resetOrder();
+      }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.data?.[0]?.message ||
         error.response?.data?.message ||
         "Gagal menambahkan data!";
       showAlert2("error", errorMessage);
+      // Don't reset states on error
     } finally {
       setLoading(false);
-      setProductOrder([]);
-      setPacketOrder([]);
-      setCustomerOrder(null);
-      setSelectedTables([]);
-      resetOrder();
     }
   };
 
@@ -604,7 +620,9 @@ function PosPage() {
 
                 <div className="flex items-center">
                   <div>
-                    <p className="text-sm">{isLoadingProfile ? "Memuat...": dataProfile.data.name}</p>
+                    <p className="text-sm">
+                      {isLoadingProfile ? "Memuat..." : dataProfile.data.name}
+                    </p>
                     <p className="text-xs text-[#737791]">
                       {isLoadingProfile ? "Memuat..." : dataProfile.data.role}
                     </p>
@@ -1092,6 +1110,3 @@ function PosPage() {
 }
 
 export default PosPage;
-function sweetalertDineIn(arg0: string) {
-  throw new Error("Function not implemented.");
-}
