@@ -562,7 +562,7 @@ function PosPage() {
             setCustomerOrder(null);
             setSelectedTables([]);
             resetOrder();
-            console.log("Confirmed")
+            console.log("Confirmed");
           },
         });
       } else {
@@ -589,13 +589,13 @@ function PosPage() {
   return (
     <>
       <AuthGuardPOS>
-        <div className="flex w-full h-screen max-w-[1133px] max-h-[744px] ">
+        <div className="flex w-full h-screen">
           <DarkModeComponents />
-          <div className="w-[70%] h-full ">
+          <div className="w-[65%] h-full  ">
             {/* Header */}
             <div className=" flex justify-between items-center px-2 py-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-[40px]">
+                <div className="w-8 h-10">
                   <Image
                     src={logo}
                     alt="logo"
@@ -701,7 +701,7 @@ function PosPage() {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4 w-full  max-h-[585px] overflow-y-auto px-6 mt-4">
+            <div className="grid grid-cols-4 gap-4 w-full  max-h-[73%] overflow-y-auto px-6 mt-[2%]">
               {/* Data Paket dan product */}
               {isLoadingProducts || isLoadingPackets ? (
                 <div className="col-span-4 flex justify-center items-center">
@@ -747,8 +747,8 @@ function PosPage() {
               )}
             </div>
           </div>
-          <div className="w-[30%] h-full border-l border-[#E4E4E4] ">
-            <div className="w-full h-[14%]  px-4 space-y-1">
+          <div className="w-[35%] h-full border-l border-[#E4E4E4] ">
+            <div className="w-full h-[19%] flex flex-col justify-center px-4 space-y-[2%]">
               <p className="text-lg font-bold">Detail Pesanan</p>
               <div className="flex justify-between w-full">
                 {/* Trigger DineIn Modal */}
@@ -893,7 +893,7 @@ function PosPage() {
                       </div>
                     </div>
                     {/* Display Data Table */}
-                    <div className="grid grid-cols-5 gap-5 pt-4  max-h-[400px] overflow-y-auto w-full">
+                    <div className="grid grid-cols-5 gap-5 pt-4  max-h-[300px] overflow-y-auto w-full">
                       {loadingTables ? (
                         <div className="col-span-5 flex justify-center items-center ">
                           <p className="text-xs">Memuat...</p>
@@ -980,7 +980,7 @@ function PosPage() {
                 </FormModal>
               </div>
             </div>
-            <div className="w-full h-[57%] border-y border-[#E4E4E4] px-4 ">
+            <div className="w-full h-[47%]  border-y border-[#E4E4E4] px-4 ">
               <div className="flex justify-end my-2">
                 <button
                   onClick={RemoveAll}
@@ -990,7 +990,7 @@ function PosPage() {
                   <p>Hapus Semua</p>
                 </button>
               </div>
-              <div className="  overflow-y-auto space-y-2 max-h-[90%]">
+              <div className="  overflow-y-auto space-y-2 max-h-[85%]">
                 {packetOrder.map((item) => (
                   <PacketOrder
                     key={item.id}

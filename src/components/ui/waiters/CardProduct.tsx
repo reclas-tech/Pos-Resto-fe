@@ -20,7 +20,7 @@ const CardProduct: React.FC<CardProductProps> = ({
       <div
         key={id}
         onClick={onClick}
-        className="w-full max-w-[180px] h-[192px] bg-white rounded-md p-2 cursor-pointer"
+        className="w-full max-w-[180px] h-[192px] bg-white rounded-md p-2 cursor-pointer flex flex-col"
       >
         <div className="w-full h-[120px] rounded-md flex items-center justify-center overflow-hidden">
           <Image
@@ -32,10 +32,12 @@ const CardProduct: React.FC<CardProductProps> = ({
             unoptimized
           />
         </div>
-        <p className="font-semibold text-sm mt-2">{name}</p>
-        <p className="font-semibold text-primaryColor text-sm text-end">
-          Rp. {price}
-        </p>
+        <div className="flex-1 flex flex-col">
+          <p className="font-semibold text-sm mt-2">{name}</p>
+          <p className="font-semibold text-primaryColor text-sm text-end mt-auto">
+            Rp. {price}
+          </p>
+        </div>
       </div>
     </>
   );
