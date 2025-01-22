@@ -46,7 +46,7 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
   return (
     <div
       id={id}
-      className="w-full flex justify-between items-center pb-4 border-b-2 border-[#E4E4E4]"
+      className="w-full flex justify-between items-center pb-4 pr-[2%] border-b-2 border-[#E4E4E4]"
     >
       <div className="flex items-center space-x-2">
         <div className="space-y-2">
@@ -71,7 +71,7 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
 
           <button
             onClick={onNote}
-            className="flex space-x-1 text-[10px] font-semibold items-center p-1 text-secondaryColor bg-[#114F440D] rounded-md"
+            className="flex space-x-1 text-[9px] font-semibold items-center p-1 text-secondaryColor bg-[#114F440D] rounded-md"
           >
             <NoteOrderSVG />
             <p>Catatan</p>
@@ -79,15 +79,15 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
         </div>
         <div className="space-y-2">
           <div className="space-y-1">
-            <p className="font-bold text-[#19191C]">{name}</p>
+            <p className="font-bold text-[#19191C] text-sm">{name}</p>
             <ul className="text-[9px] list-disc ml-5">
               {product.map((item) => (
                 <li key={item.id}>{item.product.name}</li>
               ))}
             </ul>
-            <p className="font-bold text-primaryColor">{price}</p>
+            <p className="font-bold text-primaryColor text-xs">{price}</p>
           </div>
-          <div className="text-xs text-[#141414CC]">
+          <div className="text-[10px]  text-[#141414CC]">
             <p className="italic font-semibold">Catatan :</p>
             <p>{note !== "" ? note : "Tidak Ada"}</p>
           </div>
@@ -97,16 +97,16 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
       <div className="flex items-center space-x-2">
         <button
           onClick={onDecrease}
-          className="flex items-center justify-center rounded-full w-8 h-8 bg-[#E4E4E4] text-[#9C9C9C]"
+          className="flex items-center justify-center rounded-full w-7 h-7 bg-[#E4E4E4] text-[#9C9C9C]"
         >
-          <Minus className="w-6 h-6" />
+          <Minus className="w-4 h-4" />
         </button>
-        <span className="font-semibold text-base">{quantity}</span>
+        <span className="font-semibold text-sm">{quantity}</span>
         <button
           onClick={onIncrease}
-          className="flex items-center justify-center rounded-full w-8 h-8 bg-primaryColor text-white"
+          className="flex items-center justify-center rounded-full w-7 h-7 bg-primaryColor text-white"
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-4 h-4" />
         </button>
       </div>
     </div>
