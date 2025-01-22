@@ -81,11 +81,13 @@ function LaporanAdminPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  {/* Pilihan default "Semua" */}
                   <SelectItem value="Semua">Semua</SelectItem>
-                  <SelectItem value="9e054677-6082-48a6-8757-f5fd6a9ff117">Dapur 1</SelectItem>
-                  <SelectItem value="Dapur2">Dapur 2</SelectItem>
-                  <SelectItem value="Dapur3">Dapur 3</SelectItem>
-                  <SelectItem value="Dapur4">Dapur 4</SelectItem>
+                  {dataReport?.data?.kitchens.map((kitchenItem) => (
+                    <SelectItem key={kitchenItem?.id} value={kitchenItem?.id}>
+                      {kitchenItem?.name}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -252,11 +254,25 @@ function LaporanAdminPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="01">Januari</SelectItem>
-                        <SelectItem value="02">Februari</SelectItem>
-                        <SelectItem value="03">Maret</SelectItem>
-                        <SelectItem value="04">April</SelectItem>
-                        <SelectItem value="05">Mei</SelectItem>
+                        {/* Daftar bulan hingga Desember */}
+                        {[
+                          { value: "01", label: "Januari" },
+                          { value: "02", label: "Februari" },
+                          { value: "03", label: "Maret" },
+                          { value: "04", label: "April" },
+                          { value: "05", label: "Mei" },
+                          { value: "06", label: "Juni" },
+                          { value: "07", label: "Juli" },
+                          { value: "08", label: "Agustus" },
+                          { value: "09", label: "September" },
+                          { value: "10", label: "Oktober" },
+                          { value: "11", label: "November" },
+                          { value: "12", label: "Desember" },
+                        ].map((month) => (
+                          <SelectItem key={month.value} value={month.value}>
+                            {month.label}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -270,9 +286,15 @@ function LaporanAdminPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="2023">2023</SelectItem>
-                        <SelectItem value="2024">2024</SelectItem>
-                        <SelectItem value="2025">2025</SelectItem>
+                        {/* Generate daftar tahun */}
+                        {Array.from({ length: 4 }, (_, index) => {
+                          const year = new Date().getFullYear() - (3 - index); // 3 tahun sebelumnya hingga sekarang
+                          return (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          );
+                        })}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
