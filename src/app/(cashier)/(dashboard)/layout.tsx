@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import Image from "next/image";
@@ -51,10 +51,41 @@ export default function RootLayoutDashboardCashier({
   const [isValidationMoneyModal, setIsValidationMoneyModal] = useState(false);
   const [isValidationSuccessModal, setIsValidationSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const [currentTime, setCurrentTime] = useState<string>("");
 
   const access_token = Cookies.get("access_token");
   const refresh_token = Cookies.get("refresh_token");
   const role = Cookies.get("role");
+
+  // Update date and time
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+
+      // Format date
+      const dateFormatter = new Intl.DateTimeFormat("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      // Format time
+      const timeFormatter = new Intl.DateTimeFormat("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+
+      setCurrentDate(dateFormatter.format(now));
+      setCurrentTime(timeFormatter.format(now) + " WIB");
+    };
+
+    updateDateTime();
+    const interval = setInterval(updateDateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // cek berdasarkan cookies
   const handleLogout = () => {
@@ -205,7 +236,7 @@ export default function RootLayoutDashboardCashier({
 
           <div className="flex gap-4 justify-between">
             <div className="flex flex-col justify-center">
-              10:53:00 26/02/2023
+              {currentTime} {currentDate}
             </div>
             <div className="flex gap-2">
               <div className="flex flex-col justify-center">

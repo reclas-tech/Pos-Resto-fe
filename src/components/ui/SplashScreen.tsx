@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const SplashScreen = () => {
   const [stage, setStage] = useState(0);
@@ -46,6 +47,8 @@ const SplashScreen = () => {
     },
   };
 
+  const isMobile = useMediaQuery("(max-width: 1133px)");
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AnimatePresence>
@@ -78,13 +81,26 @@ const SplashScreen = () => {
                 animate={{ scale: 1 }}
                 transition={{ duration: 1.5, ease: "easeInOut" }}
               >
-                <div className="pb-6 text-lg md:text-5xl font-bold">
-                  Selamat Datang
-                </div>
-                <div className="pt-6 text-sm md:text-4xl">
-                  Sistem Point Of Sale <br />
-                  Waroeng Aceh Garuda
-                </div>
+                {!isMobile ?
+                  <>
+                    <div className="pb-6 text-lg md:text-5xl font-bold">
+                      Selamat Datang
+                    </div>
+                    <div className="pt-6 text-sm md:text-4xl">
+                      Sistem Point Of Sale <br />
+                      Waroeng Aceh Garuda
+                    </div>
+                  </>
+                  :
+                  <>
+                    <div className="pb-6 text-4xl font-bold">
+                      Selamat Datang
+                    </div>
+                    <div className="pt-6 text-3xl">
+                      Sistem Point Of Sale <br />
+                      Waroeng Aceh Garuda
+                    </div>
+                  </>}
               </motion.div>
             </div>
           </motion.div>

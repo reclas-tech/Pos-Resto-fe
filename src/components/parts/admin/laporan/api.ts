@@ -13,6 +13,8 @@ const useGetSummary = (kitchen: string, start: string, end: string) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
 
+  kitchen = kitchen === "Semua" ? "" : kitchen;
+
   const { data, error, mutate, isValidating, isLoading } =
     useSWR<useGetSummaryApiResponse>(
       `/report/admin/summary/get?kitchen=${kitchen}&start=${start}&end=${end}`,
@@ -28,7 +30,7 @@ const useGetSummary = (kitchen: string, start: string, end: string) => {
           )
           .then((res) => res.data) // Ensure `res.data` contains the desired data
     );
-  console.log("ini data summary",data);
+  console.log("ini data summary", data);
 
   return { data, error, mutate, isValidating, isLoading };
 };
