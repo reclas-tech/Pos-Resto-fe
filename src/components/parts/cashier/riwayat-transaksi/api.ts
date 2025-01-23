@@ -67,22 +67,23 @@ const putRiwayatTransaksi = (id: string) => {
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );
       showAlert2("success", response?.data?.message);
       UseNavigate.push("/riwayat-transaksi");
-    } catch (error:any){
+    } catch (error: any) {
       const errorMessage =
         error.response?.data?.data?.[0]?.message ||
         error.response?.data?.message ||
         "Gagal mengubah data!";
       showAlert2("error", errorMessage);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
+  return { handlePutSubmit };
 };
 
 export { useGetListCard, useGetOneListCard, putRiwayatTransaksi };

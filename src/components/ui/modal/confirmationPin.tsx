@@ -18,7 +18,7 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete: (pin:string) => void;
 }
 
 const pinSchema = z.object({
@@ -50,7 +50,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
     console.log("Form submitted:", data);
     setPinValue("");
     reset();
-    onDelete();
+    onDelete(pinValue);
     onClose();
   };
 

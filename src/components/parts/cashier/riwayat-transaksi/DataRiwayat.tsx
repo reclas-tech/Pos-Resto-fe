@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ListApiResponse } from "./interface";
 import { Button } from "@/components/ui/button";
 import { formatRupiah } from "@/hooks/useRupiah";
-import { useGetOneListCard } from "./api";
+import { putRiwayatTransaksi, useGetOneListCard } from "./api";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import { Label } from "@/components/ui/label";
 import { format, parseISO } from "date-fns";
@@ -43,20 +43,44 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
   const [selectedTransactionId, setSelectedTransactionId] = useState<
     string | null
   >("");
-
+  const [selectedPurchaseDetails, setSelectedPurchaseDetails] = useState<any[]>(
+    []
+  );
+  const [pinValue, setPinValue] = useState<string>("");
   const { data: dataDetail } = useGetOneListCard(
     selectedTransactionId?.toString() || ""
   );
+  console.log(dataDetail);
 
+  useEffect(() => {
+    console.log("dataDetail:", dataDetail);
 
-  const selectedPurchaseDetails = [
-    ...dataDetail?.data?.products,
-    ...dataDetail?.data?.packets,
-  ]
+    if (dataDetail?.data) {
+      const products = Array.isArray(dataDetail.data.products)
+        ? dataDetail.data.products.map((product: Product) => ({
+            ...product,
+            type: "product",
+          }))
+        : [];
+      const packets = Array.isArray(dataDetail.data.packets)
+        ? dataDetail.data.packets.map((packet: Packet) => ({
+            ...packet,
+            type: "packet",
+          }))
+        : [];
 
+      setSelectedPurchaseDetails([...products, ...packets]);
+    }
+  }, [dataDetail]);
+
+  console.log(selectedPurchaseDetails);
+  const [pinFromModal, setPinFromModal] = useState<string>("");
+  const { handlePutSubmit } = putRiwayatTransaksi(selectedTransactionId || "");
   const {
     register,
     handleSubmit,
+    trigger,
+    setValue,
     formState: { errors },
   } = useForm<FormInputs>();
 
@@ -64,54 +88,96 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
     const formatedRequest = {
       pin: formData.pin || "",
       products:
-        dataDetail?.data?.products.map((product: Product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })) || [],
+        selectedPurchaseDetails
+          .filter((item) => item.type === "product")
+          .map((product: Product) => ({
+            id: product.id,
+            quantity: product.quantity,
+          })) || [],
       packets:
-        dataDetail?.data?.packets.map((packet: Packet) => ({
-          id: packet.id,
-          quantity: packet.quantity,
-        })) || [],
+        selectedPurchaseDetails
+          .filter((item) => item.type === "packet")
+          .map((packet: Packet) => ({
+            id: packet.id,
+            quantity: packet.quantity,
+          })) || [],
     };
     console.log(formatedRequest);
+    handlePutSubmit(formatedRequest, setLoading);
   };
 
-  const handleDetailModal = (id: string) => {
-    setSelectedTransactionId(id);
-    if (dataDetail?.data?.status === "pending") {
-      setIsEditModalOpen(true);
-    } else {
-      setIsDetailModalOpenDineIn(true);
-    }
+  const handlePinSubmit = (pin: string) => {
+    const formatedRequest = {
+      pin: pinFromModal || "",
+      products:
+        selectedPurchaseDetails
+          .filter((item) => item.type === "product")
+          .map((product: Product) => ({
+            id: product.id,
+            quantity: product.quantity,
+          })) || [],
+      packets:
+        selectedPurchaseDetails
+          .filter((item) => item.type === "packet")
+          .map((packet: Packet) => ({
+            id: packet.id,
+            quantity: packet.quantity,
+          })) || [],
+    };
+    console.log("Pin received from modal:", pin);
+    setPinFromModal(pin);
+    handlePutSubmit(formatedRequest, setLoading);
+  };
+
+  const handleDetailModal = () => {
+    setIsDetailModalOpenDineIn(true);
   };
 
   const handleIncreaseQuantity = (id: number) => {
-      selectedPurchaseDetails.map((PuchaseDetails) =>
-        PuchaseDetails.id === id
-          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity + 1 }
-          : PuchaseDetails
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id
+          ? { ...purchaseDetail, quantity: purchaseDetail.quantity + 1 }
+          : purchaseDetail
       )
+    );
   };
 
   const handleDecreaseQuantity = (id: number) => {
-      selectedPurchaseDetails.map((PuchaseDetails) =>
-        PuchaseDetails.id === id && PuchaseDetails.quantity > 1
-          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity - 1 }
-          : PuchaseDetails
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id && purchaseDetail.quantity > 1
+          ? { ...purchaseDetail, quantity: purchaseDetail.quantity - 1 }
+          : purchaseDetail
       )
+    );
   };
 
   const handleRemovePurchaseDetails = (id: number) => {
-      selectedPurchaseDetails.filter(
-        (PuchaseDetails) => PuchaseDetails.id !== id
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id
+          ? { ...purchaseDetail, quantity: 0 }
+          : purchaseDetail
       )
+    );
+  };
+
+  const handleButtonClick = (num: number) => {
+    if (pinValue.length < 6) {
+      const newValue = pinValue + num;
+      setPinValue(newValue);
+      setValue("pin", newValue);
+      trigger("pin");
+    }
   };
 
   const handleDelete = () => {
-    register("pin", { required: "Pin is required" })
-  }
-
+    const newValue = pinValue.slice(0, -1);
+    setPinValue(newValue);
+    setValue("pin", newValue);
+    trigger("pin");
+  };
   const formatedProduct = dataDetail?.data.products
     .map((product: Product) => `${product.quantity}x ${product.name}`)
     .join("\n");
@@ -130,7 +196,8 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
       </>
     );
   }
-  return (    <>
+  return (
+    <>
       <section className="grid grid-cols-3 gap-4">
         {data.map((item, index) => {
           return (
@@ -164,7 +231,14 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
                       </Button>
                       <Button
                         variant={"ghostButton"}
-                        onClick={() => handleDetailModal(item?.id || "")}
+                        onClick={() => {
+                          setSelectedTransactionId(item?.id);
+                          if (item?.status === "pending") {
+                            setIsEditModalOpen(true);
+                          } else {
+                            setIsDetailModalOpenDineIn(true);
+                          }
+                        }}
                         className="text-sm bg-white border border-secondaryColor text-black pl-2 pr-2 pt-1 pb-1 h-fit w-full"
                       >
                         Detail
@@ -314,7 +388,7 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
         <>
           <Button
             onClick={() => {
-              setIsDeleteModalOpen(true);
+              setIsDeletePinModalOpen(true);
             }}
             variant={"outline"}
             className="rounded-xl text-sm w-[120px] text-white bg-[#FF0000] absolute right-4 top-4 border-none"
@@ -336,7 +410,7 @@ const DataRiwayat: React.FC<ListApiResponse> = ({ data }) => {
               setIsDeleteModalOpen(false);
               setIsDeletePinModalOpen(false);
             }}
-            onDelete={handleDelete}
+            onDelete={handlePinSubmit}
           />
           <div className="space-y-4">
             <div className="flex gap-4 justify-between text-sm">
