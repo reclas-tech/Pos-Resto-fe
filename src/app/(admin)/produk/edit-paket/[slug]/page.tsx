@@ -400,10 +400,10 @@ function EditPacketPage() {
           {imagePreview ? (
             <Image
               src={imagePreview || "waroeng aceh garuda"}
-              width={100}
-              height={100}
               alt="Preview"
-              className="h-full w-[200px] object-cover"
+              width={200}
+              height={200}
+              className="object-contain h-full"
             />
           ) : (
             <span className="text-gray-500 text-sm">Pilih file</span>

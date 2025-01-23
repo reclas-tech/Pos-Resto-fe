@@ -36,7 +36,7 @@ const CardPacket: React.FC<CardPacketProps> = ({
       <div
         key={id}
         onClick={onClick}
-        className="w-full max-w-[180px] min-h-[192px] bg-white rounded-md p-2 cursor-pointer"
+        className="w-full max-w-[180px] min-h-[152px] bg-white rounded-md p-2 cursor-pointer flex flex-col"
       >
         <div className="w-full h-[120px] rounded-md flex items-center justify-center overflow-hidden">
           <Image
@@ -48,17 +48,19 @@ const CardPacket: React.FC<CardPacketProps> = ({
             unoptimized
           />
         </div>
-        <p className="font-semibold text-sm mt-2">{name}</p>
-        <ul>
-          {products.map((item) => (
-            <li key={item.id} className="text-[9px] list-disc ml-4">
-              {item.quantity} x {item.product.name}
-            </li>
-          ))}
-        </ul>
-        <p className="font-semibold text-primaryColor text-sm text-end">
-          Rp. {price}
-        </p>
+        <div className="flex-1 flex flex-col">
+          <p className="font-semibold text-sm mt-2">{name}</p>
+          <ul className="flex-1">
+            {products.map((item) => (
+              <li key={item.id} className="text-[9px] list-disc ml-4">
+                {item.quantity} x {item.product.name}
+              </li>
+            ))}
+          </ul>
+          <p className="font-semibold text-primaryColor text-sm text-end mt-auto">
+            Rp. {price}
+          </p>
+        </div>
       </div>
     </>
   );

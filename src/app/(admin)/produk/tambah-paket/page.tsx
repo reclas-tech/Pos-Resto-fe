@@ -324,11 +324,11 @@ function CreatePacketPage() {
           >
             {imagePreview ? (
               <Image
-                src={imagePreview}
-                width={100}
-                height={100}
+                src={imagePreview || "waroeng aceh garuda"}
                 alt="Preview"
-                className="h-full w-[200px] object-cover"
+                width={200}
+                height={200}
+                className="object-contain h-full"
               />
             ) : (
               <span className="text-gray-500 text-sm">Pilih file</span>
