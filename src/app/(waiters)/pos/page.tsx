@@ -611,11 +611,11 @@ function PosPage() {
             setOrderInvoice(null);
           },
         });
-         setProductOrder([]);
-         setPacketOrder([]);
-         setCustomerOrder(null);
-         setSelectedTables([]);
-         resetOrder();
+        setProductOrder([]);
+        setPacketOrder([]);
+        setCustomerOrder(null);
+        setSelectedTables([]);
+        resetOrder();
       } else {
         showAlert2("success", response?.data?.message);
         // Reset states immediately for other types
