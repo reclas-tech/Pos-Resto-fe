@@ -57,7 +57,7 @@ function CreatePacketPage() {
       name: "",
       price: 0,
       cogp: 0,
-      stock: 0,
+      // stock: 0,
       image: "",
     },
   });

@@ -32,9 +32,13 @@ const DataTablePacket: React.FC<PacketInterface> = ({
   search,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | number | null>(
+    null
+  );
 
-  const accessToken = Cookies.get("access_token"); // Ambil token langsung
+  const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
+
   const handleDelete = async (id: string | number) => {
     try {
       const response = await axiosPrivate.delete(
@@ -45,10 +49,19 @@ const DataTablePacket: React.FC<PacketInterface> = ({
           },
         }
       );
-      // alert
+
+      // Trigger SWR revalidation for the current page
+      mutate(
+        `/product/admin/packet/list?page=${currentPage}&limit=${limit}&search=${search}`,
+        undefined,
+        { revalidate: true }
+      );
+
+      // Show success alert
       showAlert2("success", response?.data?.message);
-      // alert
-      // Update the local data after successful deletion
+
+      // Close delete modal
+      setIsDeleteModalOpen(false);
     } catch (error: any) {
       // Extract error message from API response
       const errorMessage =
@@ -56,16 +69,11 @@ const DataTablePacket: React.FC<PacketInterface> = ({
         error.response?.data?.message ||
         "Gagal menghapus data!";
       showAlert2("error", errorMessage);
-      //   alert
     }
-    mutate(
-      `/product/packet/admin/list?page=${currentPage}&limit=${limit}&search=${search}`
-    );
   };
 
   return (
     <div className="Table">
-      {/*  */}
       <div className="border border-[#E4E4E7] rounded-lg overflow-hidden">
         <Table>
           <TableHeader className="bg-primaryColor">
@@ -114,15 +122,18 @@ const DataTablePacket: React.FC<PacketInterface> = ({
                             </div>
                           </Link>
                           <button
-                            className="text-black hover:text-primaryColor  dark:text-white w-full text-left"
-                            onClick={() => setIsDeleteModalOpen(true)}
+                            className="text-black hover:text-primaryColor dark:text-white w-full text-left"
+                            onClick={() => {
+                              setItemToDelete(item?.id);
+                              setIsDeleteModalOpen(true);
+                            }}
                           >
                             Hapus
                           </button>
                           <DeleteModal
                             isOpen={isDeleteModalOpen}
                             onClose={() => setIsDeleteModalOpen(false)}
-                            onDelete={() => handleDelete(item?.id)}
+                            onDelete={() => handleDelete(itemToDelete!)}
                             title="Hapus"
                             description="Anda yakin ingin menghapus item ini ?"
                           />
