@@ -30,6 +30,9 @@ import { LoadingSVG } from "@/constants/svgIcons";
 import { useRouter } from "next/navigation";
 import AuthGuardPOS from "@/hooks/authGuardPOS";
 import { showAlertDineIn } from "@/lib/sweetalertDineIn";
+import TableReceipt from "@/components/ui/struk/TableReceipt";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
 
 interface Product {
   id: string;
@@ -181,6 +184,8 @@ function PosPage() {
     }>
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [orderInvoice, setOrderInvoice] = useState(null);
 
   const handleLogout = () => {
     setTimeout(() => {
@@ -520,6 +525,36 @@ function PosPage() {
   const tax = calculateTax(subTotal);
   const total = calculateTotal(subTotal, tax);
 
+  // Fungsi Print
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+  const printReceipt = () => {
+    console.log("Print");
+    reactToPrintFn();
+  };
+
+  // Fetch Invoice
+  const fetchInvoice = async (id: string) => {
+    try {
+      const response = await axiosPrivate.get(
+        `order/employee/history/detail/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setOrderInvoice(response.data.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch invoice", error);
+      throw error;
+    }
+  };
+
+
   //  Order Submit
   const orderSubmit = async () => {
     try {
@@ -551,6 +586,9 @@ function PosPage() {
         }
       );
 
+      // Add this right after
+      await fetchInvoice(response?.data?.data.invoice_id);
+
       // Show different alerts based on order type
       if (customerOrder?.type === "dine in") {
         showAlertDineIn({
@@ -562,7 +600,8 @@ function PosPage() {
             setCustomerOrder(null);
             setSelectedTables([]);
             resetOrder();
-            console.log("Confirmed");
+            printReceipt();
+            setOrderInvoice(null);
           },
         });
       } else {
@@ -573,6 +612,7 @@ function PosPage() {
         setCustomerOrder(null);
         setSelectedTables([]);
         resetOrder();
+        setOrderInvoice(null);
       }
     } catch (error: any) {
       const errorMessage =
@@ -1101,6 +1141,10 @@ function PosPage() {
                   </Button>
                 </div>
               </form>
+              {/* Struk */}
+              <div className="none">
+                <TableReceipt ref={contentRef} data={orderInvoice} />
+              </div>
             </div>
           </div>
         </div>
