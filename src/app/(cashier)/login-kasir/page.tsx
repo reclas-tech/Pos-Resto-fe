@@ -85,7 +85,6 @@ const LoginKasirPage = () => {
       if (result.statusCode === 200) {
         console.log("Form submitted:", data);
         setPinValue("");
-        reset();
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
@@ -101,6 +100,13 @@ const LoginKasirPage = () => {
           secure: true,
           httpOnly: false,
         });
+
+        // Check Token
+        if (result?.data?.role === "waiter") {
+          showAlert2("error", "Gagal Login.");
+          reset();
+          return;
+        }
 
         if (result?.data?.any_active_shift === true) {
           router.push("/pilih-meja");
@@ -225,32 +231,6 @@ const LoginKasirPage = () => {
     setValue("pin", newValue);
     trigger("pin");
   };
-
-  const access_token = Cookies.get("access_token");
-  const refresh_token = Cookies.get("refresh_token");
-  const role = Cookies.get("role");
-  const cash_on_hand_start = Cookies.get("cash_on_hand_start");
-  const cash_on_hand_end = Cookies.get("cash_on_hand_end");
-  const started_at = Cookies.get("started_at");
-  const ended_at = Cookies.get("ended_at");
-  const cashier_id = Cookies.get("cashier_id");
-  const id = Cookies.get("id");
-  const updated_at = Cookies.get("updated_at");
-  const created_at = Cookies.get("created_at");
-  const deleted_at = Cookies.get("deleted_at");
-
-  console.log("Access Token:", access_token);
-  console.log("Refresh Token:", refresh_token);
-  console.log("Role:", role);
-  console.log("Cash on Hand Start:", cash_on_hand_start);
-  console.log("Cash on Hand End:", cash_on_hand_end);
-  console.log("Started At:", started_at);
-  console.log("Ended At:", ended_at);
-  console.log("Cashier ID:", cashier_id);
-  console.log("ID:", id);
-  console.log("Updated At:", updated_at);
-  console.log("Created At:", created_at);
-  console.log("Delete At:", deleted_at);
 
   return (
     <div className="w-full h-screen flex flex-col sm:flex-row">
