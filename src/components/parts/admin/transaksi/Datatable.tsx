@@ -113,7 +113,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                             onDetail={handlePrint}
                                                             title="Detail Riwayat Transaksi"
                                                             showCancelButton={true}
-                                                            showPrintButton={true}
+                                                            showPrintButton={dataDetail?.data?.status === "pending" ? false : true}
                                                         >
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
@@ -177,6 +177,11 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                                                     {product.quantity}x {product.name}
                                                                                 </li>
                                                                             ))}
+                                                                            {dataDetail?.data?.packets?.map((product, index) => (
+                                                                                <li key={index}>
+                                                                                    {product.quantity}x {product.name}
+                                                                                </li>
+                                                                            ))}
                                                                         </ul>
                                                                     </div>
                                                                 </div>
@@ -185,7 +190,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                                     <div
                                                                         className={`capitalize mb-2 ${dataDetail?.data?.type === "dine in"
                                                                             ? "bg-primaryColor"
-                                                                                : "bg-secondaryColor"
+                                                                            : "bg-secondaryColor"
                                                                             } rounded-lg text-xs p-2 w-fit text-white`}
                                                                     >
                                                                         {dataDetail?.data?.type || "-"}
