@@ -30,6 +30,11 @@ import { LoadingSVG } from "@/constants/svgIcons";
 import { useRouter } from "next/navigation";
 import AuthGuardPOS from "@/hooks/authGuardPOS";
 import { showAlertDineIn } from "@/lib/sweetalertDineIn";
+import TableReceipt from "@/components/ui/struk/TableReceipt";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Product {
   id: string;
@@ -182,6 +187,8 @@ function PosPage() {
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [orderInvoice, setOrderInvoice] = useState(null);
+
   const handleLogout = () => {
     setTimeout(() => {
       Cookies.remove("access_token");
@@ -265,19 +272,30 @@ function PosPage() {
     }
   };
 
+  // Validation for Dine In & Take Away
+  type NameFormData = z.infer<typeof nameSchema>;
+  const nameSchema = z.object({
+    name: z.string().min(1, { message: "Nama Tidak Boleh Kosong" }),
+  });
   // Dine In Submit Modal useForm
   const {
     register: registerDineIn,
     handleSubmit: handleSubmitDineIn,
     reset: resetDineIn,
-  } = useForm();
+    formState: { errors: errorsDineIn },
+  } = useForm<NameFormData>({
+    resolver: zodResolver(nameSchema),
+  });
 
   // Take Away Submit Modal useForm
   const {
     register: registerTakeAway,
     handleSubmit: handleSubmitTakeAway,
     reset: resetTakeAway,
-  } = useForm();
+    formState: { errors: errorsTakeAway },
+  } = useForm<NameFormData>({
+    resolver: zodResolver(nameSchema),
+  });
 
   // Note Product  useForm
   const {
@@ -520,6 +538,35 @@ function PosPage() {
   const tax = calculateTax(subTotal);
   const total = calculateTotal(subTotal, tax);
 
+  // Fungsi Print
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+  const printReceipt = () => {
+    console.log("Print");
+    reactToPrintFn();
+  };
+
+  // Fetch Invoice
+  const fetchInvoice = async (id: string) => {
+    try {
+      const response = await axiosPrivate.get(
+        `order/employee/history/detail/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setOrderInvoice(response.data.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch invoice", error);
+      throw error;
+    }
+  };
+
   //  Order Submit
   const orderSubmit = async () => {
     try {
@@ -551,20 +598,24 @@ function PosPage() {
         }
       );
 
+      // Add this right after
+      await fetchInvoice(response?.data?.data.invoice_id);
+
       // Show different alerts based on order type
       if (customerOrder?.type === "dine in") {
         showAlertDineIn({
           message: "Pesanan berhasil!",
           onConfirm: () => {
             // Reset states only after confirmation for dine in
-            setProductOrder([]);
-            setPacketOrder([]);
-            setCustomerOrder(null);
-            setSelectedTables([]);
-            resetOrder();
-            console.log("Confirmed");
+            printReceipt();
+            setOrderInvoice(null);
           },
         });
+        setProductOrder([]);
+        setPacketOrder([]);
+        setCustomerOrder(null);
+        setSelectedTables([]);
+        resetOrder();
       } else {
         showAlert2("success", response?.data?.message);
         // Reset states immediately for other types
@@ -573,6 +624,7 @@ function PosPage() {
         setCustomerOrder(null);
         setSelectedTables([]);
         resetOrder();
+        setOrderInvoice(null);
       }
     } catch (error: any) {
       const errorMessage =
@@ -881,6 +933,11 @@ function PosPage() {
                           placeholder="Nama "
                           {...registerDineIn("name")}
                         />
+                        {errorsDineIn.name && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errorsDineIn.name.message}
+                          </p>
+                        )}
                       </div>
                       <div className="w-1/2 flex justify-end ">
                         <p className="text-sm py-1 px-2 rounded-2xl bg-secondaryColor text-white">
@@ -977,6 +1034,11 @@ function PosPage() {
                     placeholder="Nama "
                     {...registerTakeAway("name")}
                   />
+                  {errorsTakeAway.name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errorsTakeAway.name.message}
+                    </p>
+                  )}
                 </FormModal>
               </div>
             </div>
@@ -1101,6 +1163,10 @@ function PosPage() {
                   </Button>
                 </div>
               </form>
+              {/* Struk */}
+              <div className="none">
+                <TableReceipt ref={contentRef} data={orderInvoice} />
+              </div>
             </div>
           </div>
         </div>
