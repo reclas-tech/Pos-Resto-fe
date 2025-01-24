@@ -27,6 +27,8 @@ import DataIncomeComparation from "@/components/parts/admin/laporan/DataIncomeCo
 import GrafikPendapatan from "@/components/parts/admin/laporan/DataIncomeGraph";
 import { PrintSVG } from "@/constants/svgIcons";
 import DataSummary from "@/components/parts/admin/laporan/DataSummary";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 function LaporanAdminPage() {
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -67,7 +69,7 @@ function LaporanAdminPage() {
     </div>
   ) : null;
 
-  console.log("lalalalalalala",dataReport?.data?.charity_percent)
+  console.log("lalalalalalala", dataReport?.data?.charity_percent)
 
   const netProfit = (
     (dataReport?.data?.income ?? 0) -
@@ -106,6 +108,94 @@ function LaporanAdminPage() {
     }
   };
 
+  const downloadPDF = async () => {
+    const element = document.getElementById("report-content");
+
+    if (!element) {
+      console.error("Report content not found!");
+      return;
+    }
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    let position = 0;
+
+    while (position < imgHeight) {
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        position > 0 ? -position : 0,
+        pdfWidth,
+        imgHeight
+      );
+      position += pdfHeight;
+
+      if (position < imgHeight) {
+        pdf.addPage(imgData);
+      }
+    }
+
+    pdf.save("Laporan-Penjualan.pdf");
+  };
+
+  // const downloadPDF = async () => {
+  //   const element = document.getElementById("report-content");
+  //   if (!element) {
+  //     console.error("Report content not found!");
+  //     return;
+  //   }
+
+  //   const pdf = new jsPDF({
+  //     orientation: "portrait",
+  //     unit: "mm",
+  //     format: "a4",
+  //   });
+
+  //   const pdfWidth = 210;
+  //   const pdfHeight = 297;
+  //   const margin = 10; // Margin dalam mm
+  //   const availableWidth = pdfWidth - (2 * margin);
+  //   const availableHeight = pdfHeight - (2 * margin);
+
+  //   const canvas = await html2canvas(element, { scale: 2 });
+  //   const imgData = canvas.toDataURL("image/png");
+
+  //   const imgWidth = availableWidth;
+  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  //   let position = margin;
+  //   while (position < canvas.height) {
+  //     pdf.addImage(
+  //       imgData,
+  //       "PNG",
+  //       margin,
+  //       margin,
+  //       imgWidth,
+  //       imgHeight,
+  //       "",
+  //       "SLOW"
+  //     );
+
+  //     position += availableHeight;
+  //     if (position < canvas.height) {
+  //       pdf.addPage();
+  //     }
+  //   }
+
+  //   pdf.save("Laporan-Penjualan.pdf");
+  // };
 
   return (
     <>
@@ -232,7 +322,7 @@ function LaporanAdminPage() {
                 </div>
               </div>
               <div className="div">
-                <Button className="" variant={"default"}>
+                <Button className="" variant={"default"} onClick={downloadPDF}>
                   <span>
                     <PrintSVG className="text-white dark:text-secondaryColor" />
                   </span>
@@ -263,119 +353,121 @@ function LaporanAdminPage() {
             ) : error ? (
               <div className="text-center p-10 text-red-500">Error loading report data</div>
             ) : dataReport && (
-              <div id="report-content" className="m-10 mt-4 shadow-lg border bg-white">
-                <div className="p-10 space-y-10 text-sm">
-                  {/* Header */}
-                  <div className="space-y-4">
-                    <div className="text-center font-semibold text-xl mb-2">
-                      Laporan Penjualan <br /> Waroeng Aceh Garuda
-                    </div>
-                    <div className="text-center text-sm">
-                      Periode {renderPeriod()}
-                    </div>
-                  </div>
-
-                  {/* Financial Summary */}
-                  <div className="space-y-4">
-                    <div className="border border-dashed border-black/50 mt-8"></div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Total Penjualan</div>
-                      <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Potongan PPN/PB {dataReport?.data?.tax_percent}%</div>
-                      <div>Rp. {dataReport?.data?.tax.toLocaleString()}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Potongan Harga Pokok Penjualan (HPP) </div>
-                      <div>Rp. {dataReport?.data?.cogp.toLocaleString()}</div>
-                    </div>
-                    {/* This is the charity amount display */}
-                    {charityDisplay}
-                    <div className="border border-dashed border-black/50 mt-8"></div>
-                    <div className="flex justify-between text-black font-bold text-lg">
-                      <div>TOTAL LABA BERSIH</div>
-                      <div>Rp. {netProfit}</div>
-                    </div>
-                  </div>
-
-                  {/* Transaction Summary */}
-                  <div className="space-y-4">
-                    <div className="font-semibold">Transaksi</div>
-                    <div className="border"></div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Transaksi </div>
-                      <div>{dataReport?.data?.transaction}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Transaksi Selesai</div>
-                      <div>{dataReport?.data?.transaction_success}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Transaksi Dibatalkan</div>
-                      <div>{dataReport?.data?.transaction_failed}</div>
-                    </div>
-                  </div>
-
-                  {/* Invoice Summary */}
-                  <div className="space-y-4">
-                    <div className="font-semibold">Invoice</div>
-                    <div className="border"></div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Invoice</div>
-                      <div>{dataReport?.data?.transaction}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Pendapatan Invoice</div>
-                      <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Rata Rata Jumlah Pendapatan Invoice</div>
-                      <div>Rp. {dataReport?.data.avg_income.toLocaleString()}/Invoice</div>
-                    </div>
-                    <div className="flex justify-between text-[#707275]">
-                      <div>Jumlah Produk Terjual</div>
-                      <div>{dataReport?.data?.product_count} Produk</div>
-                    </div>
-                  </div>
-
-                  {/* Kitchen Sales */}
-                  <div className="space-y-4">
-                    <div className="font-semibold">Penjualan Produk Berdasarkan Dapur</div>
-                    <div className="border"></div>
-                    {dataReport?.data?.kitchens.map((kitchen) => (
-                      <div key={kitchen?.id} className="flex justify-between text-[#707275]">
-                        <div className="w-full text-start">{kitchen?.name}</div>
-                        <div className="w-full text-center">{kitchen?.quantity}</div>
-                        <div className="w-full text-end">Rp. {kitchen?.income.toLocaleString()}</div>
+              <>
+                <div id="report-content" className="m-10 mt-4 shadow-lg border bg-white">
+                  <div className="p-10 space-y-10 text-sm">
+                    {/* Header */}
+                    <div className="space-y-4">
+                      <div className="text-center font-semibold text-xl mb-2">
+                        Laporan Penjualan <br /> Waroeng Aceh Garuda
                       </div>
-                    ))}
-                    <div className="border border-dashed border-black/50 mt-8"></div>
-                    <div className="flex justify-between text-black font-bold text-lg">
-                      <div>TOTAL</div>
-                      <div>Rp. {kitchenTotal.toLocaleString()}</div>
-                    </div>
-                  </div>
-
-                  {/* Category Sales */}
-                  <div className="space-y-4">
-                    <div className="font-semibold">Penjualan Produk Berdasarkan Kategori</div>
-                    <div className="border"></div>
-                    {dataReport?.data?.categories.map((category) => (
-                      <div key={category?.id} className="flex justify-between text-[#707275]">
-                        <div className="w-full">{category?.name}</div>
-                        <div className="w-full text-center">{category?.quantity}</div>
-                        <div className="w-full text-end">Rp. {category?.income.toLocaleString()}</div>
+                      <div className="text-center text-sm">
+                        Periode {renderPeriod()}
                       </div>
-                    ))}
-                    <div className="border border-dashed border-black/50 mt-8"></div>
-                    <div className="flex justify-between text-black font-bold text-lg">
-                      <div>TOTAL</div>
-                      <div>Rp. {categoryTotal.toLocaleString()}</div>
+                    </div>
+
+                    {/* Financial Summary */}
+                    <div className="space-y-4">
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Total Penjualan</div>
+                        <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Potongan PPN/PB {dataReport?.data?.tax_percent}%</div>
+                        <div>Rp. {dataReport?.data?.tax.toLocaleString()}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Potongan Harga Pokok Penjualan (HPP) </div>
+                        <div>Rp. {dataReport?.data?.cogp.toLocaleString()}</div>
+                      </div>
+                      {/* This is the charity amount display */}
+                      {charityDisplay}
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-black font-bold text-lg">
+                        <div>TOTAL LABA BERSIH</div>
+                        <div>Rp. {netProfit}</div>
+                      </div>
+                    </div>
+
+                    {/* Transaction Summary */}
+                    <div className="space-y-4">
+                      <div className="font-semibold">Transaksi</div>
+                      <div className="border"></div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Transaksi </div>
+                        <div>{dataReport?.data?.transaction}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Transaksi Selesai</div>
+                        <div>{dataReport?.data?.transaction_success}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Transaksi Dibatalkan</div>
+                        <div>{dataReport?.data?.transaction_failed}</div>
+                      </div>
+                    </div>
+
+                    {/* Invoice Summary */}
+                    <div className="space-y-4">
+                      <div className="font-semibold">Invoice</div>
+                      <div className="border"></div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Invoice</div>
+                        <div>{dataReport?.data?.transaction}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Pendapatan Invoice</div>
+                        <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Rata Rata Jumlah Pendapatan Invoice</div>
+                        <div>Rp. {dataReport?.data.avg_income.toLocaleString()}/Invoice</div>
+                      </div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Jumlah Produk Terjual</div>
+                        <div>{dataReport?.data?.product_count} Produk</div>
+                      </div>
+                    </div>
+
+                    {/* Kitchen Sales */}
+                    <div className="space-y-4">
+                      <div className="font-semibold">Penjualan Produk Berdasarkan Dapur</div>
+                      <div className="border"></div>
+                      {dataReport?.data?.kitchens.map((kitchen) => (
+                        <div key={kitchen?.id} className="flex justify-between text-[#707275]">
+                          <div className="w-full text-start">{kitchen?.name}</div>
+                          <div className="w-full text-center">{kitchen?.quantity}</div>
+                          <div className="w-full text-end">Rp. {kitchen?.income.toLocaleString()}</div>
+                        </div>
+                      ))}
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-black font-bold text-lg">
+                        <div>TOTAL</div>
+                        <div>Rp. {kitchenTotal.toLocaleString()}</div>
+                      </div>
+                    </div>
+
+                    {/* Category Sales */}
+                    <div className="space-y-4">
+                      <div className="font-semibold">Penjualan Produk Berdasarkan Kategori</div>
+                      <div className="border"></div>
+                      {dataReport?.data?.categories.map((category) => (
+                        <div key={category?.id} className="flex justify-between text-[#707275]">
+                          <div className="w-full">{category?.name}</div>
+                          <div className="w-full text-center">{category?.quantity}</div>
+                          <div className="w-full text-end">Rp. {category?.income.toLocaleString()}</div>
+                        </div>
+                      ))}
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-black font-bold text-lg">
+                        <div>TOTAL</div>
+                        <div>Rp. {categoryTotal.toLocaleString()}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
 
           </div>
