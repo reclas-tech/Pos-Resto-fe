@@ -24,7 +24,6 @@ type PinFormData = z.infer<typeof pinSchema>;
 const LoginWaitersPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [pinValue, setPinValue] = useState<string>("");
 
   const {
@@ -59,7 +58,6 @@ const LoginWaitersPage = () => {
   /* eslint-disable */
   const onSubmit: SubmitHandler<PinFormData> = async (data) => {
     setLoading(true);
-    setErrorMessage("");
 
     try {
       const response = await axiosInstance.post("/auth/employee/login", {
@@ -67,7 +65,7 @@ const LoginWaitersPage = () => {
       });
       const result = response.data;
       if (result.statusCode === 200) {
-        console.log("Form submitted:", data);
+        console.log("login submitted:", data);
         setPinValue("");
         reset();
         showAlert2("success", "Berhasil Login.");
@@ -86,6 +84,14 @@ const LoginWaitersPage = () => {
           secure: true,
           httpOnly: false,
         });
+
+        // Check Token
+        if (result?.data?.role === "cashier") {
+          showAlert2("error", "Gagal Login.");
+          reset();
+          return;
+        }
+
         setTimeout(() => {
           router.push("/pos");
         }, 10);
@@ -101,7 +107,6 @@ const LoginWaitersPage = () => {
           error.response?.data?.data[0].message ||
           "Login gagal. Silakan coba lagi!";
       }
-      setErrorMessage(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -190,9 +195,6 @@ const LoginWaitersPage = () => {
                   >
                     {loading ? <LoadingSVG /> : "Kirim"}
                   </button>
-                  {errorMessage && (
-                    <p className="text-danger mt-2">{errorMessage}</p>
-                  )}
                 </div>
               </form>
             </div>
