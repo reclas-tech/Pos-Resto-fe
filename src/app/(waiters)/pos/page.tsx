@@ -33,6 +33,8 @@ import { showAlertDineIn } from "@/lib/sweetalertDineIn";
 import TableReceipt from "@/components/ui/struk/TableReceipt";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Product {
   id: string;
@@ -270,19 +272,30 @@ function PosPage() {
     }
   };
 
+  // Validation for Dine In & Take Away
+  type NameFormData = z.infer<typeof nameSchema>;
+  const nameSchema = z.object({
+    name: z.string().min(1, { message: "Nama Tidak Boleh Kosong" }),
+  });
   // Dine In Submit Modal useForm
   const {
     register: registerDineIn,
     handleSubmit: handleSubmitDineIn,
     reset: resetDineIn,
-  } = useForm();
+    formState: { errors: errorsDineIn },
+  } = useForm<NameFormData>({
+    resolver: zodResolver(nameSchema),
+  });
 
   // Take Away Submit Modal useForm
   const {
     register: registerTakeAway,
     handleSubmit: handleSubmitTakeAway,
     reset: resetTakeAway,
-  } = useForm();
+    formState: { errors: errorsTakeAway },
+  } = useForm<NameFormData>({
+    resolver: zodResolver(nameSchema),
+  });
 
   // Note Product  useForm
   const {
@@ -554,7 +567,6 @@ function PosPage() {
     }
   };
 
-
   //  Order Submit
   const orderSubmit = async () => {
     try {
@@ -595,15 +607,15 @@ function PosPage() {
           message: "Pesanan berhasil!",
           onConfirm: () => {
             // Reset states only after confirmation for dine in
-            setProductOrder([]);
-            setPacketOrder([]);
-            setCustomerOrder(null);
-            setSelectedTables([]);
-            resetOrder();
             printReceipt();
             setOrderInvoice(null);
           },
         });
+         setProductOrder([]);
+         setPacketOrder([]);
+         setCustomerOrder(null);
+         setSelectedTables([]);
+         resetOrder();
       } else {
         showAlert2("success", response?.data?.message);
         // Reset states immediately for other types
@@ -921,6 +933,11 @@ function PosPage() {
                           placeholder="Nama "
                           {...registerDineIn("name")}
                         />
+                        {errorsDineIn.name && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {errorsDineIn.name.message}
+                          </p>
+                        )}
                       </div>
                       <div className="w-1/2 flex justify-end ">
                         <p className="text-sm py-1 px-2 rounded-2xl bg-secondaryColor text-white">
@@ -1017,6 +1034,11 @@ function PosPage() {
                     placeholder="Nama "
                     {...registerTakeAway("name")}
                   />
+                  {errorsTakeAway.name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errorsTakeAway.name.message}
+                    </p>
+                  )}
                 </FormModal>
               </div>
             </div>
