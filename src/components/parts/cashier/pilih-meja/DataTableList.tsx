@@ -21,28 +21,21 @@ const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) =>
   }
   return (
     <>
-      <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
+      <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16">
         {data.tables.map((table, index) => {
           return (
             <button
               key={table?.id || index}
               onClick={() => onDetailModal(table?.invoice || "", table?.status)}
-              className={`rounded-lg border p-3 ${table?.status === "tersedia"
-                ? "border-[#3395F0]"
-                : "border-[#FEA026]"
-                }`}
+              disabled={table?.status === "tersedia"}
+              className={`rounded-lg border p-3 ${table?.status === "tersedia" ? "border-[#3395F0]" : "border-[#FEA026]"} ${table?.status === "tersedia" ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div
-                className={`p-2 rounded-full flex items-center justify-center w-12 h-12 ${table?.status === "tersedia"
-                  ? "bg-[#3395F0]/10"
-                  : "bg-[#FEA026]/10"
-                  }`}
+                className={`p-2 rounded-full flex items-center justify-center w-full h-full ${table?.status === "tersedia" ? "bg-[#3395F0]/10" : "bg-[#FEA026]/10"}`}
+                style={{ aspectRatio: '1' }} // memastikan aspek rasio tetap 1:1
               >
                 <span
-                  className={`font-bold text-xs ${table?.status === "tersedia"
-                    ? "text-[#3395F0]"
-                    : "text-[#FEA026]"
-                    }`}
+                  className={`font-bold text-xs ${table?.status === "tersedia" ? "text-[#3395F0]" : "text-[#FEA026]"}`}
                 >
                   {table?.name}
                 </span>

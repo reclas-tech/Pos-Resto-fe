@@ -31,14 +31,18 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useInputRp } from "@/hooks/useRupiah";
 import { axiosInstance } from "@/utils/axios";
 import AuthGuardEmployee from "@/hooks/authGuardEmployee";
+
 import useSWR from "swr";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
+
+import { useGetProfile } from "@/components/parts/cashier/profile/api";
+import Link from "next/link";
+
 
 // Handle validation input
 const closeCashierFormDataSchema = z.object({
@@ -61,8 +65,6 @@ export default function RootLayoutDashboardCashier({
   const [currentTime, setCurrentTime] = useState<string>("");
 
   const access_token = Cookies.get("access_token");
-  const refresh_token = Cookies.get("refresh_token");
-  const role = Cookies.get("role");
 
   const axiosPrivate = useAxiosPrivateInstance();
 
@@ -116,15 +118,19 @@ export default function RootLayoutDashboardCashier({
     formState: { errors },
   } = useForm<CloseCashierFormData>({
     resolver: zodResolver(closeCashierFormDataSchema),
+    defaultValues: {
+      cash: 0, // Nilai awal untuk "cash"
+    },
   });
 
   /* eslint-disable */
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
-    console.log(data);
     setLoading(true);
+
     console.log(access_token);
     console.log(refresh_token);
     console.log(role);
+
     try {
       // Get API
       const response = await axiosInstance.post("/cashier/close", data, {
@@ -138,7 +144,7 @@ export default function RootLayoutDashboardCashier({
       // Cookie Send
       const result = response.data;
       if (result.statusCode === 200) {
-        console.log("Form submitted:", data);
+        console.log("Kasir Close Submitted:", data);
         // reset();
         Cookies.set("id", result?.data?.id, {
           expires: 7,
@@ -208,6 +214,7 @@ export default function RootLayoutDashboardCashier({
     }
   };
 
+
   const id = Cookies.get("id");
 
   // GET CLOSE CASHIER RECEIPT
@@ -230,6 +237,9 @@ export default function RootLayoutDashboardCashier({
   const handlePrint = () => {
     reactToPrintFn();
   };
+
+  const { data: dataProfile } = useGetProfile();
+
 
   return (
     <>
@@ -254,16 +264,16 @@ export default function RootLayoutDashboardCashier({
           </div>
 
           <div className="flex gap-4 justify-center items-center">
-            <div className="flex gap-2 items-center text-primaryColor">
+            <Link href={"/pilih-meja"} className="flex gap-2 items-center text-primaryColor">
               <MejaSVG />
               <span>Meja</span>
-            </div>
-            <div className="flex gap-2">
+            </Link>
+            <Link href={"/riwayat-transaksi"} className="flex gap-2">
               <RiwayatSVG />
               <div className="flex flex-col justify-center text-[#737791]">
                 Riwayat
               </div>
-            </div>
+            </Link>
           </div>
 
           <div className="flex gap-4 justify-between">
@@ -272,8 +282,8 @@ export default function RootLayoutDashboardCashier({
             </div>
             <div className="flex gap-2">
               <div className="flex flex-col justify-center">
-                <div className="text-black font-bold">Amalia Putri</div>
-                <div className="text-black/50 text-xs">Kasir</div>
+                <div className="text-black font-bold">{dataProfile?.data?.name}</div>
+                <div className="text-black/50 text-xs">{dataProfile?.data?.role}</div>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -380,14 +390,19 @@ export default function RootLayoutDashboardCashier({
                     </Label>
                     <Input
                       type="text"
-                      id="price"
+                      id="cogp"
                       placeholder="Rp."
-                      value={useInputRp(watch("cash"))}
+                      value={`Rp.${isNaN(watch("cash")) ? 0 : watch("cash")}`}
                       {...register("cash")}
                       onChange={(e) => {
+
                         const numericValue =
                           parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
                           0;
+
+                        const inputValue = e.target.value.replace(/[^0-9]/g, "");
+                        const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
+
                         setValue("cash", numericValue);
                       }}
                     />

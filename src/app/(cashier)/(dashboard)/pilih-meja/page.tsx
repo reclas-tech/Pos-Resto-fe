@@ -150,7 +150,7 @@ function SelectTable() {
 
   // Handle calculate change total amount and payment amount
   const calculateChange = () => {
-    const totalAmount = 10000;
+    const totalAmount = dataInvoiceDineIn?.data?.price || 0;
     const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
     const change = paymentAmount - totalAmount;
     if (change < 0) {
@@ -197,21 +197,31 @@ function SelectTable() {
   };
 
   // Handle Open TakeAway
+
   const handleOpenDetailTakeAway = (
     invoiceId: string | number,
     status: string
   ) => {
     // console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+
+  const handleOpenDetailTakeAway = (invoiceId: string | number, status: string) => {
+    console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+
     setSelectedId(invoiceId); // Menyimpan id
     setIsDetailModalOpenTakeAway(true);
   };
 
   // Handle Open Payment TakeAway
+
   const handleOpenPaymentTakeAway = (
     invoiceId: string | number,
     status: string
   ) => {
     // console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+
+  const handleOpenPaymentTakeAway = (invoiceId: string | number, status: string) => {
+    console.log(`Table ID: ${invoiceId}, Status: ${status}`);
+
     setSelectedId(invoiceId); // Menyimpan id
     setIsPaymentModalOpenTakeAway(true);
   };
@@ -474,26 +484,30 @@ function SelectTable() {
             {/* Total Section */}
             <div className="flex justify-end items-end text-sm">
               <div className="text-end space-y-2">
-                <div className="space-x-4">
+                <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
                   </span>
                 </div>
-                <div className="space-x-4">
-                  <span className="text-[#9C9C9C]">PAJAK</span>
+                <div className="space-x-4 flex justify-between">
+                  <span className="text-[#9C9C9C]">PAJAK {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%</span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}
                   </span>
                 </div>
-                <div className="space-x-4">
+                <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">TOTAL</span>
                   <span className="text-primaryColor">
+
                     Rp.{" "}
                     {(
                       (dataInvoiceDineIn?.data?.price_sum ?? 0) +
                       (dataInvoiceDineIn?.data?.tax ?? 0)
                     ).toLocaleString()}
+
+                    Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
+
                   </span>
                 </div>
               </div>
@@ -631,6 +645,7 @@ function SelectTable() {
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
+
                       <span className="text-primaryColor">
                         Rp.{" "}
                         {(
@@ -638,6 +653,9 @@ function SelectTable() {
                           (dataInvoiceDineIn?.data?.tax ?? 0)
                         ).toLocaleString()}
                       </span>
+
+                      <span className="text-primaryColor">Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}</span>
+
                     </div>
                   </div>
                 </div>
@@ -901,26 +919,30 @@ function SelectTable() {
             {/* Total Section */}
             <div className="flex justify-end items-end text-sm">
               <div className="text-end space-y-2">
-                <div className="space-x-4">
+                <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
                   </span>
                 </div>
-                <div className="space-x-4">
-                  <span className="text-[#9C9C9C]">PAJAK</span>
+                <div className="space-x-4 flex justify-between">
+                  <span className="text-[#9C9C9C]">PAJAK {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%</span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}
                   </span>
                 </div>
-                <div className="space-x-4">
+                <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">TOTAL</span>
                   <span className="text-primaryColor">
+
                     Rp.{" "}
                     {(
                       (dataInvoiceTakeAway?.data?.price_sum ?? 0) +
                       (dataInvoiceTakeAway?.data?.tax ?? 0)
                     ).toLocaleString()}
+
+                    Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}
+
                   </span>
                 </div>
               </div>
@@ -1046,6 +1068,7 @@ function SelectTable() {
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
+
                       <span className="text-primaryColor">
                         Rp.{" "}
                         {(
@@ -1053,6 +1076,9 @@ function SelectTable() {
                           (dataInvoiceTakeAway?.data?.tax ?? 0)
                         ).toLocaleString()}
                       </span>
+
+                      <span className="text-primaryColor">Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}</span>
+
                     </div>
                   </div>
                 </div>

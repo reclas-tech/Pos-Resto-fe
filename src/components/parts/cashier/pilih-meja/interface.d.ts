@@ -53,6 +53,7 @@ export interface InvoiceDetailData {
   products: Product[];
   packets: Packet[];
   status: string;
+  tax_percent: number;
 }
 
 interface Product {
