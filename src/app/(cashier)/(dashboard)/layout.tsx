@@ -396,6 +396,8 @@ export default function RootLayoutDashboardCashier({
                         //   parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
                         //   0;
 
+=======
+>>>>>>> e0258ed468714662fbb24cae994f00259857e3b7
                         const inputValue = e.target.value.replace(/[^0-9]/g, "");
                         const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
 
