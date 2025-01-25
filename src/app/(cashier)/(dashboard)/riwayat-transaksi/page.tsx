@@ -1,372 +1,367 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import DeleteModal from "@/components/ui/modal/delete";
+import EditModal from "@/components/ui/modal/edit";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { showAlert2 } from "@/lib/sweetalert2";
-import { axiosPrivateInstance } from "@/utils/axios";
-import { AxiosError } from "axios";
-import { FilterSVG, SuccessSVG } from "@/constants/svgIcons";
-import {
-  transactionHistorySchema,
-  transactionHistoryValues,
-} from "@/validations";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import PinModal from "@/components/ui/modal/confirmationPin";
+import DetailModal from "@/components/ui/modal/detailReusable";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Input, SearchInputCashier } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import DetailModal from "@/components/ui/modal/detailReusable";
-import DeleteModal from "@/components/ui/modal/delete";
-import EditModal from "@/components/ui/modal/edit";
-import PinModal from "@/components/ui/modal/confirmationPin";
-import ValidationModal from "@/components/ui/modal/validation";
-import DataRiwayat from "@/components/parts/cashier/riwayat-transaksi/DataRiwayat";
-import { useGetListCard } from "@/components/parts/cashier/riwayat-transaksi/api";
+import { FilterSVG } from "@/constants/svgIcons";
+import { SearchInputCashier } from "@/components/ui/input";
+import { putUpdateInvoice, useGetHistoryList, useGetOneInvoice } from "@/components/parts/cashier/history-transaction/api";
+import DataTableList from "@/components/parts/cashier/history-transaction/DataTableList";
+import { Minus, Trash2 } from "lucide-react";
+
+interface Product {
+  id: string;
+  quantity: number;
+  name: string;
+  price: number;
+}
+
+interface Packet {
+  id: string;
+  quantity: number;
+  name: string;
+}
+
+interface FormInputs {
+  pin?: string;
+  products?: Product[];
+  packets?: Packet[];
+}
 
 function RiwayatTransaksi() {
   const [loading, setLoading] = useState(false);
-  const navigate = useRouter();
-  const [isDetailModalOpenDineIn, setIsDetailModalOpenDineIn] = useState(false);
-  const [isDetailModalOpenTakeaway, setIsDetailModalOpenTakeaway] =
-    useState(false);
-  const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeletePinModalOpen, setIsDeletePinModalOpen] = useState(false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
-
   const [search, setSearch] = useState("");
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
-  };
-
-  const [filterPrice, setFilterPrice] = useState("");
-  const handleFilterPriceChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilterPrice(event.target.value);
-  };
-
-  const [filterTime, setFilterTime] = useState("");
-  const handleFilterTimeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilterTime(event.target.value);
-  };
-
-  const [filterInvoice, setFilterInvoice] = useState("");
-  const handleFilterInvoiceChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilterInvoice(event.target.value);
-    console.log("Filter Invoice:", event.target.value);
-  };
-
-  const handleFilterApply = () => {
-    // Aksi yang dilakukan ketika tombol "Berhasil" ditekan
-    console.log("Filter diterapkan dengan ID Transaksi/Invoce:", filterInvoice);
-    // Anda bisa menambahkan logika untuk menerapkan filter di sini
-  };
-
-  const { data } = useGetListCard(
-    search,
-    filterPrice,
-    filterTime,
-    filterInvoice
+  const [price, setPrice] = useState("");
+  const [time, setTime] = useState("");
+  const [invoice, setInvoice] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState({
+    price: "",
+    time: "",
+    invoice: "",
+  });
+  const [isDetailModalOpenPending, setIsDetailModalOpenPending] =
+    useState(false);
+  const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
+  const [isDetailModalOpenSuccess, setIsDetailModalOpenSuccess] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | number | null>(null);
+  const [selectedPurchaseDetails, setSelectedPurchaseDetails] = useState<any[]>(
+    []
   );
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<transactionHistoryValues>({
-    resolver: zodResolver(transactionHistorySchema),
-    defaultValues: {
-      cashier_id: "",
-    },
-  });
+  // Fetch Data Hostory List
+  const { data: dataGetHistoryList, error, mutate: mutateGetHistoryList } = useGetHistoryList(search, price, time, invoice);
 
-  // Handle OnSubmit Edit
-  const onEditSubmit: SubmitHandler<transactionHistoryValues> = async (
-    data
-  ) => {
-    setLoading(true);
-    const transaction_history = {
-      ...data,
-      PuchaseDetailss: selectedPurchaseDetails,
-    };
-    console.log("Updated data:", transaction_history);
-    showAlert2("success", "Berhasil memperbarui data");
-    setLoading(false);
-    reset();
-    setSelectedPurchaseDetails([]);
+  // Handle Filter Change
+  const handleFilterChange = (field: string, value: string) => {
+    setSelectedFilter((prev) => ({ ...prev, [field]: value }));
+  };
 
-    console.log("Form data:", data);
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("name", data.cashier_id);
+  // HandleOnDetail
+  const onDetailModal = (id: string | number, status: string, isTakeawayModal: boolean) => {
+    setSelectedId(id);
 
-    try {
-      await axiosPrivateInstance.put(`/`, formData);
-      showAlert2("success", "Berhasil menyimpan data.");
-      navigate.push("/riwayat-transaksi");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.data?.[0]?.message || "Gagal memperbarui data.";
-        showAlert2("error", errorMessage);
-      } else {
-        showAlert2("error", "Terjadi kesalahan!");
-      }
-    } finally {
-      setLoading(false);
+    if (isTakeawayModal) {
+      setIsDetailModalOpenPending(true);
+      console.log(`Status Pending: ${id}, Status: ${status}`);
+    } else {
+      setIsDetailModalOpenSuccess(true);
+      console.log(`Status Success: ${id}, Status: ${status}`);
     }
   };
 
-  const handleDetail = () => {
-    console.log("Data diedit");
+  // GET ONE Invoice
+  const { data: dataGetOneInvoice } = useGetOneInvoice(selectedId ? selectedId.toString() : '');
+
+  // OnEdit Modal
+  // ErrorHandle
+  useEffect(() => {
+    console.log("dataGetOneInvoice:", dataGetOneInvoice);
+    if (dataGetOneInvoice?.data) {
+      const products = Array.isArray(dataGetOneInvoice.data.products)
+        ? dataGetOneInvoice.data.products.map((product: Product) => ({
+          ...product,
+          type: "product",
+        }))
+        : [];
+      const packets = Array.isArray(dataGetOneInvoice.data.packets)
+        ? dataGetOneInvoice.data.packets.map((packet: Packet) => ({
+          ...packet,
+          type: "packet",
+        }))
+        : [];
+      setSelectedPurchaseDetails([...products, ...packets]);
+    }
+  }, [dataGetOneInvoice]);
+
+  // Fetch data put invoice
+  const { handlePutSubmit } = putUpdateInvoice(selectedId ? selectedId.toString() : '');
+  const {
+    handleSubmit,
+    reset,
+  } = useForm<FormInputs>();
+
+  const onEditSubmit: SubmitHandler<FormInputs> = async () => {
+    const formatedRequest = {
+      products:
+        selectedPurchaseDetails
+          .filter((item) => item.type === "product")
+          .map((product: Product) => ({
+            id: product.id,
+            quantity: product.quantity,
+          })) || [],
+      packets:
+        selectedPurchaseDetails
+          .filter((item) => item.type === "packet")
+          .map((packet: Packet) => ({
+            id: packet.id,
+            quantity: packet.quantity,
+          })) || [],
+    };
+    setIsEditModalOpenTakeaway(false)
+    handlePutSubmit(formatedRequest, setLoading);
   };
 
-  const handlePrint = () => {
-    setIsPrintSuccess(true);
-    console.log("Data Di Print");
+  const handlePinSubmit = (pin: string) => {
+    const formatedRequest = {
+      pin: pin || "",
+    };
+    handlePutSubmit(formatedRequest, setLoading);
+    mutateGetHistoryList()
+    reset();
   };
 
-  const handleDelete = () => {
-    console.log("Data dihapus");
-  };
-
-  interface SelectedPurchase {
-    id: number;
-    name: string;
-    quantity: number;
-  }
-
-  const initialSelectedPurchaseDetails: SelectedPurchase[] = [
-    { id: 1, name: "Nasi Padang", quantity: 2 },
-    { id: 2, name: "Rendang", quantity: 1 },
-    { id: 3, name: "Ayam Bakar", quantity: 3 },
-  ];
-
-  const [selectedPurchaseDetails, setSelectedPurchaseDetails] = useState<
-    SelectedPurchase[]
-  >(initialSelectedPurchaseDetails);
-
-  const handleIncreaseQuantity = (id: number) => {
-    setSelectedPurchaseDetails(
-      selectedPurchaseDetails.map((PuchaseDetails) =>
-        PuchaseDetails.id === id
-          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity + 1 }
-          : PuchaseDetails
-      )
-    );
-  };
+  // const handleIncreaseQuantity = (id: number) => {
+  //   setSelectedPurchaseDetails((prevDetails) =>
+  //     prevDetails.map((purchaseDetail) =>
+  //       purchaseDetail.id === id
+  //         ? { ...purchaseDetail, quantity: purchaseDetail.quantity + 1 }
+  //         : purchaseDetail
+  //     )
+  //   );
+  // };
 
   const handleDecreaseQuantity = (id: number) => {
-    setSelectedPurchaseDetails(
-      selectedPurchaseDetails.map((PuchaseDetails) =>
-        PuchaseDetails.id === id && PuchaseDetails.quantity > 1
-          ? { ...PuchaseDetails, quantity: PuchaseDetails.quantity - 1 }
-          : PuchaseDetails
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id && purchaseDetail.quantity > 1
+          ? { ...purchaseDetail, quantity: purchaseDetail.quantity - 1 }
+          : purchaseDetail
       )
     );
   };
 
   const handleRemovePurchaseDetails = (id: number) => {
-    setSelectedPurchaseDetails(
-      selectedPurchaseDetails.filter(
-        (PuchaseDetails) => PuchaseDetails.id !== id
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id
+          ? { ...purchaseDetail, quantity: 0 }
+          : purchaseDetail
       )
     );
   };
 
+  const handleDetail = () => {
+    console.log("Data diedit");
+  };
+  if (error) return <div>Error loading data</div>;
+
+  // const { handlePutSubmit } = putUpdateInvoice(selectedId ? selectedId.toString() : '');
+  // const {
+  //   handleSubmit,
+  //   reset,
+  // } = useForm<FormInputs>();
+
+  // const onEditSubmit: SubmitHandler<FormInputs> = async () => {
+  //   const formatedRequest = {
+  //     products:
+  //       selectedPurchaseDetails
+  //         .filter((item) => item.type === "product")
+  //         .map((product: Product) => ({
+  //           id: product.id,
+  //           quantity: product.quantity,
+  //         })) || [],
+  //     packets:
+  //       selectedPurchaseDetails
+  //         .filter((item) => item.type === "packet")
+  //         .map((packet: Packet) => ({
+  //           id: packet.id,
+  //           quantity: packet.quantity,
+  //         })) || [],
+  //   };
+  //   setIsEditModalOpenTakeaway(false)
+  //   handlePutSubmit(formatedRequest, setLoading);
+  // };
+
+  // const handlePinSubmit = (pin: string) => {
+  //   const formatedRequest = {
+  //     pin: pin || "",
+  //   };
+  //   handlePutSubmit(formatedRequest, setLoading);
+  //   mutateGetHistoryList()
+  //   reset();
+  // };
+
   return (
     <>
-      <main className="pl-8 pr-8 pt-4 text-sm space-y-4">
+      <div className="pl-6 pr-6 pt-4 pb-4 text-xs">
         <section className="justify-start flex gap-4">
           <div className="">
-            <SearchInputCashier
-              className="w-[280px] text-sm h-9"
-              onChange={handleSearchChange}
-            />
+            <SearchInputCashier className="w-[280px] text-xs h-8" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={"outline"}
-                className="justify-center border-secondaryColor text-sm p-2 h-fit"
+          <div className="filters">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="justify-center border-secondaryColor text-sm p-2 h-fit"
+                >
+                  <span>
+                    <FilterSVG />
+                  </span>
+                  <span>Filter</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-[#E1E1E1] border border-gray-300 shadow-2xl rounded-md w-full"
               >
-                <span>
-                  <FilterSVG />
-                </span>
-                <span>Filter</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-[#E1E1E1] border border-gray-300 shadow-2xl rounded-md w-full">
-              <>
                 <div className="p-2 w-full text-sm text-[#000000] font-semibold">
                   <span>Pilih Filter</span>
                   <div className="border-b border-black/30 mt-1 mb-2"></div>
-                  <div className="flex justify-between gap-4 ">
-                    <div className="space-y-2">
-                      <span>ID Transaksi / Invoice</span>
-                      <div onChange={handleFilterInvoiceChange}>
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            value="asc"
-                            id="r1"
-                            checked={filterInvoice === "asc"}
-                            onChange={handleFilterInvoiceChange}
-                          />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r1"
-                          >
-                            Terendah
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <input
-                            type="radio"
-                            value="desc"
-                            id="r2"
-                            checked={filterInvoice === "desc"}
-                            onChange={handleFilterInvoiceChange}
-                          />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Tertinggi
-                          </Label>
-                        </div>
+
+                  {/* Filter berdasarkan Invoice */}
+                  <div className="space-y-2">
+                    <span>ID Transaksi / Invoice</span>
+                    <div>
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          name="invoice"
+                          value="asc"
+                          id="invoice-asc"
+                          checked={selectedFilter.invoice === "asc"}
+                          onChange={() => handleFilterChange("invoice", "asc")}
+                        />
+                        <Label htmlFor="invoice-asc">Terendah</Label>
                       </div>
-                      {/* <RadioGroup
-                      defaultValue="comfortable"
-                        // value={filterInvoice}
-                        // onChange={handleFilterInvoiceChange}
-                      >
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="asc" id="r1" checked={filterInvoice === 'asc'}/>
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r1"
-                          >
-                            Terendah
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="desc" id="r2" />
-                          <Label
-                            className="text-sm flex items-center justify-center m-auto"
-                            htmlFor="r2"
-                          >
-                            Tertinggi
-                          </Label>
-                        </div>
-                      </RadioGroup> */}
+                      <div className="flex items-center space-x-1">
+                        <input
+                          type="radio"
+                          name="invoice"
+                          value="desc"
+                          id="invoice-desc"
+                          checked={selectedFilter.invoice === "desc"}
+                          onChange={() => handleFilterChange("invoice", "desc")}
+                        />
+                        <Label htmlFor="invoice-desc">Tertinggi</Label>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Filter berdasarkan Tanggal */}
                   <div className="space-y-2">
                     <span>Tanggal dan Waktu</span>
-                    <div onChange={handleFilterTimeChange}>
+                    <div>
                       <div className="flex items-center space-x-1">
                         <input
                           type="radio"
+                          name="time"
                           value="asc"
-                          id="r1"
-                          checked={filterTime === "asc"}
-                          onChange={handleFilterTimeChange}
+                          id="time-asc"
+                          checked={selectedFilter.time === "asc"}
+                          onChange={() => handleFilterChange("time", "asc")}
                         />
-                        <Label
-                          className="text-sm flex items-center justify-center m-auto"
-                          htmlFor="r1"
-                        >
-                          Terendah
-                        </Label>
+                        <Label htmlFor="time-asc">Terendah</Label>
                       </div>
                       <div className="flex items-center space-x-1">
                         <input
                           type="radio"
+                          name="time"
                           value="desc"
-                          id="r2"
-                          checked={filterTime === "desc"}
-                          onChange={handleFilterTimeChange}
+                          id="time-desc"
+                          checked={selectedFilter.time === "desc"}
+                          onChange={() => handleFilterChange("time", "desc")}
                         />
-                        <Label
-                          className="text-sm flex items-center justify-center m-auto"
-                          htmlFor="r2"
-                        >
-                          Tertinggi
-                        </Label>
+                        <Label htmlFor="time-desc">Tertinggi</Label>
                       </div>
                     </div>
                   </div>
+
+                  {/* Filter berdasarkan Harga */}
                   <div className="space-y-2">
                     <span>Total Harga</span>
-                    <div onChange={handleFilterPriceChange}>
+                    <div>
                       <div className="flex items-center space-x-1">
                         <input
                           type="radio"
+                          name="price"
                           value="asc"
-                          id="r1"
-                          checked={filterPrice === "asc"}
-                          onChange={handleFilterPriceChange}
+                          id="price-asc"
+                          checked={selectedFilter.price === "asc"}
+                          onChange={() => handleFilterChange("price", "asc")}
                         />
-                        <Label
-                          className="text-sm flex items-center justify-center m-auto"
-                          htmlFor="r1"
-                        >
-                          Terendah
-                        </Label>
+                        <Label htmlFor="price-asc">Terendah</Label>
                       </div>
                       <div className="flex items-center space-x-1">
                         <input
                           type="radio"
+                          name="price"
                           value="desc"
-                          id="r2"
-                          checked={filterPrice === "desc"}
-                          onChange={handleFilterPriceChange}
+                          id="price-desc"
+                          checked={selectedFilter.price === "desc"}
+                          onChange={() => handleFilterChange("price", "desc")}
                         />
-                        <Label
-                          className="text-sm flex items-center justify-center m-auto"
-                          htmlFor="r2"
-                        >
-                          Tertinggi
-                        </Label>
+                        <Label htmlFor="price-desc">Tertinggi</Label>
                       </div>
                     </div>
                   </div>
+
+                  {/* Tombol Terapkan */}
                   <div className="flex justify-end mt-4">
                     <Button
                       variant={"ghostButton"}
                       className="text-sm bg-secondaryColor text-white p-2 h-fit"
-                      onClick={handleFilterApply}
+                      onClick={() => {
+                        setPrice(selectedFilter.price);
+                        setTime(selectedFilter.time);
+                        setInvoice(selectedFilter.invoice);
+                        console.log("Filter applied", selectedFilter);
+                      }}
                     >
-                      Berhasil
+                      Terapkan
                     </Button>
                   </div>
                 </div>
-              </>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </section>
-        <DataRiwayat data={data?.data} statusCode={200} message="Berhasil ngambil data" />
-      </main>
 
-      {/* Detail Riwayat Transaksi */}
-      {/* <DetailModal
-        isOpen={isDetailModalOpenDineIn}
-        onClose={() => {
-          setIsDetailModalOpenDineIn(false);
-        }}
+        {/* History List */}
+        <DataTableList
+          data={dataGetHistoryList?.data ?? []}
+          statusCode={200}
+          message={"Daftar Meja Berhasil Didapatkan"}
+          onDetailModal={onDetailModal}
+        />
+      </div>
+
+      {/* Detail Status Success */}
+      <DetailModal
+        isOpen={isDetailModalOpenSuccess}
+        onClose={() => setIsDetailModalOpenSuccess(false)}
         onDetail={handleDetail}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
@@ -378,232 +373,223 @@ function RiwayatTransaksi() {
         closeButton={false}
       >
         <>
-          <div className="flex mb-4 gap-4 dark:text-white text-sm">
+          <div className="flex mb-4 gap-4 dark:text-white text-xs">
             <div className="flex flex-col w-full">
-              <Label htmlFor="idTransaction" className="text-sm">
+              <Label htmlFor="code" className="text-xs">
                 ID Transaksi/Invoice
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                INV0001
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.code ?? "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
-              <Label htmlFor="noTable" className="text-sm">
+              <Label htmlFor="noTable" className="text-xs">
                 Nomor Meja
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                A1
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {
+                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
+                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
+                    : "-"
+                }
               </div>
             </div>
           </div>
           <div className="flex mb-4 gap-4 dark:text-white">
             <div className="flex flex-col w-full">
-              <Label htmlFor="dateTimeTransaction" className="text-sm">
+              <Label htmlFor="dateTimeTransaction" className="text-xs">
                 Tanggal dan Waktu Transaksi
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                15/12/2024 15:34
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.created_at
+                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }) + ' WIB'
+                  : '-'}
               </div>
             </div>
             <div className="flex flex-col w-full">
-              <Label htmlFor="totalPrice" className="text-sm">
+              <Label htmlFor="totalPrice" className="text-xs">
                 Total Harga
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                Rp. 105.000
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Rp. {dataGetOneInvoice?.data?.price_sum.toLocaleString() ?? "-"}
               </div>
             </div>
           </div>
           <div className="flex mb-4 gap-4 dark:text-white">
             <div className="flex flex-col w-full">
-              <Label htmlFor="name" className="text-sm">
+              <Label htmlFor="name" className="text-xs">
                 Nama Kasir
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                John Doe
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.cashier ?? "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
-              <Label htmlFor="paymentMethod" className="text-sm">
+              <Label htmlFor="paymentMethod" className="text-xs">
                 Metode Pembayaran
               </Label>
-              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                -
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center uppercase">
+                {dataGetOneInvoice?.data?.payment ?? "-"}
               </div>
             </div>
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col w-full">
-              <Label htmlFor="purchaseHistory" className="text-sm">
+              <Label htmlFor="purchaseHistory" className="text-xs">
                 Rincian Pembelian
               </Label>
               <textarea
                 id="purchaseHistory"
-                className="w-full h-20 p-2 text-sm border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
+                className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                defaultValue={dataGetOneInvoice?.data?.products.map((product) => `${product.quantity}x ${product.name}`).join('\n')}
                 disabled
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
-              <div className="rounded-lg text-sm w-fit text-white bg-secondaryColor p-1">
-                Takeaway
+              <div
+                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${dataGetOneInvoice?.data?.type === "take away" ? "bg-secondaryColor" : "bg-primaryColor"
+                  }`}
+              >
+                {dataGetOneInvoice?.data?.type}
               </div>
-              <Label htmlFor="statusPurchase" className="text-sm mt-2">
+              <Label htmlFor="statusPurchase" className="text-xs mt-2">
                 Status Pembayaran
               </Label>
-              <div className="rounded-lg text-sm w-fit text-white bg-secondaryColor p-2">
-                Berhasil
+              <div className="rounded-lg text-xs w-fit text-white bg-secondaryColor p-2 capitalize">
+                {dataGetOneInvoice?.data?.status ?? "-"}
               </div>
             </div>
           </div>
         </>
-      </DetailModal> */}
-      {/* Detail Riwayat Transaksi */}
+      </DetailModal>
 
-      {/* <DetailModal
-        isOpen={isDetailModalOpenTakeaway}
-        onClose={() => {
-          setIsDetailModalOpenTakeaway(false);
-        }}
-        onDetail={handlePrint}
+      {/* Detail Status Pending */}
+      <DetailModal
+        isOpen={isDetailModalOpenPending}
+        onClose={() => setIsDetailModalOpenPending(false)}
+        onDetail={handleDetail}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
         showCancelButton={true}
-        showPrintButton={true}
-        classNameDialogHeader="border-b p-5"
+        showPrintButton={false}
+        classNameDialogHeader="border-none p-4"
         classNameButton="w-full rounded-lg text-sm"
-        classNameDialogTitle="text-left font-semibold"
+        classNameDialogTitle="text-left font-bold"
         closeButton={false}
       >
         <>
           <Button
             onClick={() => {
               setIsEditModalOpenTakeaway(true);
-              setIsDetailModalOpenTakeaway(false);
+              setIsDetailModalOpenPending(false);
             }}
             variant={"outline"}
-            className="rounded-lg text-sm w-[70px] text-white bg-secondaryColor p-2 absolute right-4 top-4"
+            className="rounded-lg text-xs w-[70px] text-white bg-secondaryColor p-2 absolute right-4 top-4"
           >
             Edit
           </Button>
-          <div className="space-y-4">
-            <div className="flex gap-4 dark:text-white text-sm">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="idTransaction" className="text-sm">
-                  ID Transaksi/Invoice
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  INV0001
-                </div>
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="noTable" className="text-sm">
-                  Nomor Meja
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  A1
-                </div>
+          <div className="flex mb-4 gap-4 dark:text-white text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="code" className="text-xs">
+                ID Transaksi/Invoice
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.code ?? "-"}
               </div>
             </div>
-            <div className="flex gap-4 dark:text-white">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="dateTimeTransaction" className="text-sm">
-                  Tanggal dan Waktu Transaksi
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  15/12/2024 15:34
-                </div>
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="totalPrice" className="text-sm">
-                  Total Harga
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  Rp. 105.000
-                </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="noTable" className="text-xs">
+                Nomor Meja
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
+                {
+                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
+                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
+                    : "-"
+                }
               </div>
             </div>
-            <div className="flex gap-4 dark:text-white">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="name" className="text-sm">
-                  Nama Kasir
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  John Doe
-                </div>
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="paymentMethod" className="text-sm">
-                  Metode Pembayaran
-                </Label>
-                <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                  Tunai
-                </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="dateTimeTransaction" className="text-xs">
+                Tanggal dan Waktu Transaksi
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
+                {dataGetOneInvoice?.data?.created_at
+                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }) + ' WIB'
+                  : '-'}
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="purchaseHistory" className="text-sm">
-                  Rincian Pembelian
-                </Label>
-                <textarea
-                  id="purchaseHistory"
-                  className="w-full h-20 p-2 text-sm border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                  defaultValue={`1x Nasi\n1x Ayam Goreng\n1x Es Teh Manis`}
-                  disabled
-                />
+            <div className="flex flex-col w-full">
+              <Label htmlFor="totalPrice" className="text-xs">
+                Total Harga
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Rp. {dataGetOneInvoice?.data?.price_sum.toLocaleString() ?? "-"}
               </div>
-              <div className="flex flex-col w-full space-y-2">
-                <div className="rounded-lg text-sm w-fit text-white bg-secondaryColor p-1">
-                  Takeaway
-                </div>
-                <Label htmlFor="statusPurchase" className="text-sm">
-                  Status Pembayaran
-                </Label>
-                <div className="rounded-xl text-sm w-fit text-white bg-primaryColor p-2">
-                  Tertunda
-                </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="name" className="text-xs">
+                Nama Kasir
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.cashier ? dataGetOneInvoice.data.cashier : "-"}
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Metode Pembayaran
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center uppercase">
+                {dataGetOneInvoice?.data?.payment ?? "-"}
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="purchaseHistory" className="text-xs">
+                Rincian Pembelian
+              </Label>
+              <textarea
+                id="purchaseHistory"
+                className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
+                defaultValue={dataGetOneInvoice?.data?.products.map((product) => `${product.quantity}x ${product.name}`).join('\n')}
+                disabled
+              />
+            </div>
+            <div className="flex flex-col w-full space-y-2">
+              <div
+                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${dataGetOneInvoice?.data?.type === "take away" ? "bg-secondaryColor" : "bg-primaryColor"
+                  }`}
+              >
+                {dataGetOneInvoice?.data?.type}
+              </div>
+              <Label htmlFor="statusPurchase" className="text-xs">
+                Status Pembayaran
+              </Label>
+              <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2 capitalize">
+                {dataGetOneInvoice?.data?.status ?? "-"}
               </div>
             </div>
           </div>
         </>
-      </DetailModal> */}
+      </DetailModal>
 
-      {/* Handle Print in Detail Riwayat Transaction */}
-      {/* <ValidationModal
-        isOpen={isPrintSuccess}
-        onClose={() => {
-          setIsPrintSuccess(false);
-        }}
-        onSubmitTrigger={() => {}}
-        title=""
-        classNameDialogFooter="flex md:justify-center"
-        showKeluarButton={true}
-        showSubmitButton={false}
-        classNameDialogHeader=""
-        classNameButton="w-full rounded-lg text-sm"
-        classNameDialogTitle=""
-        closeButton={false}
-        keluarButtonText="Tutup"
-      >
-        <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
-          <SuccessSVG />
-        </div>
-        <div className="text-lg font-bold text-center mt-4">
-          Struk Berhasil di Print
-        </div>
-      </ValidationModal> */}
-      {/* Handle Print in Detail Riwayat Transaction */}
-
-      {/* Edit Detail Transaksi */}
-      {/* <EditModal
+      <EditModal
         isOpen={isEditModalOpenTakeaway}
         onClose={() => setIsEditModalOpenTakeaway(false)}
         onSubmit={handleSubmit(onEditSubmit)}
         title="Detail Riwayat Transaksi"
-        classNameDialogContent="sm:max-w-[704px]"
-        editButtonText="Kirim"
-        cancelButtonText="Tutup"
+        classNameDialogContent="sm:max-w-[640px]"
         loading={loading}
       >
         <>
@@ -611,8 +597,9 @@ function RiwayatTransaksi() {
             onClick={() => {
               setIsDeleteModalOpen(true);
             }}
+            type="button"
             variant={"outline"}
-            className="rounded-xl text-sm w-[120px] text-white bg-[#FF0000] absolute right-4 top-4 border-none"
+            className="rounded-xl text-xs w-[120px] text-white bg-[#FF0000] absolute right-4 top-4 border-none"
           >
             Hapus Transaksi
           </Button>
@@ -620,195 +607,151 @@ function RiwayatTransaksi() {
             isOpen={isDeleteModalOpen}
             onClose={() => {
               setIsDeleteModalOpen(false);
-              handleDelete();
+            }}
+            onDelete={() => {
+              setIsDeletePinModalOpen(true);
             }}
             title="Hapus"
             description="Anda yakin ingin menghapus item ini ?"
           />
-          <PinModal
-            isOpen={isDeletePinModalOpen}
-            onClose={() => {
-              setIsEditModalOpenTakeaway(false);
-              setIsDeleteModalOpen(false);
-              setIsDeletePinModalOpen(false);
-            }}
-            onDelete={handleDelete}
-          />
-          <div className="space-y-4">
-            <div className="flex gap-4 justify-between text-sm">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="idTransaction" className="text-sm">
-                  ID Transaksi/Invoice
-                </Label>
-                <Input
-                  type="name"
-                  id="idTransaction"
-                  placeholder="Id Transaksi"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="noTable" className="text-sm">
-                  Nomor Meja
-                </Label>
-                <Input
-                  type="name"
-                  id="noTable"
-                  placeholder="Nomor Meja"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
+          <div className="flex mb-4 gap-4 dark:text-white text-xs">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="code" className="text-xs">
+                ID Transaksi/Invoice
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.code ?? "-"}
               </div>
             </div>
-            <div className="flex gap-4 justify-between text-sm">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="dateTime" className="text-sm">
-                  Tanggal dan Waktu Transaksi
-                </Label>
-                <Input
-                  type="name"
-                  id="dateTime"
-                  placeholder="Tanggal dan Waktu Transaksi"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="price" className="text-sm">
-                  Total Harga
-                </Label>
-                <Input
-                  type="name"
-                  id="price"
-                  placeholder="Total Harga"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
+            <div className="flex flex-col w-full">
+              <Label htmlFor="noTable" className="text-xs">
+                Nomor Meja
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
+                {
+                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
+                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
+                    : "-"
+                }
               </div>
             </div>
-            <div className="flex gap-4 justify-between text-sm">
-              <div className="flex flex-col w-full">
-                <Label htmlFor="nameCashier" className="text-sm">
-                  Nama Kasir
-                </Label>
-                <Input
-                  type="name"
-                  id="nameCashier"
-                  placeholder="Nama Kasir"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col w-full">
-                <Label htmlFor="paymentMethod" className="text-sm">
-                  Metode Pembayaran
-                </Label>
-                <Input
-                  type="name"
-                  id="paymentMethod"
-                  placeholder="Metode Pembayaran"
-                  className="text-sm"
-                  {...register("cashier_id")}
-                />
-                {errors.cashier_id && (
-                  <span className="text-sm text-red-500">
-                    {errors.cashier_id.message}
-                  </span>
-                )}
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="dateTimeTransaction" className="text-xs">
+                Tanggal dan Waktu Transaksi
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
+                {dataGetOneInvoice?.data?.created_at
+                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }) + ' WIB'
+                  : '-'}
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="flex flex-col w-full text-sm">
-                <Label htmlFor="purchaseHistory" className="text-sm">
-                  Rincian Pembelian
-                </Label>
-                <div className="w-full rounded-md border border-neutral-200 bg-transparent px-3 py-3 text-base shadow-sm transition-colors space-y-2 max-h-20 overflow-y-auto">
-                  {selectedPurchaseDetails.length === 0 ? (
-                    <span className="text-slate-400">Pilih produk</span>
-                  ) : (
-                    selectedPurchaseDetails.map((PuchaseDetails) => (
-                      <div
-                        key={PuchaseDetails.id}
-                        className="flex items-center justify-between rounded-md"
-                      >
-                        <span className="text-sm">{PuchaseDetails.name}</span>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleDecreaseQuantity(PuchaseDetails.id)
-                            }
-                          >
-                            <Minus size={20} />
-                          </button>
-                          <span className="flex items-center justify-center border border-secondaryColor rounded-md font-medium w-10 h-6">
-                            {PuchaseDetails.quantity}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleIncreaseQuantity(PuchaseDetails.id)
-                            }
-                          >
-                            <Plus size={20} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleRemovePurchaseDetails(PuchaseDetails.id)
-                            }
-                            className="text-red-600"
-                          >
-                            <Trash2 size={20} />
-                          </button>
-                        </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="totalPrice" className="text-xs">
+                Total Harga
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                Rp. {dataGetOneInvoice?.data?.price_sum.toLocaleString() ?? "-"}
+              </div>
+            </div>
+          </div>
+          <div className="flex mb-4 gap-4 dark:text-white">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="name" className="text-xs">
+                Nama Kasir
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                {dataGetOneInvoice?.data?.cashier ? dataGetOneInvoice.data.cashier : "-"}
+              </div>
+            </div>
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Metode Pembayaran
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center uppercase">
+                {dataGetOneInvoice?.data?.payment ?? "-"}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex flex-col w-full text-sm">
+              <Label htmlFor="purchaseHistory" className="text-sm">
+                Rincian Pembelian
+              </Label>
+              <div className="w-full rounded-md border border-neutral-200 bg-transparent px-3 py-3 text-base shadow-sm transition-colors space-y-2 max-h-20 overflow-y-auto">
+                {selectedPurchaseDetails.length === 0 ? (
+                  <span className="text-slate-400">Pilih produk</span>
+                ) : (
+                  selectedPurchaseDetails.map((PuchaseDetails) => (
+                    <div
+                      key={PuchaseDetails.id}
+                      className="flex items-center justify-between rounded-md"
+                    >
+                      <span className="text-sm">{PuchaseDetails.name}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleDecreaseQuantity(PuchaseDetails.id)
+                          }
+                        >
+                          <Minus size={20} />
+                        </button>
+                        <span className="flex items-center justify-center border border-secondaryColor rounded-md font-medium w-10 h-6">
+                          {PuchaseDetails.quantity}
+                        </span>
+                        {/* <button
+                          type="button"
+                          onClick={() =>
+                            handleIncreaseQuantity(PuchaseDetails.id)
+                          }
+                        >
+                          <Plus size={20} />
+                        </button> */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleRemovePurchaseDetails(PuchaseDetails.id)
+                          }
+                          className="text-red-600"
+                        >
+                          <Trash2 size={20} />
+                        </button>
                       </div>
-                    ))
-                  )}
-                </div>
+                    </div>
+                  ))
+                )}
               </div>
-              <div className="flex flex-col w-full space-y-2">
-                <div className="rounded-lg text-sm w-fit text-white bg-primaryColor p-1">
-                  Dine In
-                </div>
-                <Label htmlFor="statusPurchase" className="text-sm">
-                  Status Pembayaran
-                </Label>
-                <div className="rounded-xl text-sm w-fit text-white bg-primaryColor p-2">
-                  Tertunda
-                </div>
+            </div>
+            <div className="flex flex-col w-full space-y-2">
+              <div className="rounded-lg text-xs w-fit text-white bg-primaryColor p-1">
+                Dine In
+              </div>
+              <Label htmlFor="statusPurchase" className="text-xs">
+                Status Pembayaran
+              </Label>
+              <div className="rounded-xl text-xs w-fit text-white bg-primaryColor p-2">
+                Tertunda
               </div>
             </div>
           </div>
         </>
-      </EditModal> */}
-      {/* Edit Detail Transaksi */}
+      </EditModal>
+
+      <PinModal
+        isOpen={isDeletePinModalOpen}
+        onClose={() => {
+          setIsEditModalOpenTakeaway(false);
+          setIsDeleteModalOpen(false);
+          setIsDeletePinModalOpen(false);
+        }}
+        onDelete={handlePinSubmit}
+      />
     </>
   );
 }
