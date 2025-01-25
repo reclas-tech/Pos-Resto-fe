@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import logo from "@assets/splashScreen.png";
 import {
   CloseSVG,
@@ -33,16 +33,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "@/utils/axios";
 import AuthGuardEmployee from "@/hooks/authGuardEmployee";
+import { useGetProfile } from "@/components/parts/cashier/profile/api";
+import Link from "next/link";
 
 import useSWR from "swr";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
-
-import { useGetProfile } from "@/components/parts/cashier/profile/api";
-import Link from "next/link";
-
 
 // Handle validation input
 const closeCashierFormDataSchema = z.object({
@@ -56,6 +54,7 @@ export default function RootLayoutDashboardCashier({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isValidationModal, setIsValidationModal] = useState(false);
   const [isValidationMoneyModal, setIsValidationMoneyModal] = useState(false);
   const [isValidationSuccessModal, setIsValidationSuccessModal] =
@@ -126,11 +125,6 @@ export default function RootLayoutDashboardCashier({
   /* eslint-disable */
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
     setLoading(true);
-
-    console.log(access_token);
-    console.log(refresh_token);
-    console.log(role);
-
     try {
       // Get API
       const response = await axiosInstance.post("/cashier/close", data, {
@@ -138,8 +132,6 @@ export default function RootLayoutDashboardCashier({
           Authorization: `Bearer ${access_token}`,
         },
       });
-
-      console.log(response?.data);
 
       // Cookie Send
       const result = response.data;
@@ -238,8 +230,8 @@ export default function RootLayoutDashboardCashier({
     reactToPrintFn();
   };
 
+  // Fetch data user
   const { data: dataProfile } = useGetProfile();
-
 
   return (
     <>
@@ -264,13 +256,30 @@ export default function RootLayoutDashboardCashier({
           </div>
 
           <div className="flex gap-4 justify-center items-center">
-            <Link href={"/pilih-meja"} className="flex gap-2 items-center text-primaryColor">
-              <MejaSVG />
+            <Link
+              href="/pilih-meja"
+              className={`flex gap-2 items-center ${pathname === "/pilih-meja" ? "text-primaryColor" : "text-[#737791]"
+                }`}
+            >
+              {pathname === "/pilih-meja" ? (
+                <MejaSVG strokeColor="#FEA026" />
+              ) : (
+                <MejaSVG strokeColor="#737791" />
+              )}
               <span>Meja</span>
             </Link>
-            <Link href={"/riwayat-transaksi"} className="flex gap-2">
-              <RiwayatSVG />
-              <div className="flex flex-col justify-center text-[#737791]">
+
+            <Link
+              href="/riwayat-transaksi"
+              className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi" ? "text-primaryColor" : "text-[#737791]"
+                }`}
+            >
+              {pathname === "/riwayat-transaksi" ? (
+                <RiwayatSVG strokeColor="#FEA026" />
+              ) : (
+                <RiwayatSVG strokeColor="#737791" />
+              )}
+              <div className="flex flex-col justify-center">
                 Riwayat
               </div>
             </Link>
@@ -395,14 +404,8 @@ export default function RootLayoutDashboardCashier({
                       value={`Rp.${isNaN(watch("cash")) ? 0 : watch("cash")}`}
                       {...register("cash")}
                       onChange={(e) => {
-
-                        const numericValue =
-                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
-                          0;
-
                         const inputValue = e.target.value.replace(/[^0-9]/g, "");
                         const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
-
                         setValue("cash", numericValue);
                       }}
                     />
