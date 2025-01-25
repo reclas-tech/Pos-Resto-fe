@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
-type Product = {
+
+type ProductOrPacket = {
   id: string;
   name: string;
   quantity: number;
   note?: string;
-  price:string;
+  price: string;
 };
 
 type Data = {
@@ -14,7 +16,8 @@ type Data = {
   time: string;
   customer: string;
   table: string;
-  products: Product[];
+  products: ProductOrPacket[];
+  packets: ProductOrPacket[];
   quantity: number;
   sub_total: string;
   total_tagihan: string;
@@ -23,15 +26,100 @@ type Data = {
 };
 
 type PaymentReceiptProps = {
-  data: Data | null; // Data bisa null jika tidak tersedia
+  dataReceipt: {
+    statusCode: number;
+    message: string;
+    data: {
+      id: string;
+      type: string;
+      status: string;
+      customer: string;
+      created_at: string;
+      cashier: string;
+      codes: string[];
+      tables: string[];
+      products: {
+        id: string;
+        note: string | null;
+        quantity: number;
+        price_sum: number;
+        name: string;
+        price: number;
+      }[];
+      packets: {
+        id: string;
+        note: string | null;
+        quantity: number;
+        price_sum: number;
+        name: string;
+        price: number;
+      }[];
+      tax_percent: number;
+      tax: number;
+      price_sum: number;
+      price: number;
+    };
+  } | null;
+  ref?: any;
 };
-const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
+
+const transformDataReceiptToData = (
+  response: PaymentReceiptProps["dataReceipt"]
+): Data | null => {
+  if (!response || response.statusCode !== 200) return null;
+
+  const {
+    data: {
+      id,
+      created_at,
+      customer,
+      tables,
+      products,
+      packets,
+      tax,
+      price_sum,
+    },
+  } = response;
+
+  return {
+    id,
+    no_transaksi: response.data.codes[0] || "N/A",
+    time: new Date(created_at).toLocaleString(),
+    customer,
+    table: tables.length > 0 ? tables.join(", ") : "-",
+    products: products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      quantity: product.quantity,
+      note: product.note || undefined,
+      price: `Rp ${product.price.toLocaleString()}`,
+    })),
+    packets: packets.map((packet) => ({
+      id: packet.id,
+      name: packet.name,
+      quantity: packet.quantity,
+      note: packet.note || undefined,
+      price: `Rp ${packet.price.toLocaleString()}`,
+    })),
+    quantity:
+      products.reduce((sum, product) => sum + product.quantity, 0) +
+      packets.reduce((sum, packet) => sum + packet.quantity, 0),
+    sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
+    total_tagihan: `Rp ${price_sum.toLocaleString()}`,
+    cash: "-", // This field can be updated if cash data is available.
+    total_bayar: `Rp ${price_sum.toLocaleString()}`,
+  };
+};
+
+const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
+  dataReceipt,
+  ref,
+}) => {
+  const data = transformDataReceiptToData(dataReceipt);
   if (!data) return null;
+
   return (
-    <div
-      id="struk"
-      className="bg-white p-[2%] text-[10px] w-full "
-    >
+    <div id="struk" className="bg-white p-[2%] text-[10px] w-full" ref={ref}>
       <div className="flex justify-center">
         <div className="w-[25%] h-[25%]">
           <Image
@@ -75,6 +163,22 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
             )}
           </div>
         ))}
+        {data.packets.map((packet) => (
+          <div key={packet.id}>
+            <div className="flex justify-between">
+              <span className="flex space-x-2">
+                <p>{packet.quantity}x</p>
+                <p>@{packet.name}</p>
+              </span>
+              <p>{packet.price}</p>
+            </div>
+            {packet.note && packet.note.trim() !== "" && (
+              <ul className="list-disc ml-6">
+                <li className="">{packet.note}</li>
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
 
       <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-[1%] border-b border-dashed border-black">
@@ -99,39 +203,3 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
 };
 
 export default PaymentReceipt;
-
-// Example Use
-//  const dataPaymentReceipt = [
-//    {
-//      id: "1",
-//      no_transaksi: "INV1232134",
-//      time: "21 Des 24 15: 21",
-//      customer: "Andika Jaya",
-//      table: "Meja 2",
-
-//      products: [
-//        {
-//          id: "1",
-//          name: "Kopi Hitam",
-//          quantity: 1,
-//          note: "Tanpa gula",
-//          price: "33,000",
-//        },
-//        {
-//          id: "2",
-//          quantity: 1,
-//          name: "Es Teh",
-//          note: "",
-//          price: "15,000",
-//        },
-//      ],
-//      quantity: 4,
-//      sub_total: "20,000",
-//      total_tagihan: "20,000",
-//      cash: "20,000",
-//      total_bayar: "20,000",
-//    },
-//  ];
-
-//  <PaymentReceipt data={dataPaymentReceipt[0]} />
-
