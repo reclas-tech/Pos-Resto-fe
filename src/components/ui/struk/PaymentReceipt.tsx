@@ -2,7 +2,7 @@
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
 
-type Product = {
+type ProductOrPacket = {
   id: string;
   name: string;
   quantity: number;
@@ -16,7 +16,8 @@ type Data = {
   time: string;
   customer: string;
   table: string;
-  products: Product[];
+  products: ProductOrPacket[];
+  packets: ProductOrPacket[];
   quantity: number;
   sub_total: string;
   total_tagihan: string;
@@ -45,14 +46,21 @@ type PaymentReceiptProps = {
         name: string;
         price: number;
       }[];
-      packets: unknown[];
+      packets: {
+        id: string;
+        note: string | null;
+        quantity: number;
+        price_sum: number;
+        name: string;
+        price: number;
+      }[];
       tax_percent: number;
       tax: number;
       price_sum: number;
       price: number;
     };
   } | null;
-  ref?:any
+  ref?: any;
 };
 
 const transformDataReceiptToData = (
@@ -61,7 +69,16 @@ const transformDataReceiptToData = (
   if (!response || response.statusCode !== 200) return null;
 
   const {
-    data: { id, created_at, customer, tables, products, tax, price_sum, },
+    data: {
+      id,
+      created_at,
+      customer,
+      tables,
+      products,
+      packets,
+      tax,
+      price_sum,
+    },
   } = response;
 
   return {
@@ -77,7 +94,16 @@ const transformDataReceiptToData = (
       note: product.note || undefined,
       price: `Rp ${product.price.toLocaleString()}`,
     })),
-    quantity: products.reduce((sum, product) => sum + product.quantity, 0),
+    packets: packets.map((packet) => ({
+      id: packet.id,
+      name: packet.name,
+      quantity: packet.quantity,
+      note: packet.note || undefined,
+      price: `Rp ${packet.price.toLocaleString()}`,
+    })),
+    quantity:
+      products.reduce((sum, product) => sum + product.quantity, 0) +
+      packets.reduce((sum, packet) => sum + packet.quantity, 0),
     sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
     total_tagihan: `Rp ${price_sum.toLocaleString()}`,
     cash: "-", // This field can be updated if cash data is available.
@@ -85,7 +111,10 @@ const transformDataReceiptToData = (
   };
 };
 
-const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ dataReceipt, ref }) => {
+const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
+  dataReceipt,
+  ref,
+}) => {
   const data = transformDataReceiptToData(dataReceipt);
   if (!data) return null;
 
@@ -130,6 +159,22 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ dataReceipt, ref }) => 
             {product.note && product.note.trim() !== "" && (
               <ul className="list-disc ml-6">
                 <li className="">{product.note}</li>
+              </ul>
+            )}
+          </div>
+        ))}
+        {data.packets.map((packet) => (
+          <div key={packet.id}>
+            <div className="flex justify-between">
+              <span className="flex space-x-2">
+                <p>{packet.quantity}x</p>
+                <p>@{packet.name}</p>
+              </span>
+              <p>{packet.price}</p>
+            </div>
+            {packet.note && packet.note.trim() !== "" && (
+              <ul className="list-disc ml-6">
+                <li className="">{packet.note}</li>
               </ul>
             )}
           </div>

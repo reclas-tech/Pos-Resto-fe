@@ -34,6 +34,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useInputRp } from "@/hooks/useRupiah";
 import { axiosInstance } from "@/utils/axios";
 import AuthGuardEmployee from "@/hooks/authGuardEmployee";
+import useSWR from "swr";
+import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
 
 // Handle validation input
 const closeCashierFormDataSchema = z.object({
@@ -49,7 +54,8 @@ export default function RootLayoutDashboardCashier({
   const router = useRouter();
   const [isValidationModal, setIsValidationModal] = useState(false);
   const [isValidationMoneyModal, setIsValidationMoneyModal] = useState(false);
-  const [isValidationSuccessModal, setIsValidationSuccessModal] = useState(false);
+  const [isValidationSuccessModal, setIsValidationSuccessModal] =
+    useState(false);
   const [loading, setLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<string>("");
@@ -57,6 +63,8 @@ export default function RootLayoutDashboardCashier({
   const access_token = Cookies.get("access_token");
   const refresh_token = Cookies.get("refresh_token");
   const role = Cookies.get("role");
+
+  const axiosPrivate = useAxiosPrivateInstance();
 
   // Update date and time
   useEffect(() => {
@@ -114,16 +122,18 @@ export default function RootLayoutDashboardCashier({
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
     console.log(data);
     setLoading(true);
-    console.log(access_token)
-    console.log(refresh_token)
-    console.log(role)
+    console.log(access_token);
+    console.log(refresh_token);
+    console.log(role);
     try {
-      // Get API 
+      // Get API
       const response = await axiosInstance.post("/cashier/close", data, {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
       });
+
+      console.log(response?.data);
 
       // Cookie Send
       const result = response.data;
@@ -185,10 +195,9 @@ export default function RootLayoutDashboardCashier({
         // reset();
         // console.log("testtt");
       } else {
-        console.log(data)
+        console.log(data);
         showAlert2("error", response.data.message || "Terjadi kesalahan!");
       }
-
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || "Terjadi kesalahan saat membuka cash!";
@@ -197,6 +206,29 @@ export default function RootLayoutDashboardCashier({
     } finally {
       setLoading(false);
     }
+  };
+
+  const id = Cookies.get("id");
+
+  // GET CLOSE CASHIER RECEIPT
+  const { data: dataReceipt } = useSWR(
+    `/cashier/close/invoice/${id}`,
+    () =>
+      axiosPrivate
+        .get(`/cashier/close/invoice/${id}`, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  // Handle Print
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const handlePrint = () => {
+    reactToPrintFn();
   };
 
   return (
@@ -273,8 +305,7 @@ export default function RootLayoutDashboardCashier({
                         <span>
                           <CloseSVG />
                         </span>
-                        <span>{loading ? <LoadingSVG /> : "Keluar"}
-                        </span>
+                        <span>{loading ? <LoadingSVG /> : "Keluar"}</span>
                       </Button>
                     </div>
                   </div>
@@ -331,11 +362,18 @@ export default function RootLayoutDashboardCashier({
                 submitButtonText="Simpan"
               >
                 <div className="flex justify-start gap-8 text-sm">
-                  <div className="text-secondaryColor"><MoneyCloseCashierSVG /></div>
-                  <div className="font-bold flex justify-center items-center text-xl">Uang Tunai</div>
+                  <div className="text-secondaryColor">
+                    <MoneyCloseCashierSVG />
+                  </div>
+                  <div className="font-bold flex justify-center items-center text-xl">
+                    Uang Tunai
+                  </div>
                 </div>
-                <form onSubmit={handleSubmit(onSubmit)}
-                  className="space-y-4" id="paymentForm">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-4"
+                  id="paymentForm"
+                >
                   <div className="space-y-1">
                     <Label className="text-sm" htmlFor="name">
                       Masukkan Uang Tunai di Tangan
@@ -348,7 +386,8 @@ export default function RootLayoutDashboardCashier({
                       {...register("cash")}
                       onChange={(e) => {
                         const numericValue =
-                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
+                          0;
                         setValue("cash", numericValue);
                       }}
                     />
@@ -367,11 +406,12 @@ export default function RootLayoutDashboardCashier({
                 isOpen={isValidationSuccessModal}
                 onClose={() => {
                   setIsValidationSuccessModal(false);
-                  handleLogout()
+                  handleLogout();
                 }}
                 onSubmitTrigger={() => {
-                  // handleLogout()
-                  // router.push("/login-kasir");
+                  handlePrint();
+                  handleLogout();
+                  router.push("/login-kasir");
                 }}
                 title=""
                 classNameDialogFooter="flex md:justify-center"
@@ -394,8 +434,12 @@ export default function RootLayoutDashboardCashier({
               {/* Handle Modal Validation */}
             </div>
           </div>
-        </nav >
+        </nav>
         <>{children}</>
+        {/* Struk */}
+        <div className="hidden">
+          <CloseCashierReceipt ref={contentRef} data={dataReceipt} />
+        </div>
         <DarkModeComponents className="hidden" />
       </AuthGuardEmployee>
     </>

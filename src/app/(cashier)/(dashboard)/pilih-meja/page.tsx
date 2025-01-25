@@ -255,14 +255,14 @@ function SelectTable() {
     selectedId ? selectedId.toString() : ""
   );
 
-  console.log("dataReceipt", dataInvoiceReceipt);
+  // console.log("dataReceipt", dataInvoiceReceipt);
 
   // PRINT RECEIPT
   const contentRef = useRef<HTMLDivElement>(null);
   const reactToPrintFn = useReactToPrint({ contentRef });
 
   const handlePrint = () => {
-    console.log("data receipt", dataInvoiceReceipt);
+    // console.log("data receipt", dataInvoiceReceipt);
     reactToPrintFn();
     console.log("test print");
   };
@@ -1384,9 +1384,9 @@ function SelectTable() {
           setIsPaymentCashModalOpen(false);
           setIsPaymentModalOpenDineIn(false);
           setIsPaymentModalOpenTakeAway(false);
-          // if (typeof window !== "undefined") {
-          //   window.location.reload();
-          // }
+          if (typeof window !== "undefined") {
+            window.location.reload();
+          }
         }}
         onSubmitTrigger={() => {
           handlePrint();
