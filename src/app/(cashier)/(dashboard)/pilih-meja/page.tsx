@@ -1384,9 +1384,9 @@ function SelectTable() {
           setIsPaymentCashModalOpen(false);
           setIsPaymentModalOpenDineIn(false);
           setIsPaymentModalOpenTakeAway(false);
-          if (typeof window !== "undefined") {
-            window.location.reload();
-          }
+          // if (typeof window !== "undefined") {
+          //   window.location.reload();
+          // }
         }}
         onSubmitTrigger={() => {
           handlePrint();

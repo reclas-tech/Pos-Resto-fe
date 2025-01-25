@@ -410,8 +410,8 @@ export default function RootLayoutDashboardCashier({
                 }}
                 onSubmitTrigger={() => {
                   handlePrint();
-                  handleLogout();
-                  router.push("/login-kasir");
+                  // handleLogout();
+                  // router.push("/login-kasir");
                 }}
                 title=""
                 classNameDialogFooter="flex md:justify-center"
