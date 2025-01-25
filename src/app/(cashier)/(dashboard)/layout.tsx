@@ -127,10 +127,6 @@ export default function RootLayoutDashboardCashier({
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
     setLoading(true);
 
-    console.log(access_token);
-    console.log(refresh_token);
-    console.log(role);
-
     try {
       // Get API
       const response = await axiosInstance.post("/cashier/close", data, {
@@ -396,9 +392,9 @@ export default function RootLayoutDashboardCashier({
                       {...register("cash")}
                       onChange={(e) => {
 
-                        const numericValue =
-                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
-                          0;
+                        // const numericValue =
+                        //   parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
+                        //   0;
 
                         const inputValue = e.target.value.replace(/[^0-9]/g, "");
                         const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
