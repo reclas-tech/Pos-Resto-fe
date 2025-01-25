@@ -1,18 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ProductInPacket } from "@/components/parts/waiters/interface";
 import Image from "next/image";
-
-interface Product {
-  id: string;
-  name: string;
-}
-
-interface ProductInPacket {
-  id: string;
-  packet_id: string;
-  product_id: string;
-  quantity: number;
-  product: Product;
-}
 
 interface CardPacketProps {
   id?: string;

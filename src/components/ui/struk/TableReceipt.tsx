@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import { Ref } from "react";
 
 type Product = {
   id: string;
@@ -21,7 +20,7 @@ type TableReceiptProps = {
     tables: string[];
     customer: string;
   } | null;
-  ref?: any;
+  ref?: Ref<HTMLDivElement> | undefined;
 };
 
 const TableReceipt: React.FC<TableReceiptProps> = ({ data, ref }) => {

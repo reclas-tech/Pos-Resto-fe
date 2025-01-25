@@ -226,8 +226,8 @@ export default function RootLayoutDashboardCashier({
     reactToPrintFn();
   };
 
-  // Fetch data user
   const { data: dataProfile } = useGetProfile();
+
 
   return (
     <>
