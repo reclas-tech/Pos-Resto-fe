@@ -63,7 +63,7 @@ const useGetInvoiceDetail = (invoiceId: string) => {
 
   const { data, error, mutate, isValidating, isLoading } =
     useSWR<InvoiceDetailApiResponse>(
-      `/order/cashier/detail/${invoiceId}`,
+      invoiceId ? `/order/cashier/detail/${invoiceId}` : null,
       () =>
         axiosPrivate
           .get(`/order/cashier/detail/${invoiceId}`, {
@@ -71,7 +71,7 @@ const useGetInvoiceDetail = (invoiceId: string) => {
               Authorization: `Bearer ${accessToken}`,
             },
           })
-          .then((res) => res.data) // Menjamin data dari response
+          .then((res) => res.data)
     );
 
   return { data, error, mutate, isValidating, isLoading };

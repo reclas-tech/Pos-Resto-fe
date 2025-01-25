@@ -142,15 +142,15 @@ const DataTable: React.FC<TableInterface> = ({
                   <TableCell className="text-center">
                     {item?.capacity ?? "-"} Orang
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center capitalize">
                     {item?.location ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     <p
-                      className={`text-center  p-1  text-white  rounded-md ${
-                        item?.status === "Tersedia"
+                      className={`text-center capitalize p-1  text-white  rounded-md ${
+                        item?.status === "tersedia"
                           ? "bg-[#114F44] "
-                          : item?.status === "Terisi"
+                          : item?.status === "terisi"
                           ? "bg-[#EE1616]"
                           : "bg-primaryColor"
                       }`}
