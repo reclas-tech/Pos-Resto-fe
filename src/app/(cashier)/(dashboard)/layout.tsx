@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import logo from "@assets/splashScreen.png";
 import {
   CloseSVG,
@@ -48,6 +48,7 @@ export default function RootLayoutDashboardCashier({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isValidationModal, setIsValidationModal] = useState(false);
   const [isValidationMoneyModal, setIsValidationMoneyModal] = useState(false);
   const [isValidationSuccessModal, setIsValidationSuccessModal] = useState(false);
@@ -222,13 +223,30 @@ export default function RootLayoutDashboardCashier({
           </div>
 
           <div className="flex gap-4 justify-center items-center">
-            <Link href={"/pilih-meja"} className="flex gap-2 items-center text-primaryColor">
-              <MejaSVG />
+            <Link
+              href="/pilih-meja"
+              className={`flex gap-2 items-center ${pathname === "/pilih-meja" ? "text-primaryColor" : "text-[#737791]"
+                }`}
+            >
+              {pathname === "/pilih-meja" ? (
+                <MejaSVG strokeColor="#FEA026" />
+              ) : (
+                <MejaSVG strokeColor="#737791" />
+              )}
               <span>Meja</span>
             </Link>
-            <Link href={"/riwayat-transaksi"} className="flex gap-2">
-              <RiwayatSVG />
-              <div className="flex flex-col justify-center text-[#737791]">
+
+            <Link
+              href="/riwayat-transaksi"
+              className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi" ? "text-primaryColor" : "text-[#737791]"
+                }`}
+            >
+              {pathname === "/riwayat-transaksi" ? (
+                <RiwayatSVG strokeColor="#FEA026" />
+              ) : (
+                <RiwayatSVG strokeColor="#737791" />
+              )}
+              <div className="flex flex-col justify-center">
                 Riwayat
               </div>
             </Link>

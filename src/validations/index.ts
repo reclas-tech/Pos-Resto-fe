@@ -90,16 +90,3 @@ export const packetSchema = z.object({
   category_id: z.string().optional(),
 });
 export type PacketValues = z.infer<typeof packetSchema>;
-
-// Validation Transaction History
-export const transactionHistorySchema = z.object({
-  id: z.string().min(1, { message: "ID TRansaksi harus diisi" }),
-  code: z.string().min(1, { message: "Nomor Meja harus diisi" }),
-  status: z.string().min(1, { message: "Status harus diisi" }),
-  price_sum: z.string().min(1, { message: "Total Harga harus diisi" }),
-  created_at: z.string().min(1, { message: "Tanggal Waktu harus diisi" }),
-  payment_method: z.string().min(1, { message: "harus diisi" }),
-  cashier_id: z.string().min(1, { message: "harus diisi" }),
-  invoice_tables: z.string().min(1, { message: "harus diisi" }),
-});
-export type transactionHistoryValues = z.infer<typeof transactionHistorySchema>;
