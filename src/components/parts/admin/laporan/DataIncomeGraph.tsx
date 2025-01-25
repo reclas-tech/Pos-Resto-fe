@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { TotalIncomeGrafikSVG } from '@/constants/svgIcons';
-import { useGetIncomeGraph } from './api';
+import { useGetIncomeGraph, useGetYears } from './api';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const GrafikPendapatan = () => {
     const [selectedYear, setSelectedYear] = useState('2024');
     const { data } = useGetIncomeGraph(Number(selectedYear));
+    const { data: years, isLoading, error } = useGetYears();
 
     const incomeChart = data?.data.map((item) => ({
         name: item.month,
@@ -26,19 +27,36 @@ const GrafikPendapatan = () => {
                     Grafik Pendapatan
                 </div>
                 <div className="w-fit">
-                    <Select onValueChange={handleYearChange}>
+                    <Select value={selectedYear} onValueChange={handleYearChange}>
                         <SelectTrigger className="w-fit px-2 gap-2 border-secondaryColor">
                             <SelectValue
-                                placeholder="2024"
+                                placeholder={
+                                    isLoading
+                                        ? "Loading..."
+                                        : error
+                                            ? "Gagal memuat tahun"
+                                            : "Pilih Tahun"
+                                }
                                 className="text-[#9E9E9E]"
                             />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="2023">2023</SelectItem>
-                                <SelectItem value="2024">2024</SelectItem>
-                                <SelectItem value="2025">2025</SelectItem>
-                                <SelectItem value="2026">2026</SelectItem>
+                                {isLoading ? (
+                                    <SelectItem value="loading" disabled>
+                                        Loading...
+                                    </SelectItem>
+                                ) : error ? (
+                                    <SelectItem value="error" disabled>
+                                        Gagal memuat data
+                                    </SelectItem>
+                                ) : (
+                                    years?.map((year) => (
+                                        <SelectItem key={year} value={year.toString()}>
+                                            {year}
+                                        </SelectItem>
+                                    ))
+                                )}
                             </SelectGroup>
                         </SelectContent>
                     </Select>

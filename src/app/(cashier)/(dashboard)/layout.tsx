@@ -41,6 +41,8 @@ import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
+import HandleCloseCashier from "@/components/ui/modal/HandleCloseCashier";
+import { useInputRp } from "@/hooks/useRupiah";
 
 // Handle validation input
 const closeCashierFormDataSchema = z.object({
@@ -62,9 +64,7 @@ export default function RootLayoutDashboardCashier({
   const [loading, setLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState<string>("");
   const [currentTime, setCurrentTime] = useState<string>("");
-
   const access_token = Cookies.get("access_token");
-
   const axiosPrivate = useAxiosPrivateInstance();
 
   // Update date and time
@@ -112,8 +112,7 @@ export default function RootLayoutDashboardCashier({
     watch,
     handleSubmit,
     setValue,
-    // reset,
-    register: register,
+    reset,
     formState: { errors },
   } = useForm<CloseCashierFormData>({
     resolver: zodResolver(closeCashierFormDataSchema),
@@ -187,11 +186,9 @@ export default function RootLayoutDashboardCashier({
 
       // Response API
       if (response.data.statusCode === 200) {
-        console.log("Cash On Hand Submitted: ", response.data);
+        console.log("Cash On Hand Close Cashier: ", response.data);
         setIsValidationSuccessModal(true);
-        // showAlert2("success", "Cash on Hand berhasil!");
-        // reset();
-        // console.log("testtt");
+        reset();
       } else {
         console.log(data);
         showAlert2("error", response.data.message || "Terjadi kesalahan!");
@@ -205,7 +202,6 @@ export default function RootLayoutDashboardCashier({
       setLoading(false);
     }
   };
-
 
   const id = Cookies.get("id");
 
@@ -361,22 +357,16 @@ export default function RootLayoutDashboardCashier({
               {/* Handle Modal Validation */}
 
               {/* Handle Modal Uang Tunai */}
-              <ValidationModal
+              <HandleCloseCashier
                 isOpen={isValidationMoneyModal}
-                onClose={() => {
-                  setIsValidationMoneyModal(false);
-                }}
-                onSubmitTrigger={() => {
-                  setIsValidationSuccessModal(true);
-                }}
-                title=""
-                classNameDialogFooter="flex md:justify-center mt-4"
+                onClose={() => setIsValidationMoneyModal(false)}
+                onSubmit={handleSubmit(onSubmit)}
                 showKeluarButton={true}
                 showSubmitButton={true}
+                title=""
                 classNameDialogHeader=""
+                classNameDialogFooter="flex md:justify-center mt-4"
                 classNameButton="w-full rounded-lg text-sm"
-                classNameDialogTitle=""
-                closeButton={false}
                 keluarButtonText="Batalkan"
                 submitButtonText="Simpan"
               >
@@ -388,71 +378,61 @@ export default function RootLayoutDashboardCashier({
                     Uang Tunai
                   </div>
                 </div>
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="space-y-4"
-                  id="paymentForm"
-                >
+                <div className="space-y-4" id="paymentForm">
                   <div className="space-y-1">
                     <Label className="text-sm" htmlFor="name">
                       Masukkan Uang Tunai di Tangan
                     </Label>
                     <Input
                       type="text"
-                      id="cogp"
+                      id="cash"
                       placeholder="Rp."
-                      value={`Rp.${isNaN(watch("cash")) ? 0 : watch("cash")}`}
-                      {...register("cash")}
+                      value={useInputRp(watch("cash"))}
                       onChange={(e) => {
-                        const inputValue = e.target.value.replace(/[^0-9]/g, "");
-                        const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
+                        const numericValue =
+                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
                         setValue("cash", numericValue);
                       }}
                     />
                     {errors.cash && (
-                      <span className="text-sm text-red-500">
-                        {errors.cash.message}
-                      </span>
+                      <span className="text-sm text-red-500">{errors.cash.message}</span>
                     )}
                   </div>
-                </form>
-              </ValidationModal>
-              {/* Handle Modal Uang Tunai */}
-
-              {/* Handle Modal Validation */}
-              <ValidationModal
-                isOpen={isValidationSuccessModal}
-                onClose={() => {
-                  setIsValidationSuccessModal(false);
-                  handleLogout();
-                }}
-                onSubmitTrigger={() => {
-                  handlePrint();
-                  handleLogout();
-                  router.push("/login-kasir");
-                }}
-                title=""
-                classNameDialogFooter="flex md:justify-center"
-                showKeluarButton={true}
-                showSubmitButton={true}
-                classNameDialogHeader=""
-                classNameButton="w-full rounded-lg text-sm"
-                classNameDialogTitle=""
-                closeButton={false}
-                keluarButtonText="Tutup"
-                submitButtonText="Print"
-              >
-                <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
-                  <SuccessSVG />
                 </div>
-                <div className="text-lg font-bold text-center mt-4">
-                  Kasir telah ditutup
-                </div>
-              </ValidationModal>
-              {/* Handle Modal Validation */}
+              </HandleCloseCashier>
             </div>
           </div>
         </nav>
+        {/* Handle Modal Validation */}
+        <ValidationModal
+          isOpen={isValidationSuccessModal}
+          onClose={() => {
+            setIsValidationSuccessModal(false);
+            handleLogout();
+          }}
+          onSubmitTrigger={() => {
+            handlePrint();
+            handleLogout();
+            router.push("/login-kasir");
+          }}
+          title=""
+          showKeluarButton={true}
+          showSubmitButton={true}
+          classNameDialogHeader=""
+          classNameDialogFooter="flex md:justify-center"
+          classNameButton="w-full rounded-lg text-sm"
+          classNameDialogTitle=""
+          keluarButtonText="Tutup"
+          submitButtonText="Print"
+        >
+          <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
+            <SuccessSVG />
+          </div>
+          <div className="text-lg font-bold text-center mt-4">
+            Kasir telah ditutup
+          </div>
+        </ValidationModal>
+        {/* Handle Modal Validation */}
         <>{children}</>
         {/* Struk */}
         <div className="hidden">
