@@ -53,7 +53,7 @@ const CardPacket: React.FC<CardPacketProps> = ({
           <ul className="flex-1">
             {products.map((item) => (
               <li key={item.id} className="text-[9px] list-disc ml-4">
-                {item.quantity} x {item.product.name}
+                {item.quantity} x {item?.product?.name}
               </li>
             ))}
           </ul>

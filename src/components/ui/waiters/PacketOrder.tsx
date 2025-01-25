@@ -82,7 +82,7 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
             <p className="font-bold text-[#19191C] text-sm">{name}</p>
             <ul className="text-[9px] list-disc ml-5">
               {product.map((item) => (
-                <li key={item.id}>{item.product.name}</li>
+                <li key={item.id}>{item?.product?.name}</li>
               ))}
             </ul>
             <p className="font-bold text-primaryColor text-xs">{price}</p>
