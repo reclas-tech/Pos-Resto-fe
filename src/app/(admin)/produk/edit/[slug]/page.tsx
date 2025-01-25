@@ -29,8 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { showAlert2 } from "@/lib/sweetalert2";
 
 type FormValues = z.infer<typeof productSchemaEdit>;
 
@@ -38,6 +39,9 @@ function EditProductPage() {
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [existingImage, setExistingImage] = useState<string | null>(null);
+
+  //  Navigate redirect route
+  const navigate = useRouter();
 
   const {
     data: categories,
@@ -90,16 +94,40 @@ function EditProductPage() {
         setValue("category_id", getDataOne?.data?.category_id ?? "");
         setValue("kitchen_id", getDataOne?.data?.kitchen_id ?? "");
 
+        // Before Revisi
+        // if (getDataOne?.data?.image) {
+        //   setImagePreview(getDataOne?.data?.image);
+        //   setExistingImage(getDataOne?.data?.image);
+        //   setValue("image", getDataOne?.data?.image);
+        // }
+
+        // After Revisi
         if (getDataOne?.data?.image) {
-          setImagePreview(getDataOne?.data?.image);
-          setExistingImage(getDataOne?.data?.image);
-          setValue("image", getDataOne?.data?.image);
+          const imageUrl = getDataOne.data.image;
+
+          // Check if image path is valid for Next.js Image
+          const isValidImagePath =
+            imageUrl.startsWith("/") ||
+            imageUrl.startsWith("http://") ||
+            imageUrl.startsWith("https://");
+
+          if (isValidImagePath) {
+            setImagePreview(imageUrl);
+            setExistingImage(imageUrl);
+            setValue("image", imageUrl);
+          } else {
+            console.error(
+              `Invalid image path: ${imageUrl}. Must start with '/', 'http://', or 'https://'`
+            );
+            showAlert2("error", "Url Gambar Tidak Valid");
+            navigate.push("/produk");
+          }
         }
       }, 100);
 
       return () => clearTimeout(timer);
     }
-  }, [getDataOne, setValue]);
+  }, [getDataOne, setValue, navigate]);
 
   const { handlePostSubmit } = putSubmitProduct(slug as string);
   const onSubmit: SubmitHandler<FormValues> = (data) => {
@@ -124,7 +152,6 @@ function EditProductPage() {
       console.error("Error submitting product:", error);
     }
   };
-
 
   if (isCategoriesLoading || isKitchensLoading) {
     return <LoadingSVG />;
@@ -267,7 +294,7 @@ function EditProductPage() {
         >
           {imagePreview ? (
             <Image
-              src={imagePreview || 'waroeng aceh garuda'}
+              src={imagePreview || "waroeng aceh garuda"}
               alt="Preview"
               width={200}
               height={200}

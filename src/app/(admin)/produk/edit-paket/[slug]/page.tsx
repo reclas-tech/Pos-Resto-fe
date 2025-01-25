@@ -99,14 +99,36 @@ function EditPacketPage() {
       );
 
       // Pastikan image handling lebih robust
+      // if (packetData.data.image) {
+      //   const imageUrl = packetData.data.image;
+      //   setImagePreview(imageUrl);
+      //   setExistingImage(imageUrl);
+      //   setValue("image", imageUrl);
+      // }
+
       if (packetData.data.image) {
         const imageUrl = packetData.data.image;
-        setImagePreview(imageUrl);
-        setExistingImage(imageUrl);
-        setValue("image", imageUrl);
+
+        // Check if image path is valid for Next.js Image
+        const isValidImagePath =
+          imageUrl.startsWith("/") ||
+          imageUrl.startsWith("http://") ||
+          imageUrl.startsWith("https://");
+
+        if (isValidImagePath) {
+          setImagePreview(imageUrl);
+          setExistingImage(imageUrl);
+          setValue("image", imageUrl);
+        } else {
+          console.error(
+            `Invalid image path: ${imageUrl}. Must start with '/', 'http://', or 'https://'`
+          );
+          showAlert2("error", "Url Gambar Tidak Valid");
+          navigate.push("/produk/menu-paket");
+        }
       }
     }
-  }, [packetData, setValue]);
+  }, [packetData, setValue, navigate]);
 
   const handleAddProduct = (product: Product) => {
     const existingProduct = selectedProducts.find((p) => p.id === product.id);
