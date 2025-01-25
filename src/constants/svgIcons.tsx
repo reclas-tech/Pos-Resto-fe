@@ -826,65 +826,76 @@ export function MoneySVG() {
 // End Money
 
 // First Meja
-export function MejaSVG() {
+interface MejaSVGProps {
+  strokeColor?: string;
+  width?: number;
+  height?: number;
+}
+export function MejaSVG({
+  strokeColor = "#FEA026",
+  width = 24,
+  height = 24,
+}: MejaSVGProps) {
   return (
-    <>
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M14 20.9617C11.4757 21.0582 9.16166 20.9724 6.23865 20.7048C5.19543 20.6092 4.36239 19.736 4.26588 18.6277C3.87042 14.0861 3.94716 10.903 4.292 6.41419C4.37877 5.28469 5.21856 4.38258 6.28078 4.28634C10.4928 3.90469 13.4667 3.9038 17.7331 4.28821C18.7928 4.38368 19.6326 5.28098 19.7203 6.4076C19.9822 9.77112 20.0688 12.3867 19.9433 15.3485M14 20.9617L19.9433 15.3485M14 20.9617V17.8485C14 16.4678 15.1193 15.3485 16.5 15.3485H19.9433M8 3V5.5M16 3V5.5"
-          stroke="#FEA026"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M8 9.5H16"
-          stroke="#FEA026"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M8 13H13"
-          stroke="#FEA026"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    </>
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14 20.9617C11.4757 21.0582 9.16166 20.9724 6.23865 20.7048C5.19543 20.6092 4.36239 19.736 4.26588 18.6277C3.87042 14.0861 3.94716 10.903 4.292 6.41419C4.37877 5.28469 5.21856 4.38258 6.28078 4.28634C10.4928 3.90469 13.4667 3.9038 17.7331 4.28821C18.7928 4.38368 19.6326 5.28098 19.7203 6.4076C19.9822 9.77112 20.0688 12.3867 19.9433 15.3485M14 20.9617L19.9433 15.3485M14 20.9617V17.8485C14 16.4678 15.1193 15.3485 16.5 15.3485H19.9433M8 3V5.5M16 3V5.5"
+        stroke={strokeColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8 9.5H16"
+        stroke={strokeColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8 13H13"
+        stroke={strokeColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 // End Meja
 
 // First Riwayat
-export function RiwayatSVG({ className = "" }) {
+interface RiwayatSVGProps {
+  strokeColor?: string;
+  width?: number;
+  height?: number;
+}
+export function RiwayatSVG({
+  strokeColor = "#FEA026",
+  width = 24,
+  height = 24,
+}: RiwayatSVGProps) {
   return (
-    <>
-      <svg
-        className={className}
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="12" cy="12" r="9" stroke="#737791" strokeWidth="1.5" />
-        <path
-          d="M12 6.5V11.9586C12 11.9851 11.9895 12.0105 11.9707 12.0293L9 15"
-          stroke="#737791"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    </>
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="12" cy="12" r="9" stroke={strokeColor} strokeWidth="1.5" />
+      <path
+        d="M12 6.5V11.9586C12 11.9851 11.9895 12.0105 11.9707 12.0293L9 15"
+        stroke={strokeColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
-// End Riwayat
-
 // First DropDownSVG
 export function DropDownSVG() {
   return (
