@@ -33,16 +33,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "@/utils/axios";
 import AuthGuardEmployee from "@/hooks/authGuardEmployee";
+import { useGetProfile } from "@/components/parts/cashier/profile/api";
+import Link from "next/link";
 
 import useSWR from "swr";
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import CloseCashierReceipt from "@/components/ui/struk/CloseCahierReceipt";
-
-import { useGetProfile } from "@/components/parts/cashier/profile/api";
-import Link from "next/link";
-
 
 // Handle validation input
 const closeCashierFormDataSchema = z.object({
@@ -127,11 +125,6 @@ export default function RootLayoutDashboardCashier({
   /* eslint-disable */
   const onSubmit: SubmitHandler<CloseCashierFormData> = async (data) => {
     setLoading(true);
-
-    console.log(access_token);
-    console.log(refresh_token);
-    console.log(role);
-
     try {
       // Get API
       const response = await axiosInstance.post("/cashier/close", data, {
@@ -139,8 +132,6 @@ export default function RootLayoutDashboardCashier({
           Authorization: `Bearer ${access_token}`,
         },
       });
-
-      console.log(response?.data);
 
       // Cookie Send
       const result = response.data;
@@ -239,8 +230,8 @@ export default function RootLayoutDashboardCashier({
     reactToPrintFn();
   };
 
+  // Fetch data user
   const { data: dataProfile } = useGetProfile();
-
 
   return (
     <>
@@ -413,14 +404,8 @@ export default function RootLayoutDashboardCashier({
                       value={`Rp.${isNaN(watch("cash")) ? 0 : watch("cash")}`}
                       {...register("cash")}
                       onChange={(e) => {
-
-                        const numericValue =
-                          parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) ||
-                          0;
-
                         const inputValue = e.target.value.replace(/[^0-9]/g, "");
                         const numericValue = inputValue ? parseInt(inputValue, 10) : 0;
-
                         setValue("cash", numericValue);
                       }}
                     />

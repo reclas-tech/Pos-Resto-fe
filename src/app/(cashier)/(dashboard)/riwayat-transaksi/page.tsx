@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FilterSVG } from "@/constants/svgIcons";
 import { SearchInputCashier } from "@/components/ui/input";
-import { putUpdateInvoice, useGetHistoryList, useGetOneInvoice } from "@/components/parts/cashier/history-transaction/api";
-import DataTableList from "@/components/parts/cashier/history-transaction/DataTableList";
+import { putUpdateInvoice, useGetHistoryList, useGetOneInvoice } from "@/components/parts/cashier/history/api";
+import DataTableList from "@/components/parts/cashier/history/DataTableList";
 import { Minus, Trash2 } from "lucide-react";
 
 interface Product {
