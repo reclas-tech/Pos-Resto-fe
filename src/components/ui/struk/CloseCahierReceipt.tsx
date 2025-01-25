@@ -1,4 +1,4 @@
-import React, { Ref } from "react";
+import { Ref } from "react";
 
 type ReceiptData = {
   date: string;

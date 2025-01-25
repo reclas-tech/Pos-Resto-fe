@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import Image from "next/image";
 import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import { CustomerSVG, HistorySVG, NotesSVG } from "@/constants/svgIcons";
@@ -35,39 +36,14 @@ import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity?: number;
-  note?: string;
-  stock: number;
-}
-
-interface Packet {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity?: number;
-  note?: string;
-  products: Product[];
-}
-
-interface CustomerOrder {
-  type: "take away" | "dine in";
-  customerName: string;
-  tableIds?: string[];
-  tableNames?: string[];
-}
-
-interface TableData {
-  id: string;
-  name: string;
-  status: "tersedia" | "terisi";
-}
+import {
+  Packet,
+  Product,
+  CustomerOrder,
+  TableData,
+  Category,
+} from "@/components/parts/waiters/interface";
+import Link from "next/link";
 
 // For form data types
 interface TakeAwayFormData {
@@ -666,9 +642,12 @@ function PosPage() {
                 <button className="text-primaryColor text-sm font-semibold flex items-center space-x-1">
                   <NotesSVG /> <p>Pesanan</p>
                 </button>
-                <button className="text-[#737791] text-sm flex items-center space-x-1">
+                <Link
+                  href="/riwayat-transaksi"
+                  className="text-[#737791] hover:text-primaryColor text-sm flex items-center space-x-1"
+                >
                   <HistorySVG /> <p>Riwayat</p>
-                </button>
+                </Link>
 
                 <div className="flex items-center">
                   <div>
@@ -734,7 +713,7 @@ function PosPage() {
                     >
                       Semua
                     </button>
-                    {dataCategory?.data.map((category: any) => (
+                    {dataCategory?.data.map((category: Category) => (
                       <button
                         key={category.id}
                         className={`rounded-full text-xs py-1 px-2 border whitespace-nowrap   ${

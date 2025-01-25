@@ -1,20 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ProductInPacket } from "@/components/parts/waiters/interface";
 import { DeleteSVG, NoteOrderSVG } from "@/constants/svgIcons";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-interface Product {
-  id: string;
-  name: string;
-}
-
-interface ProductInPacket {
-  id: string;
-  packet_id: string;
-  product_id: string;
-  quantity: number;
-  product: Product;
-}
 
 interface PacketOrderProps {
   id: string;

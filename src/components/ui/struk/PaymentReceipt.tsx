@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
+import { Ref } from "react";
 
 type ProductOrPacket = {
   id: string;
@@ -60,7 +60,7 @@ type PaymentReceiptProps = {
       price: number;
     };
   } | null;
-  ref?: any;
+  ref?: Ref<HTMLDivElement> | undefined;
 };
 
 const transformDataReceiptToData = (
