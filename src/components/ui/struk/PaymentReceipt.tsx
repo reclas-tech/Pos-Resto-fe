@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
+
 type Product = {
   id: string;
   name: string;
   quantity: number;
   note?: string;
-  price:string;
+  price: string;
 };
 
 type Data = {
@@ -23,15 +25,72 @@ type Data = {
 };
 
 type PaymentReceiptProps = {
-  data: Data | null; // Data bisa null jika tidak tersedia
+  dataReceipt: {
+    statusCode: number;
+    message: string;
+    data: {
+      id: string;
+      type: string;
+      status: string;
+      customer: string;
+      created_at: string;
+      cashier: string;
+      codes: string[];
+      tables: string[];
+      products: {
+        id: string;
+        note: string | null;
+        quantity: number;
+        price_sum: number;
+        name: string;
+        price: number;
+      }[];
+      packets: unknown[];
+      tax_percent: number;
+      tax: number;
+      price_sum: number;
+      price: number;
+    };
+  } | null;
+  ref?:any
 };
-const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
+
+const transformDataReceiptToData = (
+  response: PaymentReceiptProps["dataReceipt"]
+): Data | null => {
+  if (!response || response.statusCode !== 200) return null;
+
+  const {
+    data: { id, created_at, customer, tables, products, tax, price_sum, },
+  } = response;
+
+  return {
+    id,
+    no_transaksi: response.data.codes[0] || "N/A",
+    time: new Date(created_at).toLocaleString(),
+    customer,
+    table: tables.length > 0 ? tables.join(", ") : "-",
+    products: products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      quantity: product.quantity,
+      note: product.note || undefined,
+      price: `Rp ${product.price.toLocaleString()}`,
+    })),
+    quantity: products.reduce((sum, product) => sum + product.quantity, 0),
+    sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
+    total_tagihan: `Rp ${price_sum.toLocaleString()}`,
+    cash: "-", // This field can be updated if cash data is available.
+    total_bayar: `Rp ${price_sum.toLocaleString()}`,
+  };
+};
+
+const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ dataReceipt, ref }) => {
+  const data = transformDataReceiptToData(dataReceipt);
   if (!data) return null;
+
   return (
-    <div
-      id="struk"
-      className="bg-white p-[2%] text-[10px] w-full "
-    >
+    <div id="struk" className="bg-white p-[2%] text-[10px] w-full" ref={ref}>
       <div className="flex justify-center">
         <div className="w-[25%] h-[25%]">
           <Image
@@ -99,39 +158,3 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({ data }) => {
 };
 
 export default PaymentReceipt;
-
-// Example Use
-//  const dataPaymentReceipt = [
-//    {
-//      id: "1",
-//      no_transaksi: "INV1232134",
-//      time: "21 Des 24 15: 21",
-//      customer: "Andika Jaya",
-//      table: "Meja 2",
-
-//      products: [
-//        {
-//          id: "1",
-//          name: "Kopi Hitam",
-//          quantity: 1,
-//          note: "Tanpa gula",
-//          price: "33,000",
-//        },
-//        {
-//          id: "2",
-//          quantity: 1,
-//          name: "Es Teh",
-//          note: "",
-//          price: "15,000",
-//        },
-//      ],
-//      quantity: 4,
-//      sub_total: "20,000",
-//      total_tagihan: "20,000",
-//      cash: "20,000",
-//      total_bayar: "20,000",
-//    },
-//  ];
-
-//  <PaymentReceipt data={dataPaymentReceipt[0]} />
-
