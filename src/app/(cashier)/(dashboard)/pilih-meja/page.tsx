@@ -32,7 +32,12 @@ import { DarkModeComponents } from "@/components/ui/darkModeButton";
 import DetailModal from "@/components/ui/modal/detailReusable";
 import ProcessModal from "@/components/ui/modal/proses";
 import ValidationModal from "@/components/ui/modal/validation";
-import { useGetInvoiceDetail, useGetTableList, useGetTakeawayList, usePostPayment } from "@/components/parts/cashier/pilih-meja/api";
+import {
+  useGetInvoiceDetail,
+  useGetTableList,
+  useGetTakeawayList,
+  usePostPayment,
+} from "@/components/parts/cashier/pilih-meja/api";
 import DataTableList from "@/components/parts/cashier/pilih-meja/DataTableList";
 import DataTakeawayList from "@/components/parts/cashier/pilih-meja/DataTakeawayList";
 import { Dialog, DialogPortal, DialogTrigger } from "@/components/ui/dialog";
@@ -109,8 +114,7 @@ function SelectTable() {
   const { data: takeawayLIst } = useGetTakeawayList(status);
 
   // Handle count Takeaway
-  const availableCountTakeawayList =
-    takeawayLIst?.data?.length || 0;
+  const availableCountTakeawayList = takeawayLIst?.data?.length || 0;
 
   const {
     handleSubmit,
@@ -182,35 +186,52 @@ function SelectTable() {
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
 
   // Handle Open Detail DineIn
-  const handleOpenDetailDineIn = (invoiceId: string | number, status: string) => {
+  const handleOpenDetailDineIn = (
+    invoiceId: string | number,
+    status: string
+  ) => {
     console.log(`Table ID: ${invoiceId}, Status: ${status}`);
     setSelectedId(invoiceId); // Menyimpan id
     setIsDetailModalOpenDineIn(true);
   };
 
   // Handle Open TakeAway
-  const handleOpenDetailTakeAway = (invoiceId: string | number, status: string) => {
+  const handleOpenDetailTakeAway = (
+    invoiceId: string | number,
+    status: string
+  ) => {
     console.log(`Table ID: ${invoiceId}, Status: ${status}`);
     setSelectedId(invoiceId); // Menyimpan id
     setIsDetailModalOpenTakeAway(true);
   };
 
   // Handle Open Payment TakeAway
-  const handleOpenPaymentTakeAway = (invoiceId: string | number, status: string) => {
+  const handleOpenPaymentTakeAway = (
+    invoiceId: string | number,
+    status: string
+  ) => {
     console.log(`Table ID: ${invoiceId}, Status: ${status}`);
     setSelectedId(invoiceId); // Menyimpan id
-    setIsPaymentModalOpenTakeAway(true)
+    setIsPaymentModalOpenTakeAway(true);
   };
 
   // GET ONE SLUG DineIn
-  const { data: dataInvoiceDineIn } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
+  const { data: dataInvoiceDineIn } = useGetInvoiceDetail(
+    selectedId ? selectedId.toString() : ""
+  );
 
   // GET ONE SLUG Takeaway
-  const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(selectedId ? selectedId.toString() : '');
+  const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(
+    selectedId ? selectedId.toString() : ""
+  );
 
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'debit' | 'qris' | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<
+    "cash" | "debit" | "qris" | null
+  >(null);
 
-  const { postPayment } = usePostPayment(selectedId ? selectedId.toString() : '');
+  const { postPayment } = usePostPayment(
+    selectedId ? selectedId.toString() : ""
+  );
 
   const handlePaymentSubmit = async () => {
     if (paymentMethod != null) {
@@ -313,10 +334,11 @@ function SelectTable() {
           {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
             <button
               key={filter}
-              className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === filter
-                ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                : ""
-                }`}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${
+                activeFilter === filter
+                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                  : ""
+              }`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -337,7 +359,9 @@ function SelectTable() {
       <>
         {/* Modal Detail Order Dine In */}
         <DetailModal
-          isOpen={isDetailModalOpenDineIn && dataInvoiceDineIn?.statusCode === 200}
+          isOpen={
+            isDetailModalOpenDineIn && dataInvoiceDineIn?.statusCode === 200
+          }
           onClose={() => {
             setIsDetailModalOpenDineIn(false);
           }}
@@ -359,21 +383,30 @@ function SelectTable() {
             <div className="justify-between flex text-sm">
               <div className="text-start">
                 <div className="text-primaryColor font-bold truncate max-w-[255px] capitalize">
-                  {dataInvoiceDineIn?.data?.type} / {dataInvoiceDineIn?.data?.tables?.map(code => `${code}`).join(', ')}
+                  {dataInvoiceDineIn?.data?.type} /{" "}
+                  {dataInvoiceDineIn?.data?.tables
+                    ?.map((code) => `${code}`)
+                    .join(", ")}
                 </div>
-                <div className="text-black">{dataInvoiceDineIn?.data?.customer}</div>
+                <div className="text-black">
+                  {dataInvoiceDineIn?.data?.customer}
+                </div>
               </div>
               <div className="text-end">
                 <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
-                  {dataInvoiceDineIn?.data?.codes?.map(code => `#${code}`).join(', ')}
+                  {dataInvoiceDineIn?.data?.codes
+                    ?.map((code) => `#${code}`)
+                    .join(", ")}
                 </div>
                 <div className="text-[#989898]">
                   {dataInvoiceDineIn?.data?.created_at
-                    ? new Date(dataInvoiceDineIn.data.created_at).toLocaleTimeString('id-ID', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    }) + ' WIB'
-                    : '-'}
+                    ? new Date(
+                        dataInvoiceDineIn.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
+                    : "-"}
                 </div>
               </div>
             </div>
@@ -398,7 +431,7 @@ function SelectTable() {
                 </TableHeader>
                 <TableBody>
                   {/* Packets */}
-                  {dataInvoiceDineIn?.data?.packets.map(packet => (
+                  {dataInvoiceDineIn?.data?.packets.map((packet) => (
                     <TableRow key={packet.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
                         {packet.name}
@@ -416,7 +449,7 @@ function SelectTable() {
                   ))}
 
                   {/* Products */}
-                  {dataInvoiceDineIn?.data?.products.map(product => (
+                  {dataInvoiceDineIn?.data?.products.map((product) => (
                     <TableRow key={product.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
                         {product.name}
@@ -445,7 +478,10 @@ function SelectTable() {
                   </span>
                 </div>
                 <div className="space-x-4 flex justify-between">
-                  <span className="text-[#9C9C9C]">PAJAK {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%</span>
+                  <span className="text-[#9C9C9C]">
+                    PAJAK{" "}
+                    {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%
+                  </span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}
                   </span>
@@ -480,26 +516,41 @@ function SelectTable() {
           <>
             <div className="p-4 flex w-full text-sm">
               <div className="w-[75%] space-y-2">
-                <div className="text-primaryColor font-semibold capitalize">{dataInvoiceDineIn?.data?.type}</div>
+                <div className="text-primaryColor font-semibold capitalize">
+                  {dataInvoiceDineIn?.data?.type}
+                </div>
                 <div className="flex justify-between w-full">
                   <div className="w-[70%]">
-                    <div className="div">{dataInvoiceDineIn?.data?.codes?.map(code => `#${code}`).join(', ')}</div>
+                    <div className="div">
+                      {dataInvoiceDineIn?.data?.codes
+                        ?.map((code) => `#${code}`)
+                        .join(", ")}
+                    </div>
                     <div>
                       {dataInvoiceDineIn?.data?.created_at
-                        ? new Date(dataInvoiceDineIn.data.created_at).toLocaleTimeString('id-ID', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        }) + ' WIB'
-                        : '-'}
+                        ? new Date(
+                            dataInvoiceDineIn.data.created_at
+                          ).toLocaleTimeString("id-ID", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }) + " WIB"
+                        : "-"}
                     </div>
                   </div>
                   <div className="w-[30%]">
-                    Meja : {dataInvoiceDineIn?.data?.tables?.map(code => `${code}`).join(', ')}
+                    Meja :{" "}
+                    {dataInvoiceDineIn?.data?.tables
+                      ?.map((code) => `${code}`)
+                      .join(", ")}
                   </div>
                 </div>
                 <div className="w-full">
-                  <div className="div">Kasir : {dataInvoiceDineIn?.data?.cashier}</div>
-                  <div className="div">Pemesan : {dataInvoiceDineIn?.data?.customer}</div>
+                  <div className="div">
+                    Kasir : {dataInvoiceDineIn?.data?.cashier}
+                  </div>
+                  <div className="div">
+                    Pemesan : {dataInvoiceDineIn?.data?.customer}
+                  </div>
                 </div>
                 <div className="overflow-y-auto h-[200px] overflow-auto space-y-2 scroll-container text-sm">
                   <Table>
@@ -521,7 +572,7 @@ function SelectTable() {
                     </TableHeader>
                     <TableBody>
                       {/* Packets */}
-                      {dataInvoiceDineIn?.data?.packets.map(packet => (
+                      {dataInvoiceDineIn?.data?.packets.map((packet) => (
                         <TableRow key={packet.id} className="border-none">
                           <TableCell className="text-start border-b text-[#19191C]">
                             {packet.name}
@@ -539,7 +590,7 @@ function SelectTable() {
                       ))}
 
                       {/* Packets */}
-                      {dataInvoiceDineIn?.data?.products.map(product => (
+                      {dataInvoiceDineIn?.data?.products.map((product) => (
                         <TableRow key={product.id} className="border-none">
                           <TableCell className="text-start border-b text-[#19191C]">
                             {product.name}
@@ -563,15 +614,22 @@ function SelectTable() {
                   <div className="text-end space-y-2">
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}</span>
+                      <span className="text-[#19191C]">
+                        Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
+                      </span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}</span>
+                      <span className="text-[#19191C]">
+                        Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}
+                      </span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}</span>
+                      <span className="text-primaryColor">
+                        Rp.{" "}
+                        {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -631,8 +689,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -678,8 +737,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -720,7 +780,9 @@ function SelectTable() {
       <>
         {/* Modal Detail Order Take Away */}
         <DetailModal
-          isOpen={isDetailModalOpenTakeAway && dataInvoiceTakeAway?.statusCode === 200}
+          isOpen={
+            isDetailModalOpenTakeAway && dataInvoiceTakeAway?.statusCode === 200
+          }
           onClose={() => {
             setIsDetailModalOpenTakeAway(false);
           }}
@@ -743,21 +805,29 @@ function SelectTable() {
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
               <div className="text-start">
-                <div className="text-secondaryColor font-bold capitalize">{dataInvoiceTakeAway?.data?.type}</div>
-                <div className="text-black">{dataInvoiceTakeAway?.data?.customer}</div>
+                <div className="text-secondaryColor font-bold capitalize">
+                  {dataInvoiceTakeAway?.data?.type}
+                </div>
+                <div className="text-black">
+                  {dataInvoiceTakeAway?.data?.customer}
+                </div>
               </div>
               <div className="text-end">
                 <div className="text-[#4F4F4F] font-bold truncate max-w-[255px]">
-                  {dataInvoiceTakeAway?.data?.codes?.map(code => `#${code}`).join(', ')}
+                  {dataInvoiceTakeAway?.data?.codes
+                    ?.map((code) => `#${code}`)
+                    .join(", ")}
                 </div>
 
                 <div className="text-[#989898]">
                   {dataInvoiceTakeAway?.data?.created_at
-                    ? new Date(dataInvoiceTakeAway.data.created_at).toLocaleTimeString('id-ID', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    }) + ' WIB'
-                    : '-'}
+                    ? new Date(
+                        dataInvoiceTakeAway.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
+                    : "-"}
                 </div>
               </div>
             </div>
@@ -782,7 +852,7 @@ function SelectTable() {
                 </TableHeader>
                 <TableBody>
                   {/* Packets */}
-                  {dataInvoiceTakeAway?.data?.packets.map(packet => (
+                  {dataInvoiceTakeAway?.data?.packets.map((packet) => (
                     <TableRow key={packet?.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
                         {packet?.name}
@@ -800,7 +870,7 @@ function SelectTable() {
                   ))}
 
                   {/* Products */}
-                  {dataInvoiceTakeAway?.data?.products.map(product => (
+                  {dataInvoiceTakeAway?.data?.products.map((product) => (
                     <TableRow key={product.id} className="border-none">
                       <TableCell className="text-start border-b text-[#6D6D6D]">
                         {product?.name}
@@ -830,7 +900,10 @@ function SelectTable() {
                   </span>
                 </div>
                 <div className="space-x-4 flex justify-between">
-                  <span className="text-[#9C9C9C]">PAJAK {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%</span>
+                  <span className="text-[#9C9C9C]">
+                    PAJAK{" "}
+                    {dataInvoiceTakeAway?.data?.tax_percent.toLocaleString()}%
+                  </span>
                   <span className="text-[#19191C]">
                     Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}
                   </span>
@@ -869,14 +942,20 @@ function SelectTable() {
                   {dataInvoiceTakeAway?.data?.type}
                 </div>
                 <div className="w-full text-start">
-                  <div>{dataInvoiceTakeAway?.data?.codes?.map(code => `#${code}`).join(', ')}</div>
+                  <div>
+                    {dataInvoiceTakeAway?.data?.codes
+                      ?.map((code) => `#${code}`)
+                      .join(", ")}
+                  </div>
                   <div>
                     {dataInvoiceTakeAway?.data?.created_at
-                      ? new Date(dataInvoiceTakeAway.data.created_at).toLocaleTimeString('id-ID', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      }) + ' WIB'
-                      : '-'}
+                      ? new Date(
+                          dataInvoiceTakeAway.data.created_at
+                        ).toLocaleTimeString("id-ID", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) + " WIB"
+                      : "-"}
                   </div>
                 </div>
                 <div className="w-full text-start">
@@ -903,7 +982,7 @@ function SelectTable() {
                     </TableHeader>
                     <TableBody>
                       {/* Packets */}
-                      {dataInvoiceTakeAway?.data?.packets.map(packet => (
+                      {dataInvoiceTakeAway?.data?.packets.map((packet) => (
                         <TableRow key={packet.id} className="border-none">
                           <TableCell className="text-start border-b text-[#19191C]">
                             {packet?.name}
@@ -921,7 +1000,7 @@ function SelectTable() {
                       ))}
 
                       {/* Packets */}
-                      {dataInvoiceTakeAway?.data?.products.map(product => (
+                      {dataInvoiceTakeAway?.data?.products.map((product) => (
                         <TableRow key={product.id} className="border-none">
                           <TableCell className="text-start border-b text-[#19191C]">
                             {product?.name}
@@ -945,15 +1024,22 @@ function SelectTable() {
                   <div className="text-end space-y-2">
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}</span>
+                      <span className="text-[#19191C]">
+                        Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}
+                      </span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}</span>
+                      <span className="text-[#19191C]">
+                        Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}
+                      </span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}</span>
+                      <span className="text-primaryColor">
+                        Rp.{" "}
+                        {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1013,8 +1099,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1060,8 +1147,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1287,7 +1375,9 @@ function SelectTable() {
           //   window.location.reload();
           // }
         }}
-        onSubmitTrigger={() => { handlePrint(); }}
+        onSubmitTrigger={() => {
+          handlePrint();
+        }}
         title=""
         classNameDialogFooter="flex md:justify-center"
         showKeluarButton={true}
@@ -1311,7 +1401,6 @@ function SelectTable() {
       <div className="hidden">
         <PaymentReceipt ref={contentRef} dataReceipt={dataInvoiceReceipt} />
       </div>
-
       <DarkModeComponents className="hidden" />
     </>
   );

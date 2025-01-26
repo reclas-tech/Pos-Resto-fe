@@ -1,7 +1,7 @@
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
 import { Ref } from "react";
-import { InvoiceDetailApiResponse } from "@/components/parts/cashier/pilih-meja/interface";
+import { GetOneInvoiceApiResponse } from "@/components/parts/cashier/history/interface";
 
 type ProductOrPacket = {
   id: string;
@@ -26,7 +26,7 @@ type Data = {
   total_bayar: string;
 };
 
-// type PaymentReceiptProps = {
+// type HistoryReceiptProps = {
 //   dataReceipt: {
 //     statusCode: number;
 //     message: string;
@@ -64,60 +64,109 @@ type Data = {
 //   ref?: Ref<HTMLDivElement> | undefined;
 // };
 
-type PaymentReceiptProps = {
-  dataReceipt: InvoiceDetailApiResponse | null | undefined;
-  ref?: Ref<HTMLDivElement>;
+// const transformDataReceiptToData = (
+//   response: HistoryReceiptProps["dataReceipt"]
+// ): Data | null => {
+//   if (!response || response.statusCode !== 200) return null;
+
+//   const {
+//     data: {
+//       id,
+//       created_at,
+//       customer,
+//       tables,
+//       products,
+//       packets,
+//       tax,
+//       price_sum,
+//     },
+//   } = response;
+
+//   return {
+//     id,
+//     no_transaksi: response.data.codes[0] || "N/A",
+//     time: new Date(created_at).toLocaleString(),
+//     customer,
+//     table: tables.length > 0 ? tables.join(", ") : "-",
+//     products: products.map((product) => ({
+//       id: product.id,
+//       name: product.name,
+//       quantity: product.quantity,
+//       note: product.note || undefined,
+//       price: `Rp ${product.price.toLocaleString()}`,
+//     })),
+//     packets: packets.map((packet) => ({
+//       id: packet.id,
+//       name: packet.name,
+//       quantity: packet.quantity,
+//       note: packet.note || undefined,
+//       price: `Rp ${packet.price.toLocaleString()}`,
+//     })),
+//     quantity:
+//       products.reduce((sum, product) => sum + product.quantity, 0) +
+//       packets.reduce((sum, packet) => sum + packet.quantity, 0),
+//     sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
+//     total_tagihan: `Rp ${price_sum.toLocaleString()}`,
+//     cash: "-", // This field can be updated if cash data is available.
+//     total_bayar: `Rp ${price_sum.toLocaleString()}`,
+//   };
+// };
+
+type HistoryReceiptProps = {
+  dataReceipt: GetOneInvoiceApiResponse | null;
+  ref?: Ref<HTMLDivElement> | undefined;
 };
 
 const transformDataReceiptToData = (
-  response: PaymentReceiptProps["dataReceipt"]
+  response: HistoryReceiptProps["dataReceipt"]
 ): Data | null => {
-  if (!response || response.statusCode !== 200) return null;
+  if (!response || response.statusCode !== 200 || !response.data) return null;
 
   const {
     data: {
       id,
       created_at,
-      customer,
-      tables,
-      products,
-      packets,
-      tax,
-      price_sum,
+      customer = "-", // Provide default value
+      tables = [], // Ensure it's an array
+      products = [],
+      packets = [],
+      tax = 0,
+      price_sum = 0,
+      code,
     },
   } = response;
 
   return {
     id,
-    no_transaksi: response.data.codes[0] || "N/A",
+    no_transaksi: code || "N/A" , // Optional chaining
     time: new Date(created_at).toLocaleString(),
     customer,
     table: tables.length > 0 ? tables.join(", ") : "-",
     products: products.map((product) => ({
       id: product.id,
       name: product.name,
-      quantity: product.quantity,
+      quantity: product.quantity || 0,
       note: product.note || undefined,
-      price: `Rp ${product.price.toLocaleString()}`,
+      price: `Rp ${(product.price || 0).toLocaleString()}`,
     })),
     packets: packets.map((packet) => ({
       id: packet.id,
       name: packet.name,
-      quantity: packet.quantity,
+      quantity: packet.quantity || 0,
       note: packet.note || undefined,
-      price: `Rp ${packet.price.toLocaleString()}`,
+      price: `Rp ${(packet.price || 0).toLocaleString()}`,
     })),
     quantity:
-      products.reduce((sum, product) => sum + product.quantity, 0) +
-      packets.reduce((sum, packet) => sum + packet.quantity, 0),
-    sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
-    total_tagihan: `Rp ${price_sum.toLocaleString()}`,
-    cash: "-", // This field can be updated if cash data is available.
-    total_bayar: `Rp ${price_sum.toLocaleString()}`,
+      products.reduce((sum, product) => sum + (product.quantity || 0), 0) +
+      packets.reduce((sum, packet) => sum + (packet.quantity || 0), 0),
+    sub_total: `Rp ${Math.max(price_sum - tax, 0).toLocaleString()}`,
+    total_tagihan: `Rp ${(price_sum || 0).toLocaleString()}`,
+    cash: "-",
+    total_bayar: `Rp ${(price_sum || 0).toLocaleString()}`,
   };
 };
 
-const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
+const HistoryReceipt: React.FC<HistoryReceiptProps> = ({
   dataReceipt,
   ref,
 }) => {
@@ -208,4 +257,5 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
   );
 };
 
-export default PaymentReceipt;
+
+export default HistoryReceipt;

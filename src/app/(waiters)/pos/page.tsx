@@ -618,7 +618,10 @@ function PosPage() {
     <>
       <AuthGuardPOS>
         <div className="flex w-full h-screen">
-          <DarkModeComponents />
+          <div className="hidden">
+             <DarkModeComponents />
+          </div>
+         
           <div className="w-[65%] h-full  ">
             {/* Header */}
             <div className=" flex justify-between items-center px-2 py-4">
@@ -1143,7 +1146,7 @@ function PosPage() {
                 </div>
               </form>
               {/* Struk */}
-              <div className="none">
+              <div className="hidden">
                 <TableReceipt ref={contentRef} data={orderInvoice} />
               </div>
             </div>

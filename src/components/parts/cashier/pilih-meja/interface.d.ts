@@ -57,6 +57,7 @@ export interface InvoiceDetailData {
 }
 
 interface Product {
+  note: undefined;
   id: string;
   quantity: number;
   price_sum: number;
@@ -65,6 +66,7 @@ interface Product {
 }
 
 interface Packet {
+  note: undefined;
   id: string;
   quantity: number;
   price_sum: number;
