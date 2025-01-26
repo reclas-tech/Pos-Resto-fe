@@ -16,6 +16,7 @@ interface DetailModalProps {
   onClose: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onDetail: (data: any) => void;
+  onPrint: (e: React.FormEvent<HTMLFormElement>) => void;
   title?: string;
   printButtonText?: string;
   cetakButtonText?: string;
@@ -39,6 +40,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
   isOpen,
   onClose,
   onDetail,
+  onPrint,
   title = "Detail",
   printButtonText = "Print",
   cetakButtonText = "Cetak Struk",
@@ -102,13 +104,17 @@ const DetailModal: React.FC<DetailModalProps> = ({
             </Button>
           )}
           {showPrintButton && (
-            <Button
-              className={classNameButton}
-              variant="default"
-              onClick={handleDetail}
-            >
-              {printButtonText}
-            </Button>
+            <>
+              <form onSubmit={onPrint} className="space-y-5">
+                <Button
+                  className={classNameButton}
+                  variant="default"
+                  onClick={handleDetail}
+                >
+                  {printButtonText}
+                </Button>
+              </form>
+            </>
           )}
           {showCetakButton && (
             <Button

@@ -351,6 +351,9 @@ function SelectTable() {
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
+          onPrint={() => {
+            // Ini handle print sahabat
+          }}
         >
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
