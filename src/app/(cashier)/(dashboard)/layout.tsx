@@ -410,10 +410,16 @@ export default function RootLayoutDashboardCashier({
             setIsValidationSuccessModal(false);
             handleLogout();
           }}
-          onSubmitTrigger={() => {
-            handlePrint();
-            handleLogout();
-            router.push("/login-kasir");
+          onSubmitTrigger={async () => {
+            try {
+              await handlePrint();
+            } catch (error) {
+              console.error("Proses print dibatalkan atau gagal:", error);
+            } finally {
+              setIsValidationSuccessModal(false);
+              await handleLogout();
+              router.push("/login-kasir");
+            }
           }}
           title=""
           showKeluarButton={true}

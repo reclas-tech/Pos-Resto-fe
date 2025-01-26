@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   Dialog,
@@ -14,9 +15,8 @@ import { cn } from "@/lib/utils";
 interface DetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onDetail: (data: any) => void;
-  onPrint: (e: React.FormEvent<HTMLFormElement>) => void;
+  onPrint: (e: React.MouseEvent<HTMLButtonElement>) => void;
   title?: string;
   printButtonText?: string;
   cetakButtonText?: string;
@@ -104,17 +104,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
             </Button>
           )}
           {showPrintButton && (
-            <>
-              <form onSubmit={onPrint} className="space-y-5">
-                <Button
-                  className={classNameButton}
-                  variant="default"
-                  onClick={handleDetail}
-                >
-                  {printButtonText}
-                </Button>
-              </form>
-            </>
+            <Button
+              className={classNameButton}
+              variant="default"
+              onClick={onPrint}
+            >
+              {printButtonText}
+            </Button>
           )}
           {showCetakButton && (
             <Button
