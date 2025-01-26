@@ -55,7 +55,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
         setTimeout(() => {
             // Panggil print setelah ID dipilih dan data sudah siap
             reactToPrintFn();
-        }, 300); // Tambahkan delay jika perlu agar data benar-benar terupdate
+        }, 1000); // Tambahkan delay jika perlu agar data benar-benar terupdate
     };
 
 
