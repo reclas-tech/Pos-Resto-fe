@@ -25,7 +25,7 @@ const TableReceiptAdmin = React.forwardRef<HTMLDivElement, PropsInvoice>((props,
                 <p>: {dataDetail?.data?.code}</p>
                 <p>Waktu</p>
                 <p>: {new Date(dataDetail?.data?.created_at).toLocaleString()}</p>
-                <p>Nama Pemesan</p>
+                <p>Nama Kasir</p>
                 <p>: {dataDetail?.data?.cashier}</p>
                 <p>Nomor Meja</p>
                 <p>: {dataDetail?.data?.tables.join(", ")}</p>
