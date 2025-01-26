@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -17,27 +18,47 @@ import {
 } from "@/components/ui/table";
 import { ActionSVG } from "@/constants/svgIcons";
 import { format, parseISO } from "date-fns";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { TransaksiInterface } from "./interface";
 import { useGetTransaksiOne } from "./api";
 import { Label } from "@/components/ui/label";
 import { showAlert2 } from "@/lib/sweetalert2";
+import TableReceiptAdmin from "./struk";
+import { useReactToPrint } from "react-to-print";
 
 const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
 
-    // Data fetching
+    // Fetch the data for the selected transaction
     const { data: dataDetail } = useGetTransaksiOne(selectedTransactionId?.toString() || "");
+
+    // Content reference for printing
+    const contentRef = useRef<HTMLDivElement>(null);
+    const reactToPrintFn = useReactToPrint({ contentRef });
+
     const handleDetail = (id: string) => {
         setSelectedTransactionId(id);
         setIsDetailModalOpen(true);
-        // showAlert2("success", 'Berhasil Print Transaksi');
     };
 
-    const handlePrint = () => {
-        showAlert2("success", 'Berhasil Print Transaksi');
+    const printReceiptDetail = (id: string) => {
+        setSelectedTransactionId(id);
+        reactToPrintFn();
     };
+
+    const printReceipt = (id: string) => {
+        // Perbarui ID transaksi yang dipilih dengan data transaksi terbaru
+        setSelectedTransactionId(id);
+
+        // Menunggu update data selesai baru memanggil reactToPrintFn
+        setTimeout(() => {
+            // Panggil print setelah ID dipilih dan data sudah siap
+            reactToPrintFn();
+        }, 300); // Tambahkan delay jika perlu agar data benar-benar terupdate
+    };
+
+
 
     return (
         <div className="Table">
@@ -110,10 +131,10 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                         <DetailModal
                                                             isOpen={isDetailModalOpen}
                                                             onClose={() => setIsDetailModalOpen(false)}
-                                                            onDetail={handlePrint}
+                                                            onDetail={printReceiptDetail}
                                                             title="Detail Riwayat Transaksi"
                                                             showCancelButton={true}
-                                                            showPrintButton={dataDetail?.data?.status === "pending" ? false : true}
+                                                            showPrintButton={dataDetail?.data?.status !== "success" ? false : true}
                                                         >
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
@@ -212,12 +233,21 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                             </div>
                                                         </DetailModal>
                                                     </div>
+                                                    <div style={{ display: 'none' }}>
+                                                        <div ref={contentRef}>
+                                                            {/* This is the content that will be printed */}
+                                                            <TableReceiptAdmin idInvoice={selectedTransactionId || ""} />
+                                                        </div>
+                                                    </div>
+
                                                     <button
-                                                        className="text-black hover:text-primaryColor dark:text-white w-full text-left"
-                                                        onClick={() => setIsDetailModalOpen(true)}
+                                                        className={`text-black ${item?.status !== "success" ? "hover:text-gray-500" : "hover:text-primaryColor"}  dark:text-white w-full text-left`}
+                                                        onClick={() => printReceipt(item.id)}
+                                                        disabled={item?.status !== "success"}
                                                     >
                                                         Print
                                                     </button>
+
                                                 </div>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
