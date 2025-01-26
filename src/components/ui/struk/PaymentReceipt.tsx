@@ -26,44 +26,6 @@ type Data = {
   total_bayar: string;
 };
 
-// type PaymentReceiptProps = {
-//   dataReceipt: {
-//     statusCode: number;
-//     message: string;
-//     data: {
-//       id: string;
-//       type: string;
-//       status: string;
-//       customer: string;
-//       created_at: string;
-//       cashier: string;
-//       codes: string[];
-//       tables: string[];
-//       products: {
-//         id: string;
-//         note: string | null;
-//         quantity: number;
-//         price_sum: number;
-//         name: string;
-//         price: number;
-//       }[];
-//       packets: {
-//         id: string;
-//         note: string | null;
-//         quantity: number;
-//         price_sum: number;
-//         name: string;
-//         price: number;
-//       }[];
-//       tax_percent: number;
-//       tax: number;
-//       price_sum: number;
-//       price: number;
-//     };
-//   } | null;
-//   ref?: Ref<HTMLDivElement> | undefined;
-// };
-
 type PaymentReceiptProps = {
   dataReceipt: InvoiceDetailApiResponse | null | undefined;
   ref?: Ref<HTMLDivElement>;
@@ -112,7 +74,7 @@ const transformDataReceiptToData = (
       packets.reduce((sum, packet) => sum + packet.quantity, 0),
     sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
     total_tagihan: `Rp ${price_sum.toLocaleString()}`,
-    cash: "-", // This field can be updated if cash data is available.
+    cash: `Rp ${price_sum.toLocaleString()}`, // This field can be updated if cash data is available.
     total_bayar: `Rp ${price_sum.toLocaleString()}`,
   };
 };
