@@ -273,7 +273,7 @@ function RiwayatTransaksi() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant={"outline"}
-                  className="justify-center border-secondaryColor text-sm p-2 h-fit"
+                  className="justify-center border-secondaryColor text-sm p-2 h-8"
                 >
                   <span>
                     <FilterSVG />

@@ -135,6 +135,7 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                             title="Detail Riwayat Transaksi"
                                                             showCancelButton={true}
                                                             showPrintButton={dataDetail?.data?.status !== "success" ? false : true}
+                                                            onPrint={() => { }}
                                                         >
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
