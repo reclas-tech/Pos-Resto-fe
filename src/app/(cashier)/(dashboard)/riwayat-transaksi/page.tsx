@@ -16,9 +16,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FilterSVG } from "@/constants/svgIcons";
 import { SearchInputCashier } from "@/components/ui/input";
-import { putUpdateInvoice, useGetHistoryList, useGetOneInvoice } from "@/components/parts/cashier/history/api";
+import {
+  putUpdateInvoice,
+  useGetHistoryList,
+  useGetOneInvoice,
+} from "@/components/parts/cashier/history/api";
 import DataTableList from "@/components/parts/cashier/history/DataTableList";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useReactToPrint } from "react-to-print";
+import { useRef } from "react";
+import HistoryReceipt from "@/components/ui/struk/HistoryReceipt";
 
 interface Product {
   id: string;
@@ -55,14 +62,28 @@ function RiwayatTransaksi() {
   const [isDetailModalOpenPending, setIsDetailModalOpenPending] =
     useState(false);
   const [isEditModalOpenTakeaway, setIsEditModalOpenTakeaway] = useState(false);
-  const [isDetailModalOpenSuccess, setIsDetailModalOpenSuccess] = useState(false);
+  const [isDetailModalOpenSuccess, setIsDetailModalOpenSuccess] =
+    useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const [selectedPurchaseDetails, setSelectedPurchaseDetails] = useState<any[]>(
     []
   );
 
   // Fetch Data Hostory List
-  const { data: dataGetHistoryList, error, mutate: mutateGetHistoryList } = useGetHistoryList(search, price, time, invoice);
+  const {
+    data: dataGetHistoryList,
+    error,
+    mutate: mutateGetHistoryList,
+  } = useGetHistoryList(search, price, time, invoice);
+
+  // PRINT RECEIPT
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
+  const handlePrint = () => {
+    reactToPrintFn();
+    console.log("test print");
+  };
 
   // Handle Filter Change
   const handleFilterChange = (field: string, value: string) => {
@@ -70,7 +91,11 @@ function RiwayatTransaksi() {
   };
 
   // HandleOnDetail
-  const onDetailModal = (id: string | number, status: string, isTakeawayModal: boolean) => {
+  const onDetailModal = (
+    id: string | number,
+    status: string,
+    isTakeawayModal: boolean
+  ) => {
     setSelectedId(id);
 
     if (isTakeawayModal) {
@@ -83,7 +108,8 @@ function RiwayatTransaksi() {
   };
 
   // GET ONE Invoice
-  const { data: dataGetOneInvoice, mutate: mutateGetOneInvoice } = useGetOneInvoice(selectedId ? selectedId.toString() : '');
+  const { data: dataGetOneInvoice, mutate: mutateGetOneInvoice } =
+    useGetOneInvoice(selectedId ? selectedId.toString() : "");
 
   // OnEdit Modal
   // ErrorHandle
@@ -92,26 +118,25 @@ function RiwayatTransaksi() {
     if (dataGetOneInvoice?.data) {
       const products = Array.isArray(dataGetOneInvoice.data.products)
         ? dataGetOneInvoice.data.products.map((product: Product) => ({
-          ...product,
-          type: "product",
-        }))
+            ...product,
+            type: "product",
+          }))
         : [];
       const packets = Array.isArray(dataGetOneInvoice.data.packets)
         ? dataGetOneInvoice.data.packets.map((packet: Packet) => ({
-          ...packet,
-          type: "packet",
-        }))
+            ...packet,
+            type: "packet",
+          }))
         : [];
       setSelectedPurchaseDetails([...products, ...packets]);
     }
   }, [dataGetOneInvoice]);
 
   // Fetch data put invoice
-  const { handlePutSubmit } = putUpdateInvoice(selectedId ? selectedId.toString() : '');
-  const {
-    handleSubmit,
-    reset,
-  } = useForm<FormInputs>();
+  const { handlePutSubmit } = putUpdateInvoice(
+    selectedId ? selectedId.toString() : ""
+  );
+  const { handleSubmit, reset } = useForm<FormInputs>();
 
   const onEditSubmit: SubmitHandler<FormInputs> = async () => {
     const formatedRequest = {
@@ -130,10 +155,10 @@ function RiwayatTransaksi() {
             quantity: packet.quantity,
           })) || [],
     };
-    setIsEditModalOpenTakeaway(false)
+    setIsEditModalOpenTakeaway(false);
     handlePutSubmit(formatedRequest, setLoading);
-    mutateGetHistoryList()
-    mutateGetOneInvoice()
+    mutateGetHistoryList();
+    mutateGetOneInvoice();
   };
 
   const handlePinSubmit = (pin: string) => {
@@ -141,14 +166,18 @@ function RiwayatTransaksi() {
       pin: pin || "",
     };
     handlePutSubmit(formatedRequest, setLoading);
-    mutateGetHistoryList()
-    mutateGetOneInvoice()
+    mutateGetHistoryList();
+    mutateGetOneInvoice();
     reset();
   };
 
   const handleIncreaseQuantity = (id: string) => {
-    const product = dataGetOneInvoice?.data?.products.find((item) => item.id === id);
-    const packet = dataGetOneInvoice?.data?.packets.find((item) => item.id === id);
+    const product = dataGetOneInvoice?.data?.products.find(
+      (item) => item.id === id
+    );
+    const packet = dataGetOneInvoice?.data?.packets.find(
+      (item) => item.id === id
+    );
 
     if (!product && !packet) {
       console.log("Produk atau Packet tidak ditemukan");
@@ -233,7 +262,11 @@ function RiwayatTransaksi() {
       <div className="pl-6 pr-6 pt-4 pb-4 text-xs">
         <section className="justify-start flex gap-4">
           <div className="">
-            <SearchInputCashier className="w-[280px] text-xs h-8" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <SearchInputCashier
+              className="w-[280px] text-xs h-8"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
           <div className="filters">
             <DropdownMenu>
@@ -248,9 +281,7 @@ function RiwayatTransaksi() {
                   <span>Filter</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-[#E1E1E1] border border-gray-300 shadow-2xl rounded-md w-full"
-              >
+              <DropdownMenuContent className="transition-all duration-300 ease-in-out opacity-1 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 bg-[#E1E1E1] border border-gray-300 shadow-2xl rounded-md w-full">
                 <div className="p-2 w-full text-sm text-[#000000] font-semibold">
                   <span>Pilih Filter</span>
                   <div className="border-b border-black/30 mt-1 mb-2"></div>
@@ -376,6 +407,7 @@ function RiwayatTransaksi() {
       <DetailModal
         isOpen={isDetailModalOpenSuccess}
         onClose={() => setIsDetailModalOpenSuccess(false)}
+        onPrint={() => handlePrint()}
         onDetail={handleDetail}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
@@ -401,11 +433,12 @@ function RiwayatTransaksi() {
                 Nomor Meja
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                {
-                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
-                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
-                    : "-"
-                }
+                {dataGetOneInvoice?.data?.tables &&
+                dataGetOneInvoice.data.tables.length > 0
+                  ? dataGetOneInvoice.data.tables
+                      .map((code) => `${code}`)
+                      .join(", ")
+                  : "-"}
               </div>
             </div>
           </div>
@@ -416,11 +449,13 @@ function RiwayatTransaksi() {
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
                 {dataGetOneInvoice?.data?.created_at
-                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }) + ' WIB'
-                  : '-'}
+                  ? new Date(
+                      dataGetOneInvoice.data.created_at
+                    ).toLocaleDateString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
+                  : "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
@@ -461,20 +496,23 @@ function RiwayatTransaksi() {
                 defaultValue={[
                   dataGetOneInvoice?.data?.products
                     .map((product) => `${product.quantity}x ${product.name}`)
-                    .join('\n'),
+                    .join("\n"),
                   dataGetOneInvoice?.data?.packets
                     ?.map((packet) => `${packet.quantity}x ${packet.name}`)
-                    .join('\n')
+                    .join("\n"),
                 ]
                   .filter(Boolean)
-                  .join('\n')}
+                  .join("\n")}
                 disabled
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
               <div
-                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${dataGetOneInvoice?.data?.type === "take away" ? "bg-secondaryColor" : "bg-primaryColor"
-                  }`}
+                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${
+                  dataGetOneInvoice?.data?.type === "take away"
+                    ? "bg-secondaryColor"
+                    : "bg-primaryColor"
+                }`}
               >
                 {dataGetOneInvoice?.data?.type}
               </div>
@@ -494,6 +532,7 @@ function RiwayatTransaksi() {
         isOpen={isDetailModalOpenPending}
         onClose={() => setIsDetailModalOpenPending(false)}
         onDetail={handleDetail}
+        onPrint={() => handlePrint()}
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
         showCancelButton={true}
@@ -528,11 +567,12 @@ function RiwayatTransaksi() {
                 Nomor Meja
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
-                {
-                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
-                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
-                    : "-"
-                }
+                {dataGetOneInvoice?.data?.tables &&
+                dataGetOneInvoice.data.tables.length > 0
+                  ? dataGetOneInvoice.data.tables
+                      .map((code) => `${code}`)
+                      .join(", ")
+                  : "-"}
               </div>
             </div>
           </div>
@@ -543,11 +583,13 @@ function RiwayatTransaksi() {
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
                 {dataGetOneInvoice?.data?.created_at
-                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }) + ' WIB'
-                  : '-'}
+                  ? new Date(
+                      dataGetOneInvoice.data.created_at
+                    ).toLocaleDateString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
+                  : "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
@@ -565,7 +607,9 @@ function RiwayatTransaksi() {
                 Nama Kasir
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                {dataGetOneInvoice?.data?.cashier ? dataGetOneInvoice.data.cashier : "-"}
+                {dataGetOneInvoice?.data?.cashier
+                  ? dataGetOneInvoice.data.cashier
+                  : "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
@@ -588,20 +632,23 @@ function RiwayatTransaksi() {
                 defaultValue={[
                   dataGetOneInvoice?.data?.products
                     .map((product) => `${product.quantity}x ${product.name}`)
-                    .join('\n'),
+                    .join("\n"),
                   dataGetOneInvoice?.data?.packets
                     ?.map((packet) => `${packet.quantity}x ${packet.name}`)
-                    .join('\n')
+                    .join("\n"),
                 ]
                   .filter(Boolean)
-                  .join('\n')}
+                  .join("\n")}
                 disabled
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
               <div
-                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${dataGetOneInvoice?.data?.type === "take away" ? "bg-secondaryColor" : "bg-primaryColor"
-                  }`}
+                className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${
+                  dataGetOneInvoice?.data?.type === "take away"
+                    ? "bg-secondaryColor"
+                    : "bg-primaryColor"
+                }`}
               >
                 {dataGetOneInvoice?.data?.type}
               </div>
@@ -660,11 +707,12 @@ function RiwayatTransaksi() {
                 Nomor Meja
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
-                {
-                  dataGetOneInvoice?.data?.tables && dataGetOneInvoice.data.tables.length > 0
-                    ? dataGetOneInvoice.data.tables.map(code => `${code}`).join(', ')
-                    : "-"
-                }
+                {dataGetOneInvoice?.data?.tables &&
+                dataGetOneInvoice.data.tables.length > 0
+                  ? dataGetOneInvoice.data.tables
+                      .map((code) => `${code}`)
+                      .join(", ")
+                  : "-"}
               </div>
             </div>
           </div>
@@ -675,11 +723,13 @@ function RiwayatTransaksi() {
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 items-center">
                 {dataGetOneInvoice?.data?.created_at
-                  ? new Date(dataGetOneInvoice.data.created_at).toLocaleDateString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }) + ' WIB'
-                  : '-'}
+                  ? new Date(
+                      dataGetOneInvoice.data.created_at
+                    ).toLocaleDateString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
+                  : "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
@@ -697,7 +747,9 @@ function RiwayatTransaksi() {
                 Nama Kasir
               </Label>
               <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                {dataGetOneInvoice?.data?.cashier ? dataGetOneInvoice.data.cashier : "-"}
+                {dataGetOneInvoice?.data?.cashier
+                  ? dataGetOneInvoice.data.cashier
+                  : "-"}
               </div>
             </div>
             <div className="flex flex-col w-full">
@@ -774,6 +826,11 @@ function RiwayatTransaksi() {
           </div>
         </>
       </EditModal>
+
+      {/* Struk */}
+      <div className="hidden">
+        <HistoryReceipt ref={contentRef} dataReceipt={dataGetOneInvoice} />
+      </div>
 
       <PinModal
         isOpen={isDeletePinModalOpen}
