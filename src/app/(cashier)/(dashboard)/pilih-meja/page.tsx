@@ -145,7 +145,7 @@ function SelectTable() {
 
   // Handle calculate change total amount and payment amount
   const calculateChange = () => {
-    const totalAmount = dataInvoiceDineIn?.data?.price || 0;
+    const totalAmount = dataInvoiceDineIn?.data?.price_sum || 0;
     const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
     const change = paymentAmount - totalAmount;
     if (change < 0) {
@@ -438,7 +438,7 @@ function SelectTable() {
                 <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
                   <span className="text-[#19191C]">
-                    Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
+                    Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
                   </span>
                 </div>
                 <div className="space-x-4 flex justify-between">
@@ -450,7 +450,7 @@ function SelectTable() {
                 <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">TOTAL</span>
                   <span className="text-primaryColor">
-                    Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
+                    Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -560,7 +560,7 @@ function SelectTable() {
                   <div className="text-end space-y-2">
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}</span>
+                      <span className="text-[#19191C]">Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}</span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
@@ -568,7 +568,7 @@ function SelectTable() {
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}</span>
+                      <span className="text-primaryColor">Rp. {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -613,7 +613,6 @@ function SelectTable() {
                   </span>
                   <span>QRIS</span>
                 </Button>
-
 
                 {/* Modal Proses Card */}
                 <ProcessModal
@@ -824,7 +823,7 @@ function SelectTable() {
                 <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">SUBTOTAL</span>
                   <span className="text-[#19191C]">
-                    Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
+                    Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}
                   </span>
                 </div>
                 <div className="space-x-4 flex justify-between">
@@ -836,7 +835,7 @@ function SelectTable() {
                 <div className="space-x-4 flex justify-between">
                   <span className="text-[#9C9C9C]">TOTAL</span>
                   <span className="text-primaryColor">
-                    Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}
+                    Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -943,7 +942,7 @@ function SelectTable() {
                   <div className="text-end space-y-2">
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">SUBTOTAL</span>
-                      <span className="text-[#19191C]">Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}</span>
+                      <span className="text-[#19191C]">Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}</span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
@@ -951,7 +950,7 @@ function SelectTable() {
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}</span>
+                      <span className="text-primaryColor">Rp. {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
