@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
@@ -7,7 +6,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { GetOneInvoiceApiResponse, HistoryListApiResponse } from "./interface";
-import { InvoiceHistoryValues } from "./validation";
 
 const useGetHistoryList = (
   search: string,
@@ -68,7 +66,11 @@ const putUpdateInvoice = (selectedId: string) => {
   const UseAxiosPrivate = useAxiosPrivateInstance();
 
   const handlePutSubmit = async (
-    formData: FormData,
+    data: {
+      pin?: string;
+      products?: { id: string; quantity: number }[];
+      packets?: { id: string; quantity: number }[];
+    },
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     const access_token = Cookies.get("access_token");
@@ -76,7 +78,7 @@ const putUpdateInvoice = (selectedId: string) => {
       setLoading(true);
       const response = await UseAxiosPrivate.put(
         `/order/employee/history/update/${selectedId}`,
-        formData,
+        data,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,

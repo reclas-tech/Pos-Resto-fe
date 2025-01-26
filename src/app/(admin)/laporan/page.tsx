@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/popover";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { useGetReport } from "@/components/parts/admin/laporan/api";
+import { useGetReport, useGetYears } from "@/components/parts/admin/laporan/api";
 import DataIncomeComparation from "@/components/parts/admin/laporan/DataIncomeComparation";
 import GrafikPendapatan from "@/components/parts/admin/laporan/DataIncomeGraph";
 import { PrintSVG } from "@/constants/svgIcons";
@@ -44,6 +44,8 @@ function LaporanAdminPage() {
     selectedYear || "",
     "1000"
   );
+
+  const { data: years } = useGetYears();
 
   // Logika untuk mematikan filter
   useEffect(() => {
@@ -150,53 +152,6 @@ function LaporanAdminPage() {
     pdf.save("Laporan-Penjualan.pdf");
   };
 
-  // const downloadPDF = async () => {
-  //   const element = document.getElementById("report-content");
-  //   if (!element) {
-  //     console.error("Report content not found!");
-  //     return;
-  //   }
-
-  //   const pdf = new jsPDF({
-  //     orientation: "portrait",
-  //     unit: "mm",
-  //     format: "a4",
-  //   });
-
-  //   const pdfWidth = 210;
-  //   const pdfHeight = 297;
-  //   const margin = 10; // Margin dalam mm
-  //   const availableWidth = pdfWidth - (2 * margin);
-  //   const availableHeight = pdfHeight - (2 * margin);
-
-  //   const canvas = await html2canvas(element, { scale: 2 });
-  //   const imgData = canvas.toDataURL("image/png");
-
-  //   const imgWidth = availableWidth;
-  //   const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //   let position = margin;
-  //   while (position < canvas.height) {
-  //     pdf.addImage(
-  //       imgData,
-  //       "PNG",
-  //       margin,
-  //       margin,
-  //       imgWidth,
-  //       imgHeight,
-  //       "",
-  //       "SLOW"
-  //     );
-
-  //     position += availableHeight;
-  //     if (position < canvas.height) {
-  //       pdf.addPage();
-  //     }
-  //   }
-
-  //   pdf.save("Laporan-Penjualan.pdf");
-  // };
-
   return (
     <>
       <div className="flex items-center gap-2 text-secondaryColor dark:text-primaryColor font-bold text-3xl mb-5">
@@ -299,23 +254,46 @@ function LaporanAdminPage() {
                   </Select>
                 </div>
                 <div className="w-fit">
-                  <Select
-                    value={selectedYear}
-                    onValueChange={setSelectedYear}
-                  // disabled={!!startDate || !!endDate}
-                  >
+                  {/* isabled={!!startDate || !!endDate} */}
+                  <Select value={selectedYear} onValueChange={setSelectedYear}>
                     <SelectTrigger className="w-[130px] px-2 gap-2">
                       <SelectValue
-                        placeholder="Pilih Tahun"
+                        placeholder={
+                          isLoading
+                            ? "Loading..."
+                            : error
+                              ? "Gagal memuat"
+                              : "Pilih Tahun"
+                        }
                         className="text-[#9E9E9E]"
                       />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="2023">2023</SelectItem>
-                        <SelectItem value="2024">2024</SelectItem>
-                        <SelectItem value="2025">2025</SelectItem>
-                        <SelectItem value="2026">2026</SelectItem>
+                        {isLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading...
+                          </SelectItem>
+                        )}
+                        {error && (
+                          <SelectItem value="error" disabled>
+                            Error memuat data
+                          </SelectItem>
+                        )}
+                        {!isLoading && !error && years && years.length > 0 ? (
+                          years.map((year) => (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          !isLoading &&
+                          !error && (
+                            <SelectItem value="no-data" disabled>
+                              Tidak ada data
+                            </SelectItem>
+                          )
+                        )}
                       </SelectGroup>
                     </SelectContent>
                   </Select>

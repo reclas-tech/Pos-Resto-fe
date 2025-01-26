@@ -126,10 +126,35 @@ const useGetKitchen = () => {
   return { data, error, mutate, isValidating, isLoading };
 };
 
+const useGetYears = () => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR<number[]>(
+    `/order/admin/year/list`,
+    () =>
+      axiosPrivate
+        .get(`/order/admin/year/list`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          if (res.data.statusCode === 200) {
+            return Object.values(res.data.data) as number[]; // Pastikan tipe array number[]
+          }
+          throw new Error(res.data.message);
+        })
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
 export {
   useGetSummary,
   useGetIncomeGraph,
   useGetIncomeComparation,
   useGetReport,
   useGetKitchen,
+  useGetYears,
 };

@@ -20,7 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useGetIncomeComparation } from "./api";
+import { useGetIncomeComparation, useGetYears } from "./api";
 
 // Helper function to convert strings to Title Case
 const toTitleCase = (str: string) => {
@@ -41,6 +41,9 @@ const formatToIDR = (value: number) => {
 
 const DataIncomeComparation = () => {
     const [selectedYear, setSelectedYear] = useState<string>("2024");
+
+    // Fetch Api Year
+    const { data: years, error } = useGetYears();
 
     // Fetch Api
     const { data, isLoading } = useGetIncomeComparation(Number(selectedYear));
@@ -85,16 +88,36 @@ const DataIncomeComparation = () => {
                     Perbandingan Penjualan Antar Dapur
                 </div>
                 <div className="w-fit">
-                    <Select onValueChange={handleYearChange} defaultValue={selectedYear}>
+                    <Select value={selectedYear} onValueChange={handleYearChange}>
                         <SelectTrigger className="w-fit px-2 gap-2 border-secondaryColor">
-                            <SelectValue placeholder={selectedYear} className="text-[#9E9E9E]" />
+                            <SelectValue
+                                placeholder={
+                                    isLoading
+                                        ? "Loading..."
+                                        : error
+                                            ? "Gagal memuat tahun"
+                                            : "Pilih Tahun"
+                                }
+                                className="text-[#9E9E9E]"
+                            />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="2023">2023</SelectItem>
-                                <SelectItem value="2024">2024</SelectItem>
-                                <SelectItem value="2025">2025</SelectItem>
-                                <SelectItem value="2026">2026</SelectItem>
+                                {isLoading ? (
+                                    <SelectItem value="loading" disabled>
+                                        Loading...
+                                    </SelectItem>
+                                ) : error ? (
+                                    <SelectItem value="error" disabled>
+                                        Gagal memuat data
+                                    </SelectItem>
+                                ) : (
+                                    years?.map((year) => (
+                                        <SelectItem key={year} value={year.toString()}>
+                                            {year}
+                                        </SelectItem>
+                                    ))
+                                )}
                             </SelectGroup>
                         </SelectContent>
                     </Select>

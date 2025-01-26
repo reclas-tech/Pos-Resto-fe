@@ -18,7 +18,7 @@ import { FilterSVG } from "@/constants/svgIcons";
 import { SearchInputCashier } from "@/components/ui/input";
 import { putUpdateInvoice, useGetHistoryList, useGetOneInvoice } from "@/components/parts/cashier/history/api";
 import DataTableList from "@/components/parts/cashier/history/DataTableList";
-import { Minus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -83,7 +83,7 @@ function RiwayatTransaksi() {
   };
 
   // GET ONE Invoice
-  const { data: dataGetOneInvoice } = useGetOneInvoice(selectedId ? selectedId.toString() : '');
+  const { data: dataGetOneInvoice, mutate: mutateGetOneInvoice } = useGetOneInvoice(selectedId ? selectedId.toString() : '');
 
   // OnEdit Modal
   // ErrorHandle
@@ -132,6 +132,8 @@ function RiwayatTransaksi() {
     };
     setIsEditModalOpenTakeaway(false)
     handlePutSubmit(formatedRequest, setLoading);
+    mutateGetHistoryList()
+    mutateGetOneInvoice()
   };
 
   const handlePinSubmit = (pin: string) => {
@@ -140,18 +142,30 @@ function RiwayatTransaksi() {
     };
     handlePutSubmit(formatedRequest, setLoading);
     mutateGetHistoryList()
+    mutateGetOneInvoice()
     reset();
   };
 
-  // const handleIncreaseQuantity = (id: number) => {
-  //   setSelectedPurchaseDetails((prevDetails) =>
-  //     prevDetails.map((purchaseDetail) =>
-  //       purchaseDetail.id === id
-  //         ? { ...purchaseDetail, quantity: purchaseDetail.quantity + 1 }
-  //         : purchaseDetail
-  //     )
-  //   );
-  // };
+  const handleIncreaseQuantity = (id: string) => {
+    const product = dataGetOneInvoice?.data?.products.find((item) => item.id === id);
+    const packet = dataGetOneInvoice?.data?.packets.find((item) => item.id === id);
+
+    if (!product && !packet) {
+      console.log("Produk atau Packet tidak ditemukan");
+      return;
+    }
+
+    const item = product || packet;
+    const maxQuantity = item?.quantity || 0;
+
+    setSelectedPurchaseDetails((prevDetails) =>
+      prevDetails.map((purchaseDetail) =>
+        purchaseDetail.id === id && purchaseDetail.quantity < maxQuantity
+          ? { ...purchaseDetail, quantity: purchaseDetail.quantity + 1 }
+          : purchaseDetail
+      )
+    );
+  };
 
   const handleDecreaseQuantity = (id: number) => {
     setSelectedPurchaseDetails((prevDetails) =>
@@ -444,7 +458,16 @@ function RiwayatTransaksi() {
               <textarea
                 id="purchaseHistory"
                 className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                defaultValue={dataGetOneInvoice?.data?.products.map((product) => `${product.quantity}x ${product.name}`).join('\n')}
+                defaultValue={[
+                  dataGetOneInvoice?.data?.products
+                    .map((product) => `${product.quantity}x ${product.name}`)
+                    .join('\n'),
+                  dataGetOneInvoice?.data?.packets
+                    ?.map((packet) => `${packet.quantity}x ${packet.name}`)
+                    .join('\n')
+                ]
+                  .filter(Boolean)
+                  .join('\n')}
                 disabled
               />
             </div>
@@ -562,7 +585,16 @@ function RiwayatTransaksi() {
               <textarea
                 id="purchaseHistory"
                 className="w-full h-20 p-2 text-xs border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent"
-                defaultValue={dataGetOneInvoice?.data?.products.map((product) => `${product.quantity}x ${product.name}`).join('\n')}
+                defaultValue={[
+                  dataGetOneInvoice?.data?.products
+                    .map((product) => `${product.quantity}x ${product.name}`)
+                    .join('\n'),
+                  dataGetOneInvoice?.data?.packets
+                    ?.map((packet) => `${packet.quantity}x ${packet.name}`)
+                    .join('\n')
+                ]
+                  .filter(Boolean)
+                  .join('\n')}
                 disabled
               />
             </div>
@@ -705,14 +737,14 @@ function RiwayatTransaksi() {
                         <span className="flex items-center justify-center border border-secondaryColor rounded-md font-medium w-10 h-6">
                           {PuchaseDetails.quantity}
                         </span>
-                        {/* <button
+                        <button
                           type="button"
                           onClick={() =>
                             handleIncreaseQuantity(PuchaseDetails.id)
                           }
                         >
                           <Plus size={20} />
-                        </button> */}
+                        </button>
                         <button
                           type="button"
                           onClick={() =>
