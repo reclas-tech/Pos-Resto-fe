@@ -439,6 +439,19 @@ export function TransaksiIcon({ size = 24, color = "currentColor" }) {
   );
 }
 
+export function CloseCashierIcon({ size = 24, color = "currentColor" }) {
+  return (
+    <>
+      <svg className="h-5 w-5 flex-shrink-0" width={size} height={size} viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 22.2631C11.304 22.4386 11.6489 22.5311 12 22.5311C12.3511 22.5311 12.696 22.4386 13 22.2631L20 18.2631C20.3037 18.0877 20.556 17.8356 20.7315 17.5319C20.9071 17.2283 20.9996 16.8838 21 16.5331V8.53311C20.9996 8.18238 20.9071 7.83792 20.7315 7.53427C20.556 7.23062 20.3037 6.97847 20 6.80311L13 2.80311C12.696 2.62757 12.3511 2.53516 12 2.53516C11.6489 2.53516 11.304 2.62757 11 2.80311L4 6.80311C3.69626 6.97847 3.44398 7.23062 3.26846 7.53427C3.09294 7.83792 3.00036 8.18238 3 8.53311V16.5331C3.00036 16.8838 3.09294 17.2283 3.26846 17.5319C3.44398 17.8356 3.69626 18.0877 4 18.2631L11 22.2631Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 22.5332V12.5332" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M3.2998 7.5332L11.0028 12.2672C11.3061 12.4416 11.6499 12.5334 11.9998 12.5334C12.3497 12.5334 12.6935 12.4416 12.9968 12.2672L20.6998 7.5332" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M7.5 4.80322L16.5 9.95322" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </>
+  );
+}
+
 export function KeluarIcon({
   size = 24,
   color = "currentColor",

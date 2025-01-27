@@ -19,19 +19,19 @@ import {
 import { ActionSVG } from "@/constants/svgIcons";
 import { format, parseISO } from "date-fns";
 import React, { useRef, useState } from "react";
-import { TransaksiInterface } from "./interface";
-import { useGetTransaksiOne } from "./api";
 import { Label } from "@/components/ui/label";
 import { showAlert2 } from "@/lib/sweetalert2";
 import TableReceiptAdmin from "./struk";
 import { useReactToPrint } from "react-to-print";
+import { CloseCashierInterface } from "./interface";
+import { useGetCloseCashierOne } from "./api";
 
-const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
+const DataTable: React.FC<CloseCashierInterface> = ({ data, currentPage }) => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
 
     // Fetch the data for the selected transaction
-    const { data: dataDetail } = useGetTransaksiOne(selectedTransactionId?.toString() || "");
+    const { data: dataDetail } = useGetCloseCashierOne(selectedTransactionId?.toString() || "");
 
     // Content reference for printing
     const contentRef = useRef<HTMLDivElement>(null);
@@ -68,10 +68,9 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                     <TableHeader className="bg-primaryColor">
                         <TableRow>
                             <TableHead className="w-[60px]">No</TableHead>
-                            <TableHead className="w-[260px]">ID Transaksi/Invoice</TableHead>
-                            <TableHead className="w-[260px]">Tanggal dan Waktu</TableHead>
-                            <TableHead className="w-[260px]">Status</TableHead>
-                            <TableHead className="w-[160px]">Total Harga</TableHead>
+                            <TableHead className="w-[260px]">Nama Kasir</TableHead>
+                            <TableHead className="w-[260px]">Tanggal</TableHead>
+                            <TableHead className="w-[160px]">Total Pemasukan</TableHead>
                             <TableHead className="w-[196px]">Aksi</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -86,27 +85,15 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                         {(currentPage - 1) * 10 + (index + 1)}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {item?.code || "-"}
+                                        {item?.cashier?.name || "-"}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        {item?.created_at
-                                            ? format(parseISO(item.created_at), "dd/MM/yyyy HH:mm")
+                                        {item?.started_at
+                                            ? format(parseISO(item.started_at), "dd/MM/yyyy")
                                             : "-"}
                                     </TableCell>
-                                    <TableCell className="text-center flex justify-center">
-                                        <div
-                                            className={`capitalize ${item?.status === "success"
-                                                ? "bg-secondaryColor"
-                                                : item?.status === "pending"
-                                                    ? "bg-[#FEA026]"
-                                                    : "bg-[#EE1616]"
-                                                } rounded-lg text-xs p-2 w-fit text-white`}
-                                        >
-                                            {item?.status}
-                                        </div>
-                                    </TableCell>
                                     <TableCell className="text-center">
-                                        Rp. {new Intl.NumberFormat('id-ID').format(item?.price_sum || 0)}
+                                        Rp. {new Intl.NumberFormat('id-ID').format(item?.income || 0)}
                                     </TableCell>
                                     {/* aksi */}
                                     <TableCell className="flex m-auto justify-center text-secondaryColor dark:text-white">
@@ -134,101 +121,76 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                             onDetail={printReceiptDetail}
                                                             title="Detail Riwayat Transaksi"
                                                             showCancelButton={true}
-                                                            showCetakButton={dataDetail?.data?.status !== "success" ? false : true}
+                                                            showCetakButton={true}
                                                             onPrint={() => { }}
                                                         >
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
                                                                     <Label htmlFor="idTransaction">
-                                                                        ID Transaksi/Invoice
+                                                                        Nama Kasir
                                                                     </Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                                                                        {dataDetail?.data?.code || "-"}
+                                                                        {dataDetail?.data[0]?.cashier_name || "-"}
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col w-full">
-                                                                    <Label htmlFor="noTable">Nomor Meja</Label>
+                                                                    <Label htmlFor="noTable">Tanggal Kasir Mulai</Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                                                                        {dataDetail?.data?.tables?.join(", ")}
+                                                                        {dataDetail?.data[0]?.start_at
+                                                                            ? format(parseISO(dataDetail?.data[0]?.start_at), "dd/MM/yyyy, HH:mm:ss")
+                                                                            : "-"}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
                                                                     <Label htmlFor="dateTimeTransaction">
-                                                                        Tanggal dan Waktu Transaksi
+                                                                        Tanggal
                                                                     </Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                                                                        {dataDetail?.data?.created_at
-                                                                            ? format(parseISO(dataDetail?.data?.created_at), "dd/MM/yyyy HH:mm")
+                                                                        {dataDetail?.data[0]?.date
+                                                                            ? format(parseISO(dataDetail?.data[0]?.date), "dd/MM/yyyy")
                                                                             : "-"}
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col w-full">
-                                                                    <Label htmlFor="totalPrice">Total Harga</Label>
+                                                                    <Label htmlFor="totalPrice">Tanggal Kasir Tutup</Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                                                                        Rp. {new Intl.NumberFormat('id-ID').format(dataDetail?.data?.price_sum || 0)}
+                                                                        {dataDetail?.data[0]?.end_at
+                                                                            ? format(parseISO(dataDetail?.data[0]?.end_at), "dd/MM/yyyy, HH:mm:ss")
+                                                                            : "-"}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
-                                                                    <Label htmlFor="name">Nama Kasir</Label>
+                                                                    <Label htmlFor="name">Setoran Kasir</Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
-                                                                        {dataDetail?.data?.cashier || "-"}
+                                                                        Rp. {new Intl.NumberFormat('id-ID').format(dataDetail?.data[0]?.cashier_deposit || 0)}
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex flex-col w-full">
                                                                     <Label htmlFor="paymentMethod">
-                                                                        Metode Pembayaran
+                                                                        Setoran Tutup Kasir
                                                                     </Label>
                                                                     <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center capitalize">
-                                                                        {dataDetail?.data?.payment || "-"}
+                                                                        Rp. {new Intl.NumberFormat('id-ID').format(dataDetail?.data[0]?.cash_on_hand_end || 0)}
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex gap-4">
+                                                            <div className="flex mb-4 gap-4 dark:text-white">
                                                                 <div className="flex flex-col w-full">
-                                                                    <Label htmlFor="purchaseHistory">
-                                                                        Rincian Pembelian
-                                                                    </Label>
-                                                                    <div className="w-full h-24 p-2 text-sm border dark:border-none rounded-md text-black/50 dark:text-white bg-white dark:bg-transparent overflow-auto">
-                                                                        <ul className="">
-                                                                            {dataDetail?.data?.products?.map((product, index) => (
-                                                                                <li key={index}>
-                                                                                    {product.quantity}x {product.name}
-                                                                                </li>
-                                                                            ))}
-                                                                            {dataDetail?.data?.packets?.map((product, index) => (
-                                                                                <li key={index}>
-                                                                                    {product.quantity}x {product.name}
-                                                                                </li>
-                                                                            ))}
-                                                                        </ul>
+                                                                    <Label htmlFor="name">Selisih</Label>
+                                                                    <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center">
+                                                                        Rp. {new Intl.NumberFormat('id-ID').format(dataDetail?.data[0]?.difference || 0)}
                                                                     </div>
                                                                 </div>
-                                                                {/* kanan */}
                                                                 <div className="flex flex-col w-full">
-                                                                    <div
-                                                                        className={`capitalize mb-2 ${dataDetail?.data?.type === "dine in"
-                                                                            ? "bg-primaryColor"
-                                                                            : "bg-secondaryColor"
-                                                                            } rounded-lg text-xs p-2 w-fit text-white`}
-                                                                    >
-                                                                        {dataDetail?.data?.type || "-"}
-                                                                    </div>
-                                                                    <Label htmlFor="statusPurchase">
-                                                                        Status Pembayaran
+                                                                    <Label htmlFor="paymentMethod">
+                                                                        Total Pemasukan
                                                                     </Label>
-                                                                    <div
-                                                                        className={`capitalize ${dataDetail?.data?.status === "success"
-                                                                            ? "bg-secondaryColor"
-                                                                            : dataDetail?.data?.status === "pending"
-                                                                                ? "bg-[#FEA026]"
-                                                                                : "bg-[#EE1616]"
-                                                                            } rounded-lg text-xs p-2 w-fit text-white`}
-                                                                    >
-                                                                        {dataDetail?.data?.status || "-"}
+                                                                    <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center capitalize">
+                                                                        Rp. {new Intl.NumberFormat('id-ID').format(dataDetail?.data[0]?.total || 0)}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -242,9 +204,8 @@ const DataTable: React.FC<TransaksiInterface> = ({ data, currentPage }) => {
                                                     </div>
 
                                                     <button
-                                                        className={`text-black ${item?.status !== "success" ? "hover:text-gray-500" : "hover:text-primaryColor"}  dark:text-white w-full text-left`}
+                                                        className={`text-black hover:text-primaryColor dark:text-white w-full text-left`}
                                                         onClick={() => printReceipt(item.id)}
-                                                        disabled={item?.status !== "success"}
                                                     >
                                                         Print
                                                     </button>
