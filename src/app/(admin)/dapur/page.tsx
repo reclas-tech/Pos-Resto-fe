@@ -120,7 +120,7 @@ function KitchenPage() {
               <Input
                 type="text"
                 id="ip"
-                placeholder="Nama Dapur"
+                placeholder="Alamat IP"
                 className="w-full"
                 {...register("ip")}
               />
