@@ -334,11 +334,10 @@ function SelectTable() {
           {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
             <button
               key={filter}
-              className={`rounded-3xl text-sm p-1.5 px-3 border ${
-                activeFilter === filter
-                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                  : ""
-              }`}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === filter
+                ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                : ""
+                }`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -369,15 +368,13 @@ function SelectTable() {
           title="Detail Pesanan"
           classNameDialogFooter="p-4 border-t flex md:justify-end"
           showKeluarButton={true}
-          showCetakButton={true}
+          showPrintButton={true}
           showBuyyButton={true}
           classNameDialogHeader="border-none mt-8"
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
-          onPrint={() => {
-            // Ini handle print sahabat
-          }}
+          onPrint={() => handlePrint()}
         >
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
@@ -401,11 +398,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceDineIn?.data?.created_at
                     ? new Date(
-                        dataInvoiceDineIn.data.created_at
-                      ).toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) + " WIB"
+                      dataInvoiceDineIn.data.created_at
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -529,11 +526,11 @@ function SelectTable() {
                     <div>
                       {dataInvoiceDineIn?.data?.created_at
                         ? new Date(
-                            dataInvoiceDineIn.data.created_at
-                          ).toLocaleTimeString("id-ID", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }) + " WIB"
+                          dataInvoiceDineIn.data.created_at
+                        ).toLocaleTimeString("id-ID", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) + " WIB"
                         : "-"}
                     </div>
                   </div>
@@ -689,9 +686,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -737,9 +733,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -790,12 +785,13 @@ function SelectTable() {
           title="Detail Pesanan"
           classNameDialogFooter="p-4 border-t flex md:justify-end"
           showKeluarButton={true}
-          showCetakButton={true}
+          showPrintButton={true}
           showBuyyButton={!(dataInvoiceTakeAway?.data?.status === "success")}
           classNameDialogHeader="border-none mt-8"
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
+          onPrint={() => handlePrint()}
         >
           {dataInvoiceTakeAway?.data?.status === "sudah bayar" && (
             <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
@@ -822,11 +818,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceTakeAway?.data?.created_at
                     ? new Date(
-                        dataInvoiceTakeAway.data.created_at
-                      ).toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) + " WIB"
+                      dataInvoiceTakeAway.data.created_at
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -950,11 +946,11 @@ function SelectTable() {
                   <div>
                     {dataInvoiceTakeAway?.data?.created_at
                       ? new Date(
-                          dataInvoiceTakeAway.data.created_at
-                        ).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }) + " WIB"
+                        dataInvoiceTakeAway.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
                       : "-"}
                   </div>
                 </div>
@@ -1099,9 +1095,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1147,9 +1142,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1371,9 +1365,6 @@ function SelectTable() {
           setIsPaymentCashModalOpen(false);
           setIsPaymentModalOpenDineIn(false);
           setIsPaymentModalOpenTakeAway(false);
-          // if (typeof window !== "undefined") {
-          //   window.location.reload();
-          // }
         }}
         onSubmitTrigger={() => {
           handlePrint();

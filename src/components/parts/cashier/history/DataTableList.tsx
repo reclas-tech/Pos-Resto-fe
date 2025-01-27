@@ -10,6 +10,18 @@ interface DataTableListProps extends HistoryListApiResponse {
 }
 
 const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) => {
+
+    // cek data kosong
+    const isDataEmpty = data.length === 0;
+
+    if (isDataEmpty) {
+        return (
+            <section className="text-center text-gray-500 mt-4">
+                Data Tidak DItemukan
+            </section>
+        );
+    }
+
     return (
         <>
             <section className="grid grid-cols-3 gap-4 mt-4">
