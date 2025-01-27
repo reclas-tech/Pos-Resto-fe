@@ -2,6 +2,7 @@
 
 import {
   BerandaIcon,
+  CloseCashierIcon,
   DapurIcon,
   KaryawanIcon,
   KategoriIcon,
@@ -82,6 +83,15 @@ export const adminSidebarIcons = [
     icon: (
       <>
         <TransaksiIcon size={20} color="currentColor" />
+      </>
+    ),
+  },
+  {
+    label: "Penutupan Kasir",
+    href: "/tutup-kasir",
+    icon: (
+      <>
+        <CloseCashierIcon size={20} color="currentColor" />
       </>
     ),
   },
