@@ -1,3 +1,5 @@
+"use client";
+import { format, parseISO } from "date-fns";
 import { Ref } from "react";
 
 type ReceiptData = {
@@ -6,17 +8,18 @@ type ReceiptData = {
   start_at: string;
   end_at: string | null;
   cash_on_hand_start: number;
-  income: number;
   cash_on_hand_end: number | null;
+  cashier_deposit: number;
+  income: number;
+  difference: number;
   transaction_count: number;
-  success_inv: number;
-  failed_inv: number;
-  out_inv: number;
   cash: number;
   debit: number;
   qris: number;
   total: number;
 };
+
+//
 
 type CloseCashierReceiptProps = {
   data?: {
@@ -40,11 +43,20 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
   if (!receiptData) return null;
 
   return (
-    <div ref={ref} id="struk" className="bg-white p-[2%] text-[10px] w-full">
+    <div
+      ref={ref}
+      id="struk"
+      className="bg-white p-[2%] text-[10px] max-w-[300px]"
+    >
       <p className="text-center uppercase">Tutup Kasir</p>
       <div className="text-left mt-6 grid grid-cols-2 py-2 gap-1">
         <p>Tanggal</p>
-        <p>: {receiptData.date}</p>
+        <p>
+          :
+          {receiptData.date
+            ? format(parseISO(receiptData.date), "dd/MM/yyyy")
+            : "-"}
+        </p>
         <p>Cashier</p>
         <p>: {receiptData.cashier_name}</p>
         <p className="mt-3">Shift Print</p>
@@ -56,9 +68,12 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
             <p>Start Kasir</p>
             <p>:</p>
           </span>
-          <span className="w-[60%] flex justify-between">
-            <p className="ml-[3%]">Rp</p>
-            <p>{safeToLocaleString(receiptData.cash_on_hand_start)}</p>
+          <span className="w-[60%] flex justify-end">
+            <p>
+              {receiptData.start_at
+                ? format(parseISO(receiptData.start_at), "dd/MM/yyyy, HH:mm:ss")
+                : "-"}
+            </p>
           </span>
         </div>
         <div className="flex w-full">
@@ -66,9 +81,12 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
             <p>End Kasir</p>
             <p>:</p>
           </span>
-          <span className="w-[60%] flex justify-between">
-            <p className="ml-[3%]">Rp</p>
-            <p>{safeToLocaleString(receiptData.cash_on_hand_end)}</p>
+          <span className="w-[60%] flex justify-end">
+            <p>
+              {receiptData.end_at
+                ? format(parseISO(receiptData.end_at), "dd/MM/yyyy, HH:mm:ss")
+                : "-"}
+            </p>
           </span>
         </div>
         <div className="flex w-full">
@@ -107,7 +125,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
             <p>:</p>
           </span>
           <span className="w-[60%] text-end">
-            <p>{receiptData.transaction_count}</p>
+            <p>{safeToLocaleString(receiptData.transaction_count)}</p>
           </span>
         </div>
         <p className="pt-4">Pembayaran Tunai</p>
@@ -116,42 +134,52 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
       <div className="border-y mt-1 space-y-1 border-dashed border-black py-2">
         <div className="flex w-full">
           <span className="w-[40%] flex justify-between">
-            <p>Saldo Akhir</p>
+            <p>Saldo Awal</p>
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
+            <p className="ml-[3%]">Rp</p>
+            <p>{safeToLocaleString(receiptData.cash_on_hand_start)}</p>
+          </span>
+        </div>
+        <div className="flex w-full">
+          <span className="w-[40%] flex justify-between">
+            <p>Nota Tunai</p>
+            <p>:</p>
+          </span>
+          <span className="w-[60%] flex justify-between border-b pb-1 border-dashed border-black">
+            <p className="ml-[3%]">Rp</p>
+            <p>{safeToLocaleString(receiptData.cash)}</p>
+          </span>
+        </div>
+        <div className="flex w-full">
+          <span className="w-[40%] flex justify-between">
+            <p>Setoran Kasir</p>
+            <p>:</p>
+          </span>
+          <span className="w-[60%] flex justify-between">
+            <p className="ml-[3%]">Rp</p>
+            <p>{safeToLocaleString(receiptData.cashier_deposit)}</p>
+          </span>
+        </div>
+        <div className="flex w-full">
+          <span className="w-[40%] flex justify-between">
+            <p>Setoran Tutup Kasir</p>
+            <p>:</p>
+          </span>
+          <span className="w-[60%] flex justify-between border-b pb-1 border-dashed border-black">
             <p className="ml-[3%]">Rp</p>
             <p>{safeToLocaleString(receiptData.cash_on_hand_end)}</p>
           </span>
         </div>
         <div className="flex w-full">
           <span className="w-[40%] flex justify-between">
-            <p>Nota Berhasil</p>
+            <p>Selisih</p>
             <p>:</p>
           </span>
           <span className="w-[60%] flex justify-between">
             <p className="ml-[3%]">Rp</p>
-            <p>{safeToLocaleString(receiptData.success_inv)}</p>
-          </span>
-        </div>
-        <div className="flex w-full">
-          <span className="w-[40%] flex justify-between">
-            <p>Nota Gagal</p>
-            <p>:</p>
-          </span>
-          <span className="w-[60%] flex justify-between">
-            <p className="ml-[3%]">Rp</p>
-            <p>{safeToLocaleString(receiptData.failed_inv)}</p>
-          </span>
-        </div>
-        <div className="flex w-full">
-          <span className="w-[40%] flex justify-between">
-            <p>Nota Keluar</p>
-            <p>:</p>
-          </span>
-          <span className="w-[60%] flex justify-between">
-            <p className="ml-[3%]">Rp</p>
-            <p>{safeToLocaleString(receiptData.out_inv)}</p>
+            <p>{safeToLocaleString(receiptData.difference)}</p>
           </span>
         </div>
         <p className="pt-4">Rincian Pemasukan</p>
@@ -190,7 +218,7 @@ const CloseCashierReceipt: React.FC<CloseCashierReceiptProps> = ({
         </div>
       </div>
 
-      <div className="border-t border-dashed gap-1 border-black py-2">
+      <div className=" py-2">
         <div className="flex w-full">
           <span className="w-[40%] flex justify-between">
             <p>Total</p>

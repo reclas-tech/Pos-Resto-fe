@@ -27,7 +27,11 @@ const TableReceipt: React.FC<TableReceiptProps> = ({ data, ref }) => {
   if (!data) return null;
 
   return (
-    <div id="struk" className="bg-white p-[2%] text-[10px] w-full" ref={ref}>
+    <div
+      id="struk"
+      className="bg-white p-[2%] text-[10px] w-full max-w-[300px]"
+      ref={ref}
+    >
       <p className="uppercase text-center font-medium">Checker</p>
 
       <div className="text-left mt-6 grid grid-cols-2 pb-2 border-b border-dashed border-black">

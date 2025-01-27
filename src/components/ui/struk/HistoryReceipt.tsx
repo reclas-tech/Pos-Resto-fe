@@ -52,7 +52,7 @@ const transformDataReceiptToData = (
 
   return {
     id,
-    no_transaksi: code || "N/A" , // Optional chaining
+    no_transaksi: code || "N/A", // Optional chaining
     time: new Date(created_at).toLocaleString(),
     customer,
     table: tables.length > 0 ? tables.join(", ") : "-",
@@ -75,7 +75,7 @@ const transformDataReceiptToData = (
       packets.reduce((sum, packet) => sum + (packet.quantity || 0), 0),
     sub_total: `Rp ${Math.max(price_sum - tax, 0).toLocaleString()}`,
     total_tagihan: `Rp ${(price_sum || 0).toLocaleString()}`,
-    cash: "-",
+    cash: `Rp ${(price_sum || 0).toLocaleString()}`,
     total_bayar: `Rp ${(price_sum || 0).toLocaleString()}`,
   };
 };
