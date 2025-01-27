@@ -73,7 +73,9 @@ const DataTable: React.FC<ProductInterface> = ({
             <TableRow>
               <TableHead className="w-[60px]">No</TableHead>
               <TableHead className="w-[260px]">Nama Produk</TableHead>
+              <TableHead className="w-[260px]">Kategori</TableHead>
               <TableHead className="w-[260px]">Harga</TableHead>
+              <TableHead className="w-[260px]">Hpp</TableHead>
               <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
@@ -92,7 +94,17 @@ const DataTable: React.FC<ProductInterface> = ({
                     {item?.name ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {item?.price ?? "-"}
+                    {item?.category_id ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.price
+                      ? `Rp ${item.price.toLocaleString("id-ID")}`
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.price
+                      ? `Rp ${item.cogp.toLocaleString("id-ID")}`
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {item?.stock ?? "-"}

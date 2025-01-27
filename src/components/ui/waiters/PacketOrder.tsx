@@ -77,7 +77,9 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
           </div>
           <div className="text-[10px]  text-[#141414CC]">
             <p className="italic font-semibold">Catatan :</p>
-            <p>{note !== "" ? note : "Tidak Ada"}</p>
+            <p className="whitespace-pre-line">
+              {note !== "" ? note : "Tidak Ada"}
+            </p>
           </div>
         </div>
       </div>
