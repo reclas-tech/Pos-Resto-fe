@@ -81,6 +81,7 @@ const DataTablePacket: React.FC<PacketInterface> = ({
               <TableHead className="w-[60px]">No</TableHead>
               <TableHead className="w-[260px]">Nama Menu</TableHead>
               <TableHead className="w-[260px]">Harga</TableHead>
+              <TableHead className="w-[260px]">Hpp</TableHead>
               <TableHead className="w-[260px]">Stok</TableHead>
               <TableHead className="w-[160px]">Aksi</TableHead>
             </TableRow>
@@ -99,7 +100,14 @@ const DataTablePacket: React.FC<PacketInterface> = ({
                     {item?.name ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {item?.price ?? "-"}
+                    {item?.price
+                      ? `Rp ${item.price.toLocaleString("id-ID")}`
+                      : "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item?.cogp
+                      ? `Rp ${item.cogp.toLocaleString("id-ID")}`
+                      : "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {item?.stock ?? "-"}
