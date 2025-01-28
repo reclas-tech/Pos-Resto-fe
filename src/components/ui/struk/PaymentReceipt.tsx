@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import logo from "@assets/splashScreen.png";
 import { Ref } from "react";
@@ -73,9 +74,9 @@ const transformDataReceiptToData = (
       products.reduce((sum, product) => sum + product.quantity, 0) +
       packets.reduce((sum, packet) => sum + packet.quantity, 0),
     sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
-    total_tagihan: `Rp ${price_sum.toLocaleString()}`,
-    cash: `Rp ${price_sum.toLocaleString()}`, // This field can be updated if cash data is available.
-    total_bayar: `Rp ${price_sum.toLocaleString()}`,
+    total_tagihan: `Rp ${(price_sum || 0).toLocaleString()}`,
+    cash: `Rp ${(price_sum || 0).toLocaleString()}`, // This field can be updated if cash data is available.
+    total_bayar: `Rp ${(price_sum || 0).toLocaleString()}`,
   };
 };
 
@@ -87,7 +88,11 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
   if (!data) return null;
 
   return (
-    <div id="struk" className="bg-white p-[2%] text-[10px] w-full" ref={ref}>
+    <div
+      id="struk"
+      className="bg-white p-[2%] text-[10px] w-full "
+      ref={ref}
+    >
       <div className="flex justify-center">
         <div className="w-[25%] h-[25%]">
           <Image
