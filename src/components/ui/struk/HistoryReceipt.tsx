@@ -88,14 +88,28 @@ const HistoryReceipt: React.FC<HistoryReceiptProps> = ({
   if (!data) return null;
 
   return (
-    <div id="struk" className="bg-white p-[2%] text-[10px] w-full" ref={ref}>
+    <div
+      id="struk"
+      className="bg-white p-[2%] text-[10px] w-full max-w-[300px]"
+      ref={ref}
+    >
       <div className="flex justify-center">
-        <div className="w-[25%] h-[25%]">
+        {/* <div className="w-[25%] h-[25%]">
           <Image
             src={logo}
             alt="logo"
             className="w-full h-full grayscale"
             unoptimized
+          />
+        </div> */}
+        <div className="relative w-20 h-20">
+          <Image
+            src={logo}
+            alt="logo"
+            className="grayscale object-contain"
+            fill
+            sizes="80px"
+            priority
           />
         </div>
       </div>
