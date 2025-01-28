@@ -30,8 +30,8 @@ import { mutate } from "swr";
 import { putSubmitKitchen, useGetKitchenOne } from "./api";
 import { KitchenEdit, KitchenInterface } from "./interface";
 // import { tableSchema } from "./validation";
-import { kitchenSchema } from "@/validations";
 import { z } from "zod";
+import { kitchenSchema } from "./validation";
 
 const DataTableKitchen: React.FC<KitchenInterface> = ({
   data,
