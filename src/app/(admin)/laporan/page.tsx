@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
+import { id } from 'date-fns/locale';
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -71,8 +72,6 @@ function LaporanAdminPage() {
     </div>
   ) : null;
 
-  console.log("lalalalalalala", dataReport?.data?.charity_percent)
-
   const netProfit = (
     (dataReport?.data?.income ?? 0) -
     (dataReport?.data?.tax ?? 0) -
@@ -93,21 +92,16 @@ function LaporanAdminPage() {
   ) || 0;
 
   const renderPeriod = () => {
-    // Jika startDate dan endDate dipilih
     if (startDate && endDate) {
-      return `${format(new Date(startDate), "d MMMM yyyy")} - ${format(new Date(endDate), "d MMMM yyyy")}`;
+      return `${format(new Date(startDate), "d MMMM yyyy", { locale: id })} - ${format(new Date(endDate), "d MMMM yyyy", { locale: id })}`;
     }
-
-    // Jika bulan dan tahun dipilih
+  
     if (selectedMonth && selectedYear) {
       const monthName = new Date(`${selectedYear}-${selectedMonth}-01`).toLocaleString('id-ID', { month: 'long' });
       return `${monthName} ${selectedYear}`;
     }
-
-    // Jika startDate atau endDate tidak dipilih dan bulan/tahun juga tidak dipilih, tampilkan periode default (misalnya tanggal saat ini)
-    else {
-      return `${format(new Date(), "d MMMM yyyy")}`;
-    }
+  
+    return `${format(new Date(), "d MMMM yyyy", { locale: id })}`;
   };
 
   const downloadPDF = async () => {
@@ -344,23 +338,46 @@ function LaporanAdminPage() {
                       </div>
                     </div>
 
-                    {/* Financial Summary */}
+                    {/* Summary */}
+                    <div className="space-y-4">
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-black font-bold text-lg">
+                        <div>TOTAL PENJUALAN</div>
+                        <div>Rp. {netProfit}</div>
+                      </div>
+                    </div>
+
+                    {/* Financial Summary Bruto */}
                     <div className="space-y-4">
                       <div className="border border-dashed border-black/50 mt-8"></div>
                       <div className="flex justify-between text-[#707275]">
-                        <div>Total Penjualan</div>
+                        <div>Total Penjualan (Tanpa Pajak)</div>
                         <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
                       </div>
+                       {/* This is the charity amount display */}
+                       {charityDisplay}
                       <div className="flex justify-between text-[#707275]">
                         <div>Potongan PPN/PB {dataReport?.data?.tax_percent}%</div>
                         <div>Rp. {dataReport?.data?.tax.toLocaleString()}</div>
+                      </div>
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-black font-bold text-lg">
+                        <div>TOTAL PENJUALAN BRUTO</div>
+                        <div>Rp. {netProfit}</div>
+                      </div>
+                    </div>
+
+                    {/* Financial Summary Laba Bersih */}
+                    <div className="space-y-4">
+                      <div className="border border-dashed border-black/50 mt-8"></div>
+                      <div className="flex justify-between text-[#707275]">
+                        <div>Total Penjualan (Tanpa Pajak)</div>
+                        <div>Rp. {dataReport?.data?.income.toLocaleString()}</div>
                       </div>
                       <div className="flex justify-between text-[#707275]">
                         <div>Potongan Harga Pokok Penjualan (HPP) </div>
                         <div>Rp. {dataReport?.data?.cogp.toLocaleString()}</div>
                       </div>
-                      {/* This is the charity amount display */}
-                      {charityDisplay}
                       <div className="border border-dashed border-black/50 mt-8"></div>
                       <div className="flex justify-between text-black font-bold text-lg">
                         <div>TOTAL LABA BERSIH</div>
