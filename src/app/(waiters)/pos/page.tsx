@@ -574,33 +574,34 @@ function PosPage() {
         }
       );
 
-      // Add this right after
       await fetchInvoice(response?.data?.data.invoice_id);
 
-      // Show different alerts based on order type
-      if (customerOrder?.type === "dine in") {
-        showAlertDineIn({
-          message: "Pesanan berhasil!",
-          onConfirm: () => {
-            // Reset states only after confirmation for dine in
-            printReceipt();
-            setOrderInvoice(null);
-          },
-        });
-        setProductOrder([]);
-        setPacketOrder([]);
-        setCustomerOrder(null);
-        setSelectedTables([]);
-        resetOrder();
-      } else {
-        showAlert2("success", response?.data?.message);
-        // Reset states immediately for other types
+      const resetStates = () => {
         setProductOrder([]);
         setPacketOrder([]);
         setCustomerOrder(null);
         setSelectedTables([]);
         resetOrder();
         setOrderInvoice(null);
+      };
+
+      // Show different alerts based on order type
+      if (customerOrder?.type === "dine in") {
+        if (response?.data?.data.checker_status === false) {
+          showAlertDineIn({
+            message: response?.data?.message,
+            onConfirm: () => {
+              printReceipt();
+              resetStates();
+            },
+          });
+        } else {
+          resetStates();
+          showAlert2("success", response?.data?.message);
+        }
+      } else {
+        resetStates();
+        showAlert2("success", response?.data?.message);
       }
     } catch (error: any) {
       const errorMessage =
@@ -619,9 +620,9 @@ function PosPage() {
       <AuthGuardPOS>
         <div className="flex w-full h-screen">
           <div className="hidden">
-             <DarkModeComponents />
+            <DarkModeComponents />
           </div>
-         
+
           <div className="w-[65%] h-full  ">
             {/* Header */}
             <div className=" flex justify-between items-center px-2 py-4">
