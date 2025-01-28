@@ -53,22 +53,23 @@ interface Kitchen {
 }
 
 interface ReportData {
-  month: string;
-  year: string;
-  start: string | null;
-  end: string | null;
-  income: number; 
-  tax: number; 
-  cogp: number;
-  charity: number | null;
-  profit: number;
-  tax_percent: number;
-  charity_percent: number;
-  transaction: number;
-  transaction_success: number;
-  transaction_failed: number;
-  avg_income: number;
-  product_count: number;
+  month: string; // Bulan dalam format MM
+  year: string; // Tahun dalam format YYYY
+  start: string | null; // Tanggal mulai, bisa null
+  end: string | null; // Tanggal akhir, bisa null
+  income: number; // Total pemasukan
+  charity: number; // Total donasi/amal
+  tax: number; // Pajak
+  bruto: number; // Pendapatan bruto
+  cogp: number; // Cost of Goods Produced (Biaya produksi barang)
+  profit: number; // Laba bersih
+  tax_percent: number; // Persentase pajak
+  charity_percent: number; // Persentase donasi/amal
+  transaction: number; // Total transaksi
+  transaction_success: number; // Jumlah transaksi berhasil
+  transaction_failed: number; // Jumlah transaksi gagal
+  avg_income: number; // Rata-rata pemasukan per transaksi
+  product_count: number; // Jumlah produk yang terjual
   categories: Category[];
   kitchens: Kitchen[];
 }

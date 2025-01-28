@@ -93,7 +93,7 @@ function SelectTable() {
     activeFilter === "Semua Meja" ? "" : activeFilter.toLowerCase();
 
   // Data fetching
-  const { data } = useGetTableList(status);
+  const { data, mutate: mutateGetTableList } = useGetTableList(status);
 
   // Handle count available and filled
   const availableCount =
@@ -111,7 +111,8 @@ function SelectTable() {
   };
 
   // Data fetching
-  const { data: takeawayLIst } = useGetTakeawayList(status);
+  const { data: takeawayLIst, mutate: mutateGetTakeAwayList } =
+    useGetTakeawayList(status);
 
   // Handle count Takeaway
   const availableCountTakeawayList = takeawayLIst?.data?.length || 0;
@@ -157,6 +158,12 @@ function SelectTable() {
     } else {
       return change >= 0 ? formatRupiah(change) : "Rp 0";
     }
+  };
+
+  const isButtonDisabled = () => {
+    const totalAmount = dataInvoiceDineIn?.data?.price_sum || 0;
+    const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
+    return paymentAmount < totalAmount;
   };
 
   // OnSubmit Cash Payment
@@ -246,6 +253,8 @@ function SelectTable() {
         setIsValidationModalCash(false);
       }
     }
+    mutateGetTableList();
+    mutateGetTakeAwayList();
   };
 
   // GET ONE SLUG STRUK
@@ -334,10 +343,11 @@ function SelectTable() {
           {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
             <button
               key={filter}
-              className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === filter
-                ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                : ""
-                }`}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${
+                activeFilter === filter
+                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                  : ""
+              }`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -398,11 +408,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceDineIn?.data?.created_at
                     ? new Date(
-                      dataInvoiceDineIn.data.created_at
-                    ).toLocaleTimeString("id-ID", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }) + " WIB"
+                        dataInvoiceDineIn.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -526,11 +536,11 @@ function SelectTable() {
                     <div>
                       {dataInvoiceDineIn?.data?.created_at
                         ? new Date(
-                          dataInvoiceDineIn.data.created_at
-                        ).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }) + " WIB"
+                            dataInvoiceDineIn.data.created_at
+                          ).toLocaleTimeString("id-ID", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }) + " WIB"
                         : "-"}
                     </div>
                   </div>
@@ -686,8 +696,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -733,8 +744,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -818,11 +830,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceTakeAway?.data?.created_at
                     ? new Date(
-                      dataInvoiceTakeAway.data.created_at
-                    ).toLocaleTimeString("id-ID", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }) + " WIB"
+                        dataInvoiceTakeAway.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -946,11 +958,11 @@ function SelectTable() {
                   <div>
                     {dataInvoiceTakeAway?.data?.created_at
                       ? new Date(
-                        dataInvoiceTakeAway.data.created_at
-                      ).toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) + " WIB"
+                          dataInvoiceTakeAway.data.created_at
+                        ).toLocaleTimeString("id-ID", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) + " WIB"
                       : "-"}
                   </div>
                 </div>
@@ -1095,8 +1107,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1142,8 +1155,9 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
-                              }`}
+                            className={`w-full h-full ${
+                              index === 4 ? "bg-white" : "bg-emerald-800"
+                            }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1282,7 +1296,12 @@ function SelectTable() {
                 setIsValidationModalCash(true);
               }}
               type="button"
-              className="w-full h-9 sm:h-9 md:h-10 rounded-md bg-[#114F44] hover:bg-[#104239] text-white font-medium text-sm sm:text-sm md:text-base"
+              className={`w-full h-9 sm:h-9 md:h-10 rounded-md ${
+                isButtonDisabled()
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#114F44] hover:bg-[#104239] text-white"
+              } font-medium text-sm sm:text-sm md:text-base`}
+              disabled={isButtonDisabled()}
             >
               Selesai
             </button>
