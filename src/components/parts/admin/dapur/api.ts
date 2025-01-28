@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate } from "swr";
 import { KitchenOne } from "./interface";
-import { KitchenSchemaValues } from "@/validations";
+import { KitchenChackerSchemaValues, KitchenSchemaValues } from "./validation";
 
 // Get Meja
 const useGetKitchen = (currentPage: number, search: string, limit: number) => {
@@ -144,4 +144,75 @@ const putSubmitKitchen = (id: string) => {
   return { handlePostSubmit };
 };
 
-export { postSubmitKitchen, putSubmitKitchen, useGetKitchen, useGetKitchenOne };
+// Get Checker
+const useGetChecker = () => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `/printer/admin/get`,
+    () =>
+      axiosPrivate
+        .get(`/printer/admin/get`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
+// Update Checker
+const putSubmitChecker = () => {
+  const navigate = useRouter(); // Pindahkan ke dalam fungsi
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  // Menggunakan mutate dari SWR untuk menyegarkan data setelah mutasi
+  const handleEditSubmit = async (
+    data: KitchenChackerSchemaValues,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    url: string, // URL untuk mutasi dan pemanggilan data
+    setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    reset: any
+  ) => {
+    const accessToken = Cookies.get("access_token");
+
+    try {
+      setLoading(true);
+      // Melakukan PUT request menggunakan axios
+      const response = await axiosPrivate.put(`/printer/admin/update`, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      showAlert2("success", response?.data?.message);
+      navigate.push("/dapur");
+      reset(); // Reset formulir
+      setIsCreateModalOpen(false);
+      // Setelah mutasi berhasil, lakukan mutate untuk menyegarkan data di cache SWR
+      mutate(url); // Mutate menggunakan URL untuk menyegarkan data yang diambil menggunakan SWR
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal menambahkan data!";
+      showAlert2("error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { handleEditSubmit };
+};
+
+export {
+  postSubmitKitchen,
+  putSubmitKitchen,
+  useGetKitchen,
+  useGetKitchenOne,
+  putSubmitChecker,
+  useGetChecker,
+};

@@ -42,13 +42,6 @@ export const newPasswordSchema = z
   });
 export type NewPasswordValues = z.infer<typeof newPasswordSchema>;
 
-// Validation Kitchen Management
-export const kitchenSchema = z.object({
-  name: z.string().min(1, { message: "Nama dapur tidak boleh kosong!" }),
-  ip: z.string().min(1, { message: "Alamat IP dapur tidak boleh kosong!" }),
-});
-export type KitchenSchemaValues = z.infer<typeof kitchenSchema>;
-
 // Validation Table Management
 export const tableSchema = z.object({
   name: z.string().min(1, { message: "Nama meja tidak boleh kosong!" }),
