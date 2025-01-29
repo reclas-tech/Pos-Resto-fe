@@ -50,7 +50,7 @@ function LaporanAdminPage() {
     endDate?.toISOString() || "",
     selectedMonth || "",
     selectedYear || "",
-    "1000"
+    includeCharity
   );
 
   const { data: years } = useGetYears();
