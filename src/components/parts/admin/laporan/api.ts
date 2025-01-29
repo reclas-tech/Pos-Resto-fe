@@ -83,18 +83,22 @@ const useGetReport = (
   end: string,
   month: string,
   year: string,
-  charity: string
+  charity: boolean
 ) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
 
   const { data, error, mutate, isValidating, isLoading } =
     useSWR<useGetReportApiResponse>(
-      `/report/admin/get?start=${start}&end=${end}&month=${month}&year=${year}&charity=${charity}`,
+      `/report/admin/get?start=${start}&end=${end}&month=${month}&year=${year}&charity=${
+        charity || ""
+      }`,
       () =>
         axiosPrivate
           .get(
-            `/report/admin/get?start=${start}&end=${end}&month=${month}&year=${year}&charity=${charity}`,
+            `/report/admin/get?start=${start}&end=${end}&month=${month}&year=${year}&charity=${
+              charity || ""
+            }`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
