@@ -73,7 +73,7 @@ export default function RootLayoutDashboard({
                 />
                 <div className="flex flex-col justify-center">
                   <div className="text-sm font-bold">Admin</div>
-                  <div className="text-xs">Warorng Aceh Garuda</div>
+                  <div className="text-xs">Waroeng Aceh Garuda</div>
                 </div>
               </div>
             </SidebarBody>
