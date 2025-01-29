@@ -133,8 +133,10 @@ const DataTakeawayLIst: React.FC<DataTakeawayListProps> = ({
             );
           })
         ) : (
-          <div className="text-center text-gray-500 mt-4">
-            Data tidak tersedia
+          <div className="col-span-4 flex justify-center items-center mt-8">
+            <p className="text-xs text-gray-500">
+              Takeaway Tidak Ditemukan
+            </p>
           </div>
         )}
       </div>

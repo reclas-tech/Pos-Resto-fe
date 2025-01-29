@@ -412,7 +412,7 @@ function RiwayatTransaksi() {
         title="Detail Riwayat Transaksi"
         classNameDialogFooter="p-4 border-t w-full"
         showCancelButton={true}
-        showPrintButton={true}
+        showPrintButton={dataGetOneInvoice?.data?.status?.toLowerCase() !== "cancel"}
         classNameDialogHeader="border-none p-4"
         classNameButton="w-full rounded-lg text-sm"
         classNameDialogTitle="text-left font-bold"

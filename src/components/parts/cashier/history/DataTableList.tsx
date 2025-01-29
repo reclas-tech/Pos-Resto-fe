@@ -16,9 +16,11 @@ const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) =>
 
     if (isDataEmpty) {
         return (
-            <section className="text-center text-gray-500 mt-4">
-                Data Tidak DItemukan
-            </section>
+            <div className="col-span-4 flex justify-center items-center mt-8">
+                <p className="text-sm text-gray-500">
+                Riwayat Tidak Ditemukan
+                </p>
+            </div>
         );
     }
 

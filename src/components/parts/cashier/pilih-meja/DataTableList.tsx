@@ -11,11 +11,11 @@ const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) =>
   if (!data?.tables || data?.tables.length === 0) {
     return (
       <>
-        <section className="grid grid-cols-8 gap-14 pt-8 pb-8 pl-16 pr-16 *:aspect-square">
-          <div className="col-span-8 text-center font-bold text-xl text-gray-500">
-            Data tidak tersedia
+          <div className="col-span-4 flex justify-center items-center mt-8">
+              <p className="text-sm text-gray-500">
+                Meja Tidak Ditemukan
+              </p>
           </div>
-        </section>
       </>
     );
   }
