@@ -72,8 +72,8 @@ export default function RootLayoutDashboard({
                   className="w-8 h-8"
                 />
                 <div className="flex flex-col justify-center">
-                  <div className="text-sm font-bold">Nata</div>
-                  <div className="text-xs">Admin</div>
+                  <div className="text-sm font-bold">Admin</div>
+                  <div className="text-xs">Warorng Aceh Garuda</div>
                 </div>
               </div>
             </SidebarBody>
