@@ -94,7 +94,7 @@ const DataTable: React.FC<ProductInterface> = ({
                     {item?.name ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
-                    {item?.category_id ?? "-"}
+                    {item?.category ?? "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {item?.price

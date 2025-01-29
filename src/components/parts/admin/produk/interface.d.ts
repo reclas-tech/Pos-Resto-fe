@@ -24,6 +24,7 @@ interface Product {
   created_at: string;
   updated_at: string;
   deleted_at: null;
+  category: string;
   category_id: string;
   kitchen_id: string;
   _method: string;
