@@ -60,8 +60,8 @@ function OtpInputPage() {
         showAlert2("success", "Berhasil.");
         Cookies.set("token", result?.data?.token, {
           expires: 1,
-          secure: true,
-          
+
+
         });
         setTimeout(() => {
           router.push("/buat-password-baru");

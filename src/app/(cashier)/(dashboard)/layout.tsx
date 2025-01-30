@@ -152,48 +152,48 @@ export default function RootLayoutDashboardCashier({
         // reset();
         Cookies.set("id", result?.data?.id, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("cash_on_hand_start", result?.data?.cash_on_hand_start, {
           expires: 1,
-          secure: true,
-          
+
+
         });
         Cookies.set("started_at", result?.data?.started_at, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("cash_on_hand_end", result?.data?.cash_on_hand_end, {
           expires: 1,
-          secure: true,
-          
+
+
         });
         Cookies.set("ended_at", result?.data?.ended_at, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("created_at", result?.data?.created_at, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("updated_at", result?.data?.updated_at, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("deleted_at", result?.data?.deleted_at, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         Cookies.set("cashier_id", result?.data?.cashier_id, {
           expires: 7,
-          secure: true,
-          
+
+
         });
       }
 
@@ -240,7 +240,7 @@ export default function RootLayoutDashboardCashier({
   };
 
   const { data: dataProfile } = useGetProfile();
-  
+
   return (
     <>
       {role === 'waiter' && (

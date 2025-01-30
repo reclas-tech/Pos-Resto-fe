@@ -61,13 +61,13 @@ const LoginPage = () => {
         showAlert2("success", "Berhasil Login.");
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
-          secure: true,
-          
+
+
         });
         Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
-          secure: true,
-          
+
+
         });
         setTimeout(() => {
           router.push("/beranda");
