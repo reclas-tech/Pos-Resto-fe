@@ -72,17 +72,17 @@ const LoginWaitersPage = () => {
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("role", result?.data?.role, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
 
         // Check Token

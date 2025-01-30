@@ -43,12 +43,12 @@ function ForgetPasswordPage() {
         Cookies.set("token", result?.data?.token, {
           expires: 1,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("exp", result?.data?.refresh_token, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         setTimeout(() => {
           router.push("/input-kode-otp");

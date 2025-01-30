@@ -88,17 +88,17 @@ const LoginKasirPage = () => {
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("role", result?.data?.role, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
 
         // Check Token
@@ -164,32 +164,32 @@ const LoginKasirPage = () => {
         Cookies.set("cash_on_hand_start", result?.data?.cash_on_hand_start, {
           expires: 1,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("started_at", result?.data?.started_at, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("cashier_id", result?.data?.cashier_id, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("id", result?.data?.id, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("updated_at", result?.data?.updated_at, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         Cookies.set("created_at", result?.data?.created_at, {
           expires: 7,
           secure: true,
-          httpOnly: false,
+          
         });
         setTimeout(() => {
         }, 10);
