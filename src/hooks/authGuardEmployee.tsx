@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import NotFound from "@/app/not-found";
+import useAxiosPrivateInstance from "./useAxiosPrivateInstance";
+import useSWR from "swr";
 
 interface AuthGuardEmployeeProps {
   children: ReactNode;
@@ -32,13 +34,41 @@ export default function AuthGuardEmployee({ children }: AuthGuardEmployeeProps) 
     console.log("Updated At:", updated_at);
     console.log("Created At:", created_at);
 
-    if (!access_token || !refresh_token || !role || role!= "cashier" || !cash_on_hand_start || !started_at || !cashier_id || !id || !updated_at || !created_at) {
+    if (!access_token || !refresh_token || !role || role != "cashier" || !cash_on_hand_start || !started_at || !cashier_id || !id || !updated_at || !created_at) {
       router.push("/login-kasir");
     } else {
       setLoading(false);
     }
 
   }, [router]);
+
+  const useAuthAccessTokenExp = () => {
+    const accessToken = Cookies.get("access_token");
+    const axiosPrivate = useAxiosPrivateInstance();
+
+    const { data, error, mutate, isValidating, isLoading } = useSWR(
+      `/auth/employee/profile`,
+      () =>
+        axiosPrivate
+          .get(
+            `/auth/employee/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then((res) => res.data)
+    );
+
+    return { data, error, mutate, isValidating, isLoading };
+  };
+
+  const { error } = useAuthAccessTokenExp();
+
+  if (error?.status === 401) {
+    router.push("/login-kasir")
+  }
 
   if (loading) {
     return (
