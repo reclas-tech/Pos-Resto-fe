@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/select";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { showAlert2 } from "@/lib/sweetalert2";
 
 type FormValues = z.infer<typeof productSchemaEdit>;
 
@@ -101,28 +100,12 @@ function EditProductPage() {
         //   setValue("image", getDataOne?.data?.image);
         // }
 
+        setImagePreview(getDataOne?.data?.image);
+        setExistingImage(getDataOne?.data?.image);
+        setValue("image", getDataOne?.data?.image);
+
         // After Revisi
-        if (getDataOne?.data?.image) {
-          const imageUrl = getDataOne.data.image;
-
-          // Check if image path is valid for Next.js Image
-          const isValidImagePath =
-            imageUrl.startsWith("/") ||
-            imageUrl.startsWith("http://") ||
-            imageUrl.startsWith("https://");
-
-          if (isValidImagePath) {
-            setImagePreview(imageUrl);
-            setExistingImage(imageUrl);
-            setValue("image", imageUrl);
-          } else {
-            console.error(
-              `Invalid image path: ${imageUrl}. Must start with '/', 'http://', or 'https://'`
-            );
-            showAlert2("error", "Url Gambar Tidak Valid");
-            navigate.push("/produk");
-          }
-        }
+      
       }, 100);
 
       return () => clearTimeout(timer);
@@ -294,7 +277,7 @@ function EditProductPage() {
         >
           {imagePreview ? (
             <Image
-              src={imagePreview || "waroeng aceh garuda"}
+              src={imagePreview}
               alt="Preview"
               width={200}
               height={200}

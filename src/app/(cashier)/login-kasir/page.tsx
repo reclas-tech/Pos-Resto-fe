@@ -47,6 +47,18 @@ const LoginKasirPage = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const [pinValue, setPinValue] = useState<string>("");
 
+  // Remove Akses Token
+  // useEffect(() => {
+  //   Cookies.remove("access_token");
+  //   Cookies.remove("refresh_token");
+  //   Cookies.remove("cash_on_hand_start");
+  //   Cookies.remove("started_at");
+  //   Cookies.remove("cashier_id");
+  //   Cookies.remove("id");
+  //   Cookies.remove("updated_at");
+  //   Cookies.remove("created_at");
+  // }, []);
+
   // Hook form dengan react-hook-form
   const {
     handleSubmit,
@@ -87,18 +99,12 @@ const LoginKasirPage = () => {
         setPinValue("");
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
-
-
         });
         Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
-
-
         });
         Cookies.set("role", result?.data?.role, {
           expires: 7,
-
-
         });
 
         // Check Token
@@ -163,33 +169,21 @@ const LoginKasirPage = () => {
         setIsModal(true);
         Cookies.set("cash_on_hand_start", result?.data?.cash_on_hand_start, {
           expires: 1,
-
-
         });
         Cookies.set("started_at", result?.data?.started_at, {
           expires: 7,
-
-
         });
         Cookies.set("cashier_id", result?.data?.cashier_id, {
           expires: 7,
-
-
         });
         Cookies.set("id", result?.data?.id, {
           expires: 7,
-
-
         });
         Cookies.set("updated_at", result?.data?.updated_at, {
           expires: 7,
-
-
         });
         Cookies.set("created_at", result?.data?.created_at, {
           expires: 7,
-
-
         });
         setTimeout(() => {
         }, 10);

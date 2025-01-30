@@ -17,12 +17,12 @@ export default function AuthGuardPOS({ children }: AuthGuardEmployeeProps) {
     const access_token = Cookies.get("access_token");
     const refresh_token = Cookies.get("refresh_token");
     const role = Cookies.get("role");
-    const name = Cookies.get("name");
+    // const name = Cookies.get("name");
 
-    console.log("Access Token:", access_token);
-    console.log("Refresh Token:", refresh_token);
-    console.log("Role:", role);
-    console.log("Nama:", name);
+    // console.log("Access Token:", access_token);
+    // console.log("Refresh Token:", refresh_token);
+    // console.log("Role:", role);
+    // console.log("Nama:", name);
 
     if (!access_token || !refresh_token || !role || role != "waiter") {
       router.push("/login-waiters");

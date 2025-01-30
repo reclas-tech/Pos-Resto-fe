@@ -152,48 +152,30 @@ export default function RootLayoutDashboardCashier({
         // reset();
         Cookies.set("id", result?.data?.id, {
           expires: 7,
-
-
         });
         Cookies.set("cash_on_hand_start", result?.data?.cash_on_hand_start, {
           expires: 1,
-
-
         });
         Cookies.set("started_at", result?.data?.started_at, {
           expires: 7,
-
-
         });
         Cookies.set("cash_on_hand_end", result?.data?.cash_on_hand_end, {
           expires: 1,
-
-
         });
         Cookies.set("ended_at", result?.data?.ended_at, {
           expires: 7,
-
-
         });
         Cookies.set("created_at", result?.data?.created_at, {
           expires: 7,
-
-
         });
         Cookies.set("updated_at", result?.data?.updated_at, {
           expires: 7,
-
-
         });
         Cookies.set("deleted_at", result?.data?.deleted_at, {
           expires: 7,
-
-
         });
         Cookies.set("cashier_id", result?.data?.cashier_id, {
           expires: 7,
-
-
         });
       }
 
@@ -220,7 +202,7 @@ export default function RootLayoutDashboardCashier({
 
   // GET CLOSE CASHIER RECEIPT
   const { data: dataReceipt } = useSWR(
-    `/cashier/close/invoice/${id}`,
+    id ? `/cashier/close/invoice/${id}` : null, 
     () =>
       axiosPrivate
         .get(`/cashier/close/invoice/${id}`, {
@@ -228,7 +210,7 @@ export default function RootLayoutDashboardCashier({
             Authorization: `Bearer ${access_token}`,
           },
         })
-        .then((res) => res.data) // Ensure `res.data` contains the desired data
+        .then((res) => res.data)
   );
 
   // Handle Print

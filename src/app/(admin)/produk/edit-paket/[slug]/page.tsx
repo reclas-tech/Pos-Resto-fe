@@ -106,27 +106,9 @@ function EditPacketPage() {
       //   setValue("image", imageUrl);
       // }
 
-      if (packetData.data.image) {
-        const imageUrl = packetData.data.image;
-
-        // Check if image path is valid for Next.js Image
-        const isValidImagePath =
-          imageUrl.startsWith("/") ||
-          imageUrl.startsWith("http://") ||
-          imageUrl.startsWith("https://");
-
-        if (isValidImagePath) {
-          setImagePreview(imageUrl);
-          setExistingImage(imageUrl);
-          setValue("image", imageUrl);
-        } else {
-          console.error(
-            `Invalid image path: ${imageUrl}. Must start with '/', 'http://', or 'https://'`
-          );
-          showAlert2("error", "Url Gambar Tidak Valid");
-          navigate.push("/produk/menu-paket");
-        }
-      }
+      setImagePreview(packetData?.data?.image);
+      setExistingImage(packetData?.data?.image);
+      setValue("image", packetData?.data?.image);
     }
   }, [packetData, setValue, navigate]);
 
