@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import NotFound from "@/app/not-found";
+import useAxiosPrivateInstance from "./useAxiosPrivateInstance";
+import useSWR from "swr";
 
 interface AuthGuardEmployeeProps {
   children: ReactNode;
@@ -29,6 +31,34 @@ export default function AuthGuardPOS({ children }: AuthGuardEmployeeProps) {
     }
   }, [router]);
 
+  const useAuthAccessTokenExp = () => {
+    const accessToken = Cookies.get("access_token");
+    const axiosPrivate = useAxiosPrivateInstance();
+
+    const { data, error, mutate, isValidating, isLoading } = useSWR(
+      `/auth/employee/profile`,
+      () =>
+        axiosPrivate
+          .get(
+            `/auth/employee/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then((res) => res.data)
+    );
+
+    return { data, error, mutate, isValidating, isLoading };
+  };
+
+  const { error } = useAuthAccessTokenExp();
+
+  if (error?.status === 401) {
+    router.push("/login-waiters")
+  }
+
   if (loading) {
     return (
       <>
@@ -37,5 +67,5 @@ export default function AuthGuardPOS({ children }: AuthGuardEmployeeProps) {
     );
   }
 
-  return <>{children}</>;
+  return <>{!error && children}</>;
 }
