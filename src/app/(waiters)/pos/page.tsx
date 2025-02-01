@@ -237,15 +237,23 @@ function PosPage() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (status === "tersedia") {
-      setSelectedTables((prev) => {
-        const isSelected = prev.some((table) => table.id === tableId);
-        if (isSelected) {
-          return prev.filter((table) => table.id !== tableId);
-        }
-        return [...prev, { id: tableId, name: tableName }];
-      });
-    }
+    //   if (status === "tersedia") {
+    //     setSelectedTables((prev) => {
+    //       const isSelected = prev.some((table) => table.id === tableId);
+    //       if (isSelected) {
+    //         return prev.filter((table) => table.id !== tableId);
+    //       }
+    //       return [...prev, { id: tableId, name: tableName }];
+    //     });
+    //   }
+
+    setSelectedTables((prev) => {
+      const isSelected = prev.some((table) => table.id === tableId);
+      if (isSelected) {
+        return prev.filter((table) => table.id !== tableId);
+      }
+      return [...prev, { id: tableId, name: tableName }];
+    });
   };
 
   // Validation for Dine In & Take Away
@@ -950,37 +958,36 @@ function PosPage() {
                                 e
                               )
                             }
-                            disabled={data.status === "terisi"}
                             className={`rounded-lg border p-1 
-        ${
-          data.status === "terisi"
-            ? "border-[#FEA026] cursor-not-allowed opacity-50"
-            : selectedTables.some((table) => table.id === data.id)
-            ? "border-[#114F44]"
-            : "border-[#3395F0]"
-        } 
-        flex items-center justify-center w-20 h-20`}
+              ${
+                selectedTables.some((table) => table.id === data.id)
+                  ? "border-[#114F44]"
+                  : data.status === "terisi"
+                  ? "border-[#FEA026]"
+                  : "border-[#3395F0]"
+              } 
+              flex items-center justify-center w-20 h-20`}
                           >
                             <div
                               className={`p-1 rounded-full 
-          ${
-            data.status === "terisi"
-              ? "bg-[#FEA026]/10"
-              : selectedTables.some((table) => table.id === data.id)
-              ? "bg-[#114F44]/10"
-              : "bg-[#3395F0]/10"
-          } 
-          flex items-center justify-center w-10 h-10`}
+                ${
+                  selectedTables.some((table) => table.id === data.id)
+                    ? "bg-[#114F44]/10"
+                    : data.status === "terisi"
+                    ? "bg-[#FEA026]/10"
+                    : "bg-[#3395F0]/10"
+                } 
+                flex items-center justify-center w-10 h-10`}
                             >
                               <span
                                 className={`font-bold text-xs 
-            ${
-              data.status === "terisi"
-                ? "text-[#FEA026]"
-                : selectedTables.some((table) => table.id === data.id)
-                ? "text-[#114F44]"
-                : "text-[#3395F0]"
-            }`}
+                  ${
+                    selectedTables.some((table) => table.id === data.id)
+                      ? "text-[#114F44]"
+                      : data.status === "terisi"
+                      ? "text-[#FEA026]"
+                      : "text-[#3395F0]"
+                  }`}
                               >
                                 {data.name}
                               </span>
