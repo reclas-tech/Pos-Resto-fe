@@ -776,7 +776,7 @@ function PosPage() {
                     key={product.id}
                     id={product.id}
                     name={product.name}
-                    src={product.image}
+                    src={product.image || null}
                     price={product.price}
                     onClick={() => addProduct(product)}
                   />

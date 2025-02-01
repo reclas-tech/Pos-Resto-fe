@@ -25,6 +25,8 @@ type Data = {
   total_tagihan: string;
   cash: string;
   total_bayar: string;
+  tax: string;
+  tax_percent: number;
 };
 
 type PaymentReceiptProps = {
@@ -46,6 +48,7 @@ const transformDataReceiptToData = (
       products,
       packets,
       tax,
+      tax_percent,
       price_sum,
     },
   } = response;
@@ -75,7 +78,9 @@ const transformDataReceiptToData = (
       packets.reduce((sum, packet) => sum + packet.quantity, 0),
     sub_total: `Rp ${(price_sum - tax).toLocaleString()}`,
     total_tagihan: `Rp ${(price_sum || 0).toLocaleString()}`,
-    cash: `Rp ${(price_sum || 0).toLocaleString()}`, // This field can be updated if cash data is available.
+    tax: `Rp ${(tax || 0).toLocaleString()}`,
+    tax_percent: tax_percent || 0,
+    cash: `Rp ${(price_sum || 0).toLocaleString()}`,
     total_bayar: `Rp ${(price_sum || 0).toLocaleString()}`,
   };
 };
@@ -118,7 +123,7 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         Barat, Kec. Tebet, Kota Jakarta Selatan
       </p>
 
-      <div className="text-left grid grid-cols-2 py-2 gap-[1%]  border-y border-dashed border-black">
+      <div className="text-left grid grid-cols-2 py-4 gap-[1%]  border-y border-dashed border-black">
         <p>No Transaksi</p>
         <p>: {data.no_transaksi}</p>
         <p>Waktu</p>
@@ -129,7 +134,7 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         <p>: {data.table}</p>
       </div>
 
-      <div className="mt-2 space-y-2 border-b border-dashed border-black pb-2">
+      <div className="mt-4 space-y-2 border-b border-dashed border-black pb-4">
         {data.products.map((product) => (
           <div key={product.id}>
             <div className="flex justify-between">
@@ -164,17 +169,30 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         ))}
       </div>
 
-      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-[1%] border-b border-dashed border-black">
-        <p>Sub Total {data.quantity} Produk</p>
-        <p>: {data.sub_total}</p>
-        <p>Total Tagihan</p>
-        <p>: {data.total_tagihan}</p>
+      <div className="text-left border-b py-4 space-y-[1%] border-dashed border-black">
+        <span className="flex justify-between">
+          <p>Sub Total {data.quantity} Produk</p>
+          <p>{data.sub_total}</p>
+        </span>
+        <span className="flex justify-between">
+          <p>Pajak({data.tax_percent}%)</p>
+          <p>{data.tax}</p>
+        </span>
+        <span className="flex justify-between">
+          <p>Total Tagihan</p>
+          <p>{data.total_tagihan}</p>
+        </span>
       </div>
-      <div className="text-left mt-2 grid grid-cols-2 px-3 py-4 gap-[1%] border-b border-dashed border-black">
-        <p>Tunai</p>
-        <p>: {data.cash}</p>
-        <p>Total Bayar</p>
-        <p>: {data.total_bayar}</p>
+
+      <div className="text-left space-y-[1%] py-4 border-b border-dashed border-black">
+        <span className="flex justify-between">
+          <p>Tunai</p>
+          <p>{data.cash}</p>
+        </span>
+        <span className="flex justify-between">
+          <p>Total Bayar</p>
+          <p>{data.total_bayar}</p>
+        </span>
       </div>
 
       <div className="border-t border-dashed border-black mt-2 py-2">
