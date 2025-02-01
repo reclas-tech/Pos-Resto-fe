@@ -5,7 +5,7 @@ interface CardProductProps {
   id?: string;
   onClick: any;
   name: string;
-  src: string;
+  src: string | null;
   price: number;
 }
 const CardProduct: React.FC<CardProductProps> = ({
@@ -24,7 +24,7 @@ const CardProduct: React.FC<CardProductProps> = ({
       >
         <div className="w-full h-[120px] rounded-md flex items-center justify-center overflow-hidden">
           <Image
-            src={src}
+            src={src || ""}
             width={100}
             height={100}
             alt={name}
