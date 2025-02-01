@@ -34,16 +34,16 @@ const LoginPage = () => {
   });
 
   // cek berdasarkan cookies
-  useEffect(() => {
-    const access_token = Cookies.get("access_token");
-    if (access_token) {
-      router.push("/beranda");
-    } else {
-      Cookies.remove("access_token");
-      Cookies.remove("refresh_token");
-      router.push("/login");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const access_token = Cookies.get("access_token");
+  //   if (access_token) {
+  //     router.push("/beranda");
+  //   } else {
+  //     Cookies.remove("access_token");
+  //     Cookies.remove("refresh_token");
+  //     router.push("/login");
+  //   }
+  // }, [router]);
 
   /* eslint-disable */
   const onSubmit: SubmitHandler<LoginValues> = async (data) => {
@@ -61,13 +61,9 @@ const LoginPage = () => {
         showAlert2("success", "Berhasil Login.");
         Cookies.set("access_token", result?.data?.access_token, {
           expires: 1,
-
-
         });
         Cookies.set("refresh_token", result?.data?.refresh_token, {
           expires: 7,
-
-
         });
         setTimeout(() => {
           router.push("/beranda");

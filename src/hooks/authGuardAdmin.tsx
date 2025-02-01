@@ -17,18 +17,18 @@ export default function AuthGuardAdmin({ children }: AuthGuardAdminProps) {
     const access_token = Cookies.get("access_token");
     const refresh_token = Cookies.get("refresh_token");
     const role = Cookies.get("role");
-    if (!access_token && !refresh_token) {
-      router.push("/login");
-      Cookies.remove("role");
-    } else {
-      setLoading(false);
-    }
-    if (role) {
-      Cookies.remove("access_token");
-      Cookies.remove("refresh_token");
-      Cookies.remove("role");
-      router.push("/login")
-    }
+    // if (!access_token && !refresh_token) {
+    //   router.push("/login");
+    //   Cookies.remove("role");
+    // } else {
+    //   setLoading(false);
+    // }
+    // if (role) {
+    //   Cookies.remove("access_token");
+    //   Cookies.remove("refresh_token");
+    //   Cookies.remove("role");
+    //   router.push("/login")
+    // }
   }, [router]);
 
   const useAuthAccessTokenExp = () => {
@@ -58,6 +58,8 @@ export default function AuthGuardAdmin({ children }: AuthGuardAdminProps) {
   if (error?.status === 401) {
     router.push("/login")
   }
+
+  console.log("lalalalal")
 
   if (loading) {
     return (
