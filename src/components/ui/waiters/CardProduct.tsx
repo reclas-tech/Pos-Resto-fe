@@ -5,7 +5,7 @@ interface CardProductProps {
   id?: string;
   onClick: any;
   name: string;
-  src: string | null;
+  src: string;
   price: number;
 }
 const CardProduct: React.FC<CardProductProps> = ({
@@ -24,10 +24,10 @@ const CardProduct: React.FC<CardProductProps> = ({
       >
         <div className="w-full h-[120px] rounded-md flex items-center justify-center overflow-hidden">
           <Image
-            src={src || ""}
+            src={src || "/images/notFound.png"}
             width={100}
             height={100}
-            alt={name}
+            alt={name || "Product not found"}
             className="w-full h-full object-cover"
             unoptimized
           />

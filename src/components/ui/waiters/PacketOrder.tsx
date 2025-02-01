@@ -3,7 +3,6 @@ import { DeleteSVG, NoteOrderSVG } from "@/constants/svgIcons";
 import { Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-
 interface PacketOrderProps {
   id: string;
   name: string;
@@ -49,8 +48,8 @@ const PacketOrder: React.FC<PacketOrderProps> = ({
               <Image
                 width={50}
                 height={50}
-                src={src}
-                alt={name}
+                src={src || "/images/notFound.png"}
+                alt={name || "Packet not found"}
                 className="w-full h-full object-cover"
                 unoptimized
               />
