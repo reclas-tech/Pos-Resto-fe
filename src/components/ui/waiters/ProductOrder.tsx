@@ -46,8 +46,8 @@ const ProductOrder: React.FC<ProductOrderProps> = ({
                 <Image
                   width={50}
                   height={50}
-                  src={src}
-                  alt={name}
+                  src={src || "images/notFound.png"}
+                  alt={name || "Product not found"}
                   className="w-full h-full object-cover text-[9px]"
                   unoptimized
                 />
