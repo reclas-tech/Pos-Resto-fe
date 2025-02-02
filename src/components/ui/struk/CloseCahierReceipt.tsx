@@ -6,9 +6,9 @@ type ReceiptData = {
   date: string;
   cashier_name: string;
   start_at: string;
-  end_at: string | null;
+  end_at: string ;
   cash_on_hand_start: number;
-  cash_on_hand_end: number | null;
+  cash_on_hand_end: number ;
   cashier_deposit: number;
   income: number;
   difference: number;

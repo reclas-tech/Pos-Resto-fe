@@ -179,6 +179,9 @@ export default function RootLayoutDashboardCashier({
         });
       }
 
+      // Trigger re-fetch data receipt setelah submit berhasil
+      mutateReceipt();
+
       // Response API
       if (response.data.statusCode === 200) {
         console.log("Cash On Hand Close Cashier: ", response.data);
@@ -201,14 +204,12 @@ export default function RootLayoutDashboardCashier({
   const id = Cookies.get("id");
 
   // GET CLOSE CASHIER RECEIPT
-  const { data: dataReceipt } = useSWR(
-    id ? `/cashier/close/invoice/${id}` : null, 
+  const { data: dataReceipt, mutate: mutateReceipt } = useSWR(
+    id ? `/cashier/close/invoice/${id}` : null,
     () =>
       axiosPrivate
         .get(`/cashier/close/invoice/${id}`, {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
+          headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => res.data)
   );
@@ -219,13 +220,14 @@ export default function RootLayoutDashboardCashier({
 
   const handlePrint = () => {
     reactToPrintFn();
+    console.log(dataReceipt);
   };
 
   const { data: dataProfile } = useGetProfile();
 
   return (
     <>
-      {role === 'waiter' && (
+      {role === "waiter" && (
         <>
           <div className=" flex justify-between items-center px-2 py-4 border border-b">
             <div className="flex items-center space-x-2">
@@ -247,8 +249,9 @@ export default function RootLayoutDashboardCashier({
             <div className="flex gap-4 justify-center items-center">
               <Link
                 href="/pos"
-                className={`flex gap-2 items-center ${pathname === "/pos" ? "text-primaryColor" : "text-[#737791]"
-                  }`}
+                className={`flex gap-2 items-center ${
+                  pathname === "/pos" ? "text-primaryColor" : "text-[#737791]"
+                }`}
               >
                 {pathname === "/pos" ? (
                   <MejaSVG strokeColor="#FEA026" />
@@ -260,17 +263,18 @@ export default function RootLayoutDashboardCashier({
 
               <Link
                 href="/riwayat-transaksi"
-                className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi" ? "text-primaryColor" : "text-[#737791]"
-                  }`}
+                className={`flex gap-2 items-center ${
+                  pathname === "/riwayat-transaksi"
+                    ? "text-primaryColor"
+                    : "text-[#737791]"
+                }`}
               >
                 {pathname === "/riwayat-transaksi" ? (
                   <RiwayatSVG strokeColor="#FEA026" />
                 ) : (
                   <RiwayatSVG strokeColor="#737791" />
                 )}
-                <div className="flex flex-col justify-center">
-                  Riwayat
-                </div>
+                <div className="flex flex-col justify-center">Riwayat</div>
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -289,7 +293,9 @@ export default function RootLayoutDashboardCashier({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white border border-gray-300 shadow-lg rounded-md">
                     <DropdownMenuLabel className="text-xs text-[#737791] hover:text-red-600">
-                      <button onClick={() => handleLogoutWaiter()}>Keluar</button>
+                      <button onClick={() => handleLogoutWaiter()}>
+                        Keluar
+                      </button>
                     </DropdownMenuLabel>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -300,7 +306,7 @@ export default function RootLayoutDashboardCashier({
         </>
       )}
 
-      {role === 'cashier' && (
+      {role === "cashier" && (
         <AuthGuardEmployee>
           <nav
             className={cn(
@@ -324,8 +330,11 @@ export default function RootLayoutDashboardCashier({
             <div className="flex gap-4 justify-center items-center">
               <Link
                 href="/pilih-meja"
-                className={`flex gap-2 items-center ${pathname === "/pilih-meja" ? "text-primaryColor" : "text-[#737791]"
-                  }`}
+                className={`flex gap-2 items-center ${
+                  pathname === "/pilih-meja"
+                    ? "text-primaryColor"
+                    : "text-[#737791]"
+                }`}
               >
                 {pathname === "/pilih-meja" ? (
                   <MejaSVG strokeColor="#FEA026" />
@@ -337,17 +346,18 @@ export default function RootLayoutDashboardCashier({
 
               <Link
                 href="/riwayat-transaksi"
-                className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi" ? "text-primaryColor" : "text-[#737791]"
-                  }`}
+                className={`flex gap-2 items-center ${
+                  pathname === "/riwayat-transaksi"
+                    ? "text-primaryColor"
+                    : "text-[#737791]"
+                }`}
               >
                 {pathname === "/riwayat-transaksi" ? (
                   <RiwayatSVG strokeColor="#FEA026" />
                 ) : (
                   <RiwayatSVG strokeColor="#737791" />
                 )}
-                <div className="flex flex-col justify-center">
-                  Riwayat
-                </div>
+                <div className="flex flex-col justify-center">Riwayat</div>
               </Link>
             </div>
 
@@ -357,8 +367,12 @@ export default function RootLayoutDashboardCashier({
               </div>
               <div className="flex gap-2">
                 <div className="flex flex-col justify-center">
-                  <div className="text-black font-bold">{dataProfile?.data?.name}</div>
-                  <div className="text-black/50 text-xs">{dataProfile?.data?.role}</div>
+                  <div className="text-black font-bold">
+                    {dataProfile?.data?.name}
+                  </div>
+                  <div className="text-black/50 text-xs">
+                    {dataProfile?.data?.role}
+                  </div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -460,12 +474,17 @@ export default function RootLayoutDashboardCashier({
                         value={useInputRp(watch("cash"))}
                         onChange={(e) => {
                           const numericValue =
-                            parseInt(e.target.value.replace(/[^0-9]/g, ""), 10) || 0;
+                            parseInt(
+                              e.target.value.replace(/[^0-9]/g, ""),
+                              10
+                            ) || 0;
                           setValue("cash", numericValue);
                         }}
                       />
                       {errors.cash && (
-                        <span className="text-sm text-red-500">{errors.cash.message}</span>
+                        <span className="text-sm text-red-500">
+                          {errors.cash.message}
+                        </span>
                       )}
                     </div>
                   </div>
