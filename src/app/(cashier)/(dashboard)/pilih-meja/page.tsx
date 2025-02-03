@@ -74,6 +74,7 @@ function SelectTable() {
   const [isPaymentSuccessModal, setIsPaymentSuccessModal] = useState(false);
   const [pinValue, setPinValue] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
+  const [printStatus, setPrintStatus] = useState("");
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -267,8 +268,17 @@ function SelectTable() {
   const reactToPrintFn = useReactToPrint({ contentRef });
 
   const handlePrint = () => {
-    reactToPrintFn();
-    console.log("test print");
+    setPrintStatus("payment");
+    setTimeout(() => {
+      reactToPrintFn();
+    }, 2000);  // Delay for 2 seconds
+  };
+  
+  const handlePrintDetail = () => {
+    setPrintStatus("detail");
+    setTimeout(() => {
+      reactToPrintFn();
+    }, 2000);  // Delay for 2 seconds
   };
   return (
     <>
@@ -384,7 +394,7 @@ function SelectTable() {
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
-          onPrint={() => handlePrint()}
+          onPrint={() => handlePrintDetail()}
         >
           <div className="space-y-4">
             <div className="justify-between flex text-sm">
@@ -803,7 +813,7 @@ function SelectTable() {
           classNameButton="w-fit rounded-3xl text-sm"
           classNameDialogTitle="text-center font-bold pb-4"
           closeButton={false}
-          onPrint={() => handlePrint()}
+          onPrint={() => handlePrintDetail()}
         >
           {dataInvoiceTakeAway?.data?.status === "sudah bayar" && (
             <button className="rounded-3xl text-xs pl-2 pr-2 pt-1 pb-1 text-white bg-primaryColor h-fit justify-center m-auto">
@@ -1409,7 +1419,7 @@ function SelectTable() {
 
       {/* Struk */}
       <div className="hidden">
-        <PaymentReceipt ref={contentRef} dataReceipt={dataInvoiceReceipt} />
+        <PaymentReceipt cashTotal={pinValue} kembalian={calculateChange()} transaksi={paymentMethod} printStatus={printStatus} ref={contentRef} dataReceipt={dataInvoiceReceipt} />
       </div>
       <DarkModeComponents className="hidden" />
     </>
