@@ -32,6 +32,10 @@ type Data = {
 type PaymentReceiptProps = {
   dataReceipt: InvoiceDetailApiResponse | null | undefined;
   ref?: Ref<HTMLDivElement>;
+  printStatus?: string;
+  kembalian?: string;
+  cashTotal?: string;
+  transaksi?: "cash" | "debit" | "qris" | null;
 };
 
 const transformDataReceiptToData = (
@@ -88,8 +92,13 @@ const transformDataReceiptToData = (
 const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
   dataReceipt,
   ref,
+  printStatus,
+  transaksi,
+  kembalian,
+  cashTotal
 }) => {
   const data = transformDataReceiptToData(dataReceipt);
+  console.log("data=", data)
   if (!data) return null;
 
   return (
@@ -184,14 +193,14 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         </span>
       </div>
 
-      <div className="text-left space-y-[1%] py-4 border-b border-dashed border-black">
+      <div className={`text-left ${printStatus === "detail" ? "hidden" : ""} space-y-[1%] py-4 border-b border-dashed border-black`}>
         <span className="flex justify-between">
-          <p>Tunai</p>
-          <p>{data.cash}</p>
+          <p className="capitalize">{transaksi}</p>
+          <p>{transaksi !== "cash" ? data.total_tagihan : cashTotal}</p>
         </span>
-        <span className="flex justify-between">
-          <p>Total Bayar</p>
-          <p>{data.total_bayar}</p>
+        <span className={`flex ${transaksi !== "cash" ? "hidden" : ""} justify-between`}>
+          <p>Kembalian</p>
+          <p>{kembalian}</p>
         </span>
       </div>
 
