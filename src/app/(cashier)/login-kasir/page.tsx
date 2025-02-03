@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserIcon } from "@/components/ui/icons/UserIcon";
 import { useInputRp } from "@/hooks/useRupiah";
+import { useGetProfile } from "@/components/parts/cashier/profile/api";
 
 
 type PinFormData = z.infer<typeof pinSchema>;
@@ -226,6 +227,8 @@ const LoginKasirPage = () => {
     trigger("pin");
   };
 
+  const { data: dataProfile } = useGetProfile();
+
   return (
     <div className="w-full h-screen flex flex-col sm:flex-row">
       <div className="w-full sm:w-1/2 h-1/2 sm:h-full">
@@ -355,8 +358,8 @@ const LoginKasirPage = () => {
                 </div>
 
                 <div className="space-y-0">
-                  <p className="text-xl sm:text-2xl font-medium">John Doe</p>
-                  <p className="text-base sm:text-lg font-light">Cashier</p>
+                  <p className="text-xl sm:text-2xl font-medium">{dataProfile?.data?.name}</p>
+                  <p className="text-base sm:text-lg font-light">{dataProfile?.data?.role}</p>
                 </div>
               </div>
               <div className="space-y-1 w-full">
