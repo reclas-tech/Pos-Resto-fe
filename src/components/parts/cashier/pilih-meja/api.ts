@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import useAxiosPrivateInstance from "@/hooks/useAxiosPrivateInstance";
 import Cookies from "js-cookie";
 import useSWR from "swr";
 import { InvoiceDetailApiResponse } from "./interface";
+import { showAlert2 } from "@/lib/sweetalert2";
 
 // Get TableList
 const useGetTableList = (status: string) => {
@@ -103,9 +105,43 @@ const usePostPayment = (invoiceId: string) => {
   return { postPayment };
 };
 
+const useTableChange = () => {
+  const accessToken = Cookies.get("access_token");
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const changeTable = async (fromTableId: string, toTableIds: string[]) => {
+    if (!accessToken) {
+      throw new Error("Access token is missing");
+    }
+
+    try {
+      const response = await axiosPrivate.post(
+        "/table/employee/change",
+        { from: fromTableId, to: toTableIds },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      showAlert2("success", response?.data?.message);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.data?.[0]?.message ||
+        error.response?.data?.message ||
+        "Gagal menambahkan data!";
+      showAlert2("error", errorMessage);
+    }
+  };
+  return { changeTable };
+};
+
 export {
   useGetTableList,
   useGetTakeawayList,
   useGetInvoiceDetail,
   usePostPayment,
+  useTableChange,
 };

@@ -37,6 +37,7 @@ import {
   useGetTableList,
   useGetTakeawayList,
   usePostPayment,
+  useTableChange,
 } from "@/components/parts/cashier/pilih-meja/api";
 import DataTableList from "@/components/parts/cashier/pilih-meja/DataTableList";
 import DataTakeawayList from "@/components/parts/cashier/pilih-meja/DataTakeawayList";
@@ -47,6 +48,9 @@ import Cookies from "js-cookie";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 import PaymentReceipt from "@/components/ui/struk/PaymentReceipt";
+import ValidationChoiceModal from "@/components/ui/modal/validationChoiceTable";
+import ChoiceTables from "@/components/ui/modal/choiceTables";
+import DataChoiceTableList from "@/components/parts/cashier/pilih-meja/ChoiceTable";
 
 // Handle validation input
 const pinCashPaymentSchema = z.object({
@@ -75,6 +79,8 @@ function SelectTable() {
   const [pinValue, setPinValue] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState("Semua Meja");
   const [printStatus, setPrintStatus] = useState("");
+  const [ischoiceTables, setIsChoiceTables] = useState(false);
+  const [isModalChoiceTables, setIsModalChoiceTables] = useState(false);
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -200,7 +206,8 @@ function SelectTable() {
   ) => {
     console.log(`Table ID: ${invoiceId}, Status: ${status}`);
     setSelectedId(invoiceId); // Menyimpan id
-    setIsDetailModalOpenDineIn(true);
+    setIsChoiceTables(true);
+    // setIsDetailModalOpenDineIn(true);
   };
 
   // Handle Open TakeAway
@@ -273,13 +280,45 @@ function SelectTable() {
       reactToPrintFn();
     }, 2000);  // Delay for 2 seconds
   };
-  
+
   const handlePrintDetail = () => {
     setPrintStatus("detail");
     setTimeout(() => {
       reactToPrintFn();
     }, 2000);  // Delay for 2 seconds
   };
+
+  // Change Table
+  const { changeTable } = useTableChange();
+  const [fromTableId, setFromTableId] = useState<string | null>(null); // Meja asal
+  const [toTableIds, setToTableIds] = useState<string[]>([]); // Meja tujuan
+
+  const handleSelectTable = (selectedTables: (string | number)[]) => {
+    console.log("Selected Tables:", selectedTables);
+    if (selectedTables.length > 0) {
+      setFromTableId(String(selectedTables[0]));
+      setToTableIds(selectedTables.slice(1).map(String));
+    } else {
+      setFromTableId(null);
+      setToTableIds([]);
+    }
+  };
+
+  const handleMoveTable = async () => {
+    if (!fromTableId || toTableIds.length === 0) {
+      alert("Silakan pilih meja tujuan!");
+      return;
+    }
+
+    try {
+      await changeTable(fromTableId, toTableIds);
+      mutateGetTableList();
+      setIsModalChoiceTables(false);
+    } catch (error) {
+      console.error("Error pindah meja:", error);
+    }
+  };
+
   return (
     <>
       <section className="text-sm border border-b pt-4 pb-4 pl-8 pr-8 flex justify-between">
@@ -353,11 +392,10 @@ function SelectTable() {
           {["Semua Meja", "Tersedia", "Terisi"].map((filter) => (
             <button
               key={filter}
-              className={`rounded-3xl text-sm p-1.5 px-3 border ${
-                activeFilter === filter
-                  ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
-                  : ""
-              }`}
+              className={`rounded-3xl text-sm p-1.5 px-3 border ${activeFilter === filter
+                ? "bg-[#FFF5EE] border-primaryColor text-primaryColor"
+                : ""
+                }`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -374,6 +412,81 @@ function SelectTable() {
         onDetailModal={handleOpenDetailDineIn}
       />
 
+      {/* Handle Modal Validation Choice Table */}
+      <ValidationChoiceModal
+        isOpen={ischoiceTables}
+        onClose={() => {
+          setIsChoiceTables(false);
+        }}
+        choiceModal={() => {
+          // setIsChoiceTables(true);
+          setIsModalChoiceTables(true)
+        }}
+        detailModal={() => {
+          setIsDetailModalOpenDineIn(true)
+        }}
+        // detailModal={handleOpenDetailDineIn}
+        choiceButton={true}
+        detailButton={true}
+        title=""
+        classNameDialogFooter="flex md:justify-center"
+        classNameDialogHeader=""
+        classNameButton="w-full rounded-lg text-sm"
+        classNameDialogTitle=""
+      >
+        <div className="font-semibold text-black dark:text-white m-auto flex justify-center">
+          <WarningSVG />
+        </div>
+        <div className="text-lg font-bold text-center mt-4">
+          Apa yang ingin anda lakukan ?
+        </div>
+      </ValidationChoiceModal>
+
+      {/* Modal Detail Order Dine In */}
+      <ChoiceTables
+        isOpen={
+          isModalChoiceTables
+        }
+        onClose={() => {
+          setIsModalChoiceTables(false);
+        }}
+        onClick={handleMoveTable}
+        title="Pindah Meja"
+        classNameDialogFooter="p-4 border-t flex md:justify-center"
+        showKeluarButton={true}
+        showBuyyButton={true}
+        classNameDialogHeader="border-b"
+        classNameButton="w-full rounded-3xl text-sm"
+        classNameDialogTitle="text-left font-bold p-4"
+        closeButton={true}
+        onPrint={() => handlePrintDetail()}
+      >
+        <>
+          <div className="flex gap-4 items-center border-b pl-4 pr-4 pb-4 text-xs">
+            <div className="flex gap-2">
+              <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#3395F0]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                <div className="h-2.5 w-2.5 bg-[#3395F0]/90 rounded-full" />
+              </div>
+              <div>Tersedia ({availableCount})</div>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="flex justify-center items-center aspect-square h-4 w-4 rounded-full bg-[#FEA026]/10 shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                <div className="h-2.5 w-2.5 bg-primaryColor rounded-full" />
+              </div>
+              <div>Terisi ({filledCount})</div>
+            </div>
+          </div>
+          {/* Data Table List */}
+          <DataChoiceTableList
+            data={data?.data}
+            statusCode={200}
+            message={"Daftar Meja Berhasil Didapatkan"}
+            onSelectTable={handleSelectTable}
+          />
+        </>
+      </ChoiceTables>
+
       {/* Handle Dine In */}
       <>
         {/* Modal Detail Order Dine In */}
@@ -383,6 +496,7 @@ function SelectTable() {
           }
           onClose={() => {
             setIsDetailModalOpenDineIn(false);
+            setIsChoiceTables(true)
           }}
           onDetail={() => setIsPaymentModalOpenDineIn(true)}
           title="Detail Pesanan"
@@ -418,11 +532,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceDineIn?.data?.created_at
                     ? new Date(
-                        dataInvoiceDineIn.data.created_at
-                      ).toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) + " WIB"
+                      dataInvoiceDineIn.data.created_at
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -546,11 +660,11 @@ function SelectTable() {
                     <div>
                       {dataInvoiceDineIn?.data?.created_at
                         ? new Date(
-                            dataInvoiceDineIn.data.created_at
-                          ).toLocaleTimeString("id-ID", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }) + " WIB"
+                          dataInvoiceDineIn.data.created_at
+                        ).toLocaleTimeString("id-ID", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) + " WIB"
                         : "-"}
                     </div>
                   </div>
@@ -706,9 +820,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -754,9 +867,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -840,11 +952,11 @@ function SelectTable() {
                 <div className="text-[#989898]">
                   {dataInvoiceTakeAway?.data?.created_at
                     ? new Date(
-                        dataInvoiceTakeAway.data.created_at
-                      ).toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) + " WIB"
+                      dataInvoiceTakeAway.data.created_at
+                    ).toLocaleTimeString("id-ID", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " WIB"
                     : "-"}
                 </div>
               </div>
@@ -968,11 +1080,11 @@ function SelectTable() {
                   <div>
                     {dataInvoiceTakeAway?.data?.created_at
                       ? new Date(
-                          dataInvoiceTakeAway.data.created_at
-                        ).toLocaleTimeString("id-ID", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }) + " WIB"
+                        dataInvoiceTakeAway.data.created_at
+                      ).toLocaleTimeString("id-ID", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " WIB"
                       : "-"}
                   </div>
                 </div>
@@ -1117,9 +1229,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1165,9 +1276,8 @@ function SelectTable() {
                         {Array.from({ length: 9 }).map((_, index) => (
                           <div
                             key={index}
-                            className={`w-full h-full ${
-                              index === 4 ? "bg-white" : "bg-emerald-800"
-                            }`}
+                            className={`w-full h-full ${index === 4 ? "bg-white" : "bg-emerald-800"
+                              }`}
                             style={{
                               animation:
                                 index !== 4
@@ -1306,11 +1416,10 @@ function SelectTable() {
                 setIsValidationModalCash(true);
               }}
               type="button"
-              className={`w-full h-9 sm:h-9 md:h-10 rounded-md ${
-                isButtonDisabled()
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[#114F44] hover:bg-[#104239] text-white"
-              } font-medium text-sm sm:text-sm md:text-base`}
+              className={`w-full h-9 sm:h-9 md:h-10 rounded-md ${isButtonDisabled()
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#114F44] hover:bg-[#104239] text-white"
+                } font-medium text-sm sm:text-sm md:text-base`}
               disabled={isButtonDisabled()}
             >
               Selesai
