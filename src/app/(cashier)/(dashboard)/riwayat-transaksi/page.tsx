@@ -507,6 +507,14 @@ function RiwayatTransaksi() {
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Diskon
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center uppercase">
+                {dataGetOneInvoice?.data?.discount ?? "-"} %
+              </div>
+            </div>
               <div
                 className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${
                   dataGetOneInvoice?.data?.type === "take away"
@@ -643,6 +651,14 @@ function RiwayatTransaksi() {
               />
             </div>
             <div className="flex flex-col w-full space-y-2">
+            <div className="flex flex-col w-full">
+              <Label htmlFor="paymentMethod" className="text-xs">
+                Diskon
+              </Label>
+              <div className="flex h-9 w-full rounded-md border border-neutral-200 bg-transparent px-3 py-1 text-xs shadow-sm transition-colors text-neutral-500 dark:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primaryColor disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 items-center uppercase">
+                {dataGetOneInvoice?.data?.discount ?? "-"} %
+              </div>
+            </div>
               <div
                 className={`rounded-lg text-xs w-fit text-white p-1 capitalize ${
                   dataGetOneInvoice?.data?.type === "take away"

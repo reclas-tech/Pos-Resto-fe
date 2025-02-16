@@ -39,6 +39,7 @@ interface OrderDetail {
   payment: string | null;
   customer: string;
   price_sum: number;
+  discount: number;
   created_at: string;
   products: Product[];
   packets: Packet[];
