@@ -84,14 +84,19 @@ const usePostPayment = (invoiceId: string) => {
   const accessToken = Cookies.get("access_token");
   const axiosPrivate = useAxiosPrivateInstance();
 
-  const postPayment = async (method: "cash" | "debit" | "qris") => {
+  const postPayment = async (
+    method: "cash" | "debit" | "qris",
+    discount_id: string
+  ) => {
     if (!accessToken) {
       throw new Error("Access token is missing");
     }
 
+    const requestBody: { method: string; discount_id: string } = { method, discount_id};
+
     const response = await axiosPrivate.post(
       `/order/cashier/payment/${invoiceId}`,
-      { method },
+      requestBody,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -138,7 +143,29 @@ const useTableChange = () => {
   return { changeTable };
 };
 
+// Get TakeawayList
+const useGetDiskonList = () => {
+  const accessToken = Cookies.get("access_token");
+
+  const axiosPrivate = useAxiosPrivateInstance();
+
+  const { data, error, mutate, isValidating, isLoading } = useSWR(
+    `/discount/list`,
+    () =>
+      axiosPrivate
+        .get(`/discount/list`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => res.data) // Ensure `res.data` contains the desired data
+  );
+
+  return { data, error, mutate, isValidating, isLoading };
+};
+
 export {
+  useGetDiskonList,
   useGetTableList,
   useGetTakeawayList,
   useGetInvoiceDetail,
