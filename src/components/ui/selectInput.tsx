@@ -6,7 +6,6 @@ import {
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
@@ -21,7 +20,6 @@ interface SelectProps {
 }
 
 export const SelectInput: React.FC<SelectProps> = ({
-    label,
     options,
     placeholder,
     value,
@@ -35,12 +33,12 @@ export const SelectInput: React.FC<SelectProps> = ({
             </SelectTrigger>
             <SelectContent className="bg-white">
                 <SelectGroup>
-                    <SelectLabel>{label}</SelectLabel>
-                    <SelectItem value="all">
-                        0 %
+                    {/* <SelectLabel>{label}</SelectLabel> */}
+                    <SelectItem className="cursor-pointer" value="all">
+                        Pilih Diskon
                     </SelectItem>
                     {options?.map((option) => (
-                        <SelectItem key={option.value} value={String(option.value)}>
+                        <SelectItem className="cursor-pointer" key={option.value} value={String(option.value)}>
                             {option.label} %
                         </SelectItem>
                     ))}
