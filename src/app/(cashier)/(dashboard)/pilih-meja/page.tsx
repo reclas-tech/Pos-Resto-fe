@@ -33,6 +33,7 @@ import DetailModal from "@/components/ui/modal/detailReusable";
 import ProcessModal from "@/components/ui/modal/proses";
 import ValidationModal from "@/components/ui/modal/validation";
 import {
+  useGetDiskonList,
   useGetInvoiceDetail,
   useGetTableList,
   useGetTakeawayList,
@@ -51,6 +52,7 @@ import PaymentReceipt from "@/components/ui/struk/PaymentReceipt";
 import ValidationChoiceModal from "@/components/ui/modal/validationChoiceTable";
 import ChoiceTables from "@/components/ui/modal/choiceTables";
 import DataChoiceTableList from "@/components/parts/cashier/pilih-meja/ChoiceTable";
+import { SelectInput } from "@/components/ui/selectInput";
 
 // Handle validation input
 const pinCashPaymentSchema = z.object({
@@ -161,7 +163,11 @@ function SelectTable() {
 
   // Handle calculate change total amount and payment amount
   const calculateChange = () => {
-    const totalAmount = dataInvoiceDineIn?.data?.price_sum || 0;
+    const price = Number(dataInvoiceDineIn?.data?.price ?? 0);
+    const discount = price * ((selectedDiskonValue ?? 0) / 100);
+    const priceAfterDiscount = price - discount;
+    const tax = priceAfterDiscount * ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100);
+    const totalAmount = priceAfterDiscount + tax;
     const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
     const change = paymentAmount - totalAmount;
     if (change < 0) {
@@ -172,7 +178,11 @@ function SelectTable() {
   };
 
   const isButtonDisabled = () => {
-    const totalAmount = dataInvoiceDineIn?.data?.price_sum || 0;
+    const price = Number(dataInvoiceDineIn?.data?.price ?? 0);
+    const discount = price * ((selectedDiskonValue ?? 0) / 100);
+    const priceAfterDiscount = price - discount;
+    const tax = priceAfterDiscount * ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100);
+    const totalAmount = priceAfterDiscount + tax;
     const paymentAmount = parseInt(pinValue.replace(/\D/g, "") || "0");
     return paymentAmount < totalAmount;
   };
@@ -239,6 +249,28 @@ function SelectTable() {
     selectedId ? selectedId.toString() : ""
   );
 
+  // get diskon
+  const [selectedDiskonId, setSelectedDiskonId] = useState<string | null>("all");
+  const [selectedDiskonValue, setSelectedDiskonValue] = useState<number | null>(0);
+  const { data: dataDiskon } = useGetDiskonList();
+  const diskonOptions = dataDiskon?.data.map((category: { id: string; value: number; }) => ({
+    label: category.value,
+    value: category.id,
+  }));
+
+  // Update nilai diskon setiap kali ID berubah
+  useEffect(() => {
+    if (selectedDiskonId && selectedDiskonId !== "all") {
+      const selectedDiskon = dataDiskon?.data.find((d: { id: string }) => d.id === selectedDiskonId);
+      setSelectedDiskonValue(selectedDiskon ? selectedDiskon.value : 0);
+    } else {
+      setSelectedDiskonValue(0); // Default jika 'all' dipilih
+    }
+  }, [selectedDiskonId, dataDiskon]);
+
+  console.log("id= ", selectedDiskonId);
+  console.log("value= ", selectedDiskonValue);
+
   // GET ONE SLUG Takeaway
   const { data: dataInvoiceTakeAway } = useGetInvoiceDetail(
     selectedId ? selectedId.toString() : ""
@@ -255,7 +287,7 @@ function SelectTable() {
   const handlePaymentSubmit = async () => {
     if (paymentMethod != null) {
       try {
-        const result = await postPayment(paymentMethod);
+        const result = await postPayment(paymentMethod, selectedDiskonId === "all" ? "" : selectedDiskonId ?? "");
         console.log(`Payment successful with method: ${paymentMethod}`, result);
 
         setIsPaymentSuccessModal(true);
@@ -501,6 +533,8 @@ function SelectTable() {
           onClose={() => {
             setIsDetailModalOpenDineIn(false);
             setIsChoiceTables(true)
+            setSelectedDiskonId("all")
+            setSelectedDiskonValue(0)
           }}
           onDetail={() => setIsPaymentModalOpenDineIn(true)}
           title="Detail Pesanan"
@@ -637,6 +671,8 @@ function SelectTable() {
           isOpen={isPaymentModalOpenDineIn}
           onClose={() => {
             setIsPaymentModalOpenDineIn(false);
+            setSelectedDiskonId("all")
+            setSelectedDiskonValue(0)
           }}
           onSubmit={handleSubmit}
           title="Pembayaran"
@@ -753,19 +789,52 @@ function SelectTable() {
                         Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
                       </span>
                     </div>
+                    <div className="space-x-4 flex items-center justify-end">
+                      <span className="text-[#9C9C9C]">DISKON</span>
+                      <span className="">
+                        <SelectInput
+                          label="Pilih Diskon"
+                          options={diskonOptions}
+                          placeholder="Diskon"
+                          value={selectedDiskonId}
+                          onChange={(value) => setSelectedDiskonId(value)}
+                          width={`text-xs w-[70px]`}
+                        />
+                      </span>
+                    </div>
+                    <div className="space-x-4">
+                      <span className="text-[#9C9C9C]">TOTAL</span>
+                      <span className="text-[#19191C]">
+                        Rp. {(
+                          (Number(dataInvoiceDineIn?.data?.price ?? 0) -
+                            Number(dataInvoiceDineIn?.data?.price ?? 0) * ((selectedDiskonValue ?? 0) / 100))
+                        ).toLocaleString("id-ID")}
+                      </span>
+                    </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
                       <span className="text-[#19191C]">
-                        Rp. {dataInvoiceDineIn?.data?.tax.toLocaleString()}
+                        Rp. {(
+                          (Number(dataInvoiceDineIn?.data?.price ?? 0) -
+                            Number(dataInvoiceDineIn?.data?.price ?? 0) * ((selectedDiskonValue ?? 0) / 100)) *
+                          ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100)
+                        ).toLocaleString("id-ID")}
                       </span>
                     </div>
                     <div className="space-x-4">
-                      <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">
-                        Rp.{" "}
-                        {dataInvoiceDineIn?.data?.price_sum.toLocaleString()}
+                      <span className="text-[#19191C]">TOTAL HARGA</span>
+                      <span className="text-[#19191C]">
+                        Rp. {(() => {
+                          const price = Number(dataInvoiceDineIn?.data?.price ?? 0);
+                          const discount = price * ((selectedDiskonValue ?? 0) / 100);
+                          const priceAfterDiscount = price - discount;
+                          const tax = priceAfterDiscount * ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100);
+                          const totalPrice = priceAfterDiscount + tax;
+                          return totalPrice.toLocaleString("id-ID");
+                        })()}
                       </span>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -918,6 +987,8 @@ function SelectTable() {
           }
           onClose={() => {
             setIsDetailModalOpenTakeAway(false);
+            setSelectedDiskonId("all")
+            setSelectedDiskonValue(0)
           }}
           onDetail={() => setIsPaymentModalOpenTakeAway(true)}
           title="Detail Pesanan"
@@ -1058,6 +1129,8 @@ function SelectTable() {
           isOpen={isPaymentModalOpenTakeAway}
           onClose={() => {
             setIsPaymentModalOpenTakeAway(false);
+            setSelectedDiskonId("all")
+            setSelectedDiskonValue(0)
           }}
           onSubmit={handleSubmit}
           title="Pembayaran"
@@ -1154,27 +1227,61 @@ function SelectTable() {
                   </Table>
                 </div>
                 {/* Total Section */}
+                {/* Total Section */}
                 <div className="flex justify-end items-end text-sm !mt-6">
                   <div className="text-end space-y-2">
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">SUBTOTAL</span>
                       <span className="text-[#19191C]">
-                        Rp. {dataInvoiceTakeAway?.data?.price.toLocaleString()}
+                        Rp. {dataInvoiceDineIn?.data?.price.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="space-x-4 flex items-center justify-end">
+                      <span className="text-[#9C9C9C]">DISKON</span>
+                      <span className="">
+                        <SelectInput
+                          label="Pilih Diskon"
+                          options={diskonOptions}
+                          placeholder="Diskon"
+                          value={selectedDiskonId}
+                          onChange={(value) => setSelectedDiskonId(value)}
+                          width={`text-xs w-[70px]`}
+                        />
+                      </span>
+                    </div>
+                    <div className="space-x-4">
+                      <span className="text-[#9C9C9C]">TOTAL</span>
+                      <span className="text-[#19191C]">
+                        Rp. {(
+                          (Number(dataInvoiceDineIn?.data?.price ?? 0) -
+                            Number(dataInvoiceDineIn?.data?.price ?? 0) * ((selectedDiskonValue ?? 0) / 100))
+                        ).toLocaleString("id-ID")}
                       </span>
                     </div>
                     <div className="space-x-4">
                       <span className="text-[#9C9C9C]">PB1</span>
                       <span className="text-[#19191C]">
-                        Rp. {dataInvoiceTakeAway?.data?.tax.toLocaleString()}
+                        Rp. {(
+                          (Number(dataInvoiceDineIn?.data?.price ?? 0) -
+                            Number(dataInvoiceDineIn?.data?.price ?? 0) * ((selectedDiskonValue ?? 0) / 100)) *
+                          ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100)
+                        ).toLocaleString("id-ID")}
                       </span>
                     </div>
                     <div className="space-x-4">
-                      <span className="text-[#19191C]">TOTAL</span>
-                      <span className="text-primaryColor">
-                        Rp.{" "}
-                        {dataInvoiceTakeAway?.data?.price_sum.toLocaleString()}
+                      <span className="text-[#19191C]">TOTAL HARGA</span>
+                      <span className="text-[#19191C]">
+                        Rp. {(() => {
+                          const price = Number(dataInvoiceDineIn?.data?.price ?? 0);
+                          const discount = price * ((selectedDiskonValue ?? 0) / 100);
+                          const priceAfterDiscount = price - discount;
+                          const tax = priceAfterDiscount * ((dataInvoiceDineIn?.data?.tax_percent ?? 0) / 100);
+                          const totalPrice = priceAfterDiscount + tax;
+                          return totalPrice.toLocaleString("id-ID");
+                        })()}
                       </span>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -1532,7 +1639,7 @@ function SelectTable() {
 
       {/* Struk */}
       <div className="hidden">
-        <PaymentReceipt cashTotal={pinValue} kembalian={calculateChange()} transaksi={paymentMethod} printStatus={printStatus} ref={contentRef} dataReceipt={dataInvoiceReceipt} />
+        <PaymentReceipt diskon={selectedDiskonValue ?? 0} cashTotal={pinValue} kembalian={calculateChange()} transaksi={paymentMethod} printStatus={printStatus} ref={contentRef} dataReceipt={dataInvoiceReceipt} />
       </div>
       <DarkModeComponents className="hidden" />
     </>
