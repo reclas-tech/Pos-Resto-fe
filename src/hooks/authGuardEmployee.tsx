@@ -67,7 +67,8 @@ export default function AuthGuardEmployee({ children }: AuthGuardEmployeeProps) 
   const { error } = useAuthAccessTokenExp();
 
   if (error?.status === 401) {
-    router.push("/login-kasir")
+    // router.push("/login-kasir")
+    console.log("Error 401")
   }
 
   if (loading) {

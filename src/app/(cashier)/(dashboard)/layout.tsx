@@ -249,9 +249,8 @@ export default function RootLayoutDashboardCashier({
             <div className="flex gap-4 justify-center items-center">
               <Link
                 href="/pos"
-                className={`flex gap-2 items-center ${
-                  pathname === "/pos" ? "text-primaryColor" : "text-[#737791]"
-                }`}
+                className={`flex gap-2 items-center ${pathname === "/pos" ? "text-primaryColor" : "text-[#737791]"
+                  }`}
               >
                 {pathname === "/pos" ? (
                   <MejaSVG strokeColor="#FEA026" />
@@ -263,11 +262,10 @@ export default function RootLayoutDashboardCashier({
 
               <Link
                 href="/riwayat-transaksi"
-                className={`flex gap-2 items-center ${
-                  pathname === "/riwayat-transaksi"
-                    ? "text-primaryColor"
-                    : "text-[#737791]"
-                }`}
+                className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi"
+                  ? "text-primaryColor"
+                  : "text-[#737791]"
+                  }`}
               >
                 {pathname === "/riwayat-transaksi" ? (
                   <RiwayatSVG strokeColor="#FEA026" />
@@ -330,11 +328,10 @@ export default function RootLayoutDashboardCashier({
             <div className="flex gap-4 justify-center items-center">
               <Link
                 href="/pilih-meja"
-                className={`flex gap-2 items-center ${
-                  pathname === "/pilih-meja"
-                    ? "text-primaryColor"
-                    : "text-[#737791]"
-                }`}
+                className={`flex gap-2 items-center ${pathname === "/pilih-meja"
+                  ? "text-primaryColor"
+                  : "text-[#737791]"
+                  }`}
               >
                 {pathname === "/pilih-meja" ? (
                   <MejaSVG strokeColor="#FEA026" />
@@ -346,11 +343,10 @@ export default function RootLayoutDashboardCashier({
 
               <Link
                 href="/riwayat-transaksi"
-                className={`flex gap-2 items-center ${
-                  pathname === "/riwayat-transaksi"
-                    ? "text-primaryColor"
-                    : "text-[#737791]"
-                }`}
+                className={`flex gap-2 items-center ${pathname === "/riwayat-transaksi"
+                  ? "text-primaryColor"
+                  : "text-[#737791]"
+                  }`}
               >
                 {pathname === "/riwayat-transaksi" ? (
                   <RiwayatSVG strokeColor="#FEA026" />
