@@ -95,6 +95,10 @@ function SelectTable() {
     } else {
       setLoading(false);
     }
+
+    if (role === "waiter") {
+      router.push("/login-kasir");
+    }
   }, [router]);
 
   // Handle filter status state
