@@ -61,14 +61,14 @@ const transformDataReceiptToData = (
       name: product.name,
       quantity: product.quantity || 0,
       note: product.note || undefined,
-      price: `Rp ${(product.price || 0).toLocaleString()}`,
+      price: `Rp ${(product.price_sum || 0).toLocaleString()}`,
     })),
     packets: packets.map((packet) => ({
       id: packet.id,
       name: packet.name,
       quantity: packet.quantity || 0,
       note: packet.note || undefined,
-      price: `Rp ${(packet.price || 0).toLocaleString()}`,
+      price: `Rp ${(packet.price_sum || 0).toLocaleString()}`,
     })),
     quantity:
       products.reduce((sum, product) => sum + (product.quantity || 0), 0) +

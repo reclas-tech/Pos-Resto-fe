@@ -32,6 +32,7 @@ interface Product {
   quantity: number;
   name: string;
   price: number;
+  price_sum: number;
 }
 
 interface Packet {
