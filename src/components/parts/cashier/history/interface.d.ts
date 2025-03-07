@@ -21,6 +21,7 @@ interface Product {
   quantity: number;
   name: string;
   price: number;
+  price_sum:number;
 }
 
 interface Packet {
@@ -29,6 +30,7 @@ interface Packet {
   quantity: number;
   name: string;
   price: number;
+  price_sum: number;
 }
 
 interface OrderDetail {
