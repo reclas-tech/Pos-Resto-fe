@@ -69,24 +69,24 @@ const transformDataReceiptToData = (
       name: product.name,
       quantity: product.quantity,
       note: product.note || undefined,
-      price: `Rp ${product.price.toLocaleString()}`,
+      price: `Rp ${product.price_sum.toLocaleString()}`,
     })),
     packets: packets.map((packet) => ({
       id: packet.id,
       name: packet.name,
       quantity: packet.quantity,
       note: packet.note || undefined,
-      price: `Rp ${packet.price.toLocaleString()}`,
+      price: `Rp ${packet.price_sum.toLocaleString()}`,
     })),
     quantity:
       products.reduce((sum, product) => sum + product.quantity, 0) +
       packets.reduce((sum, packet) => sum + packet.quantity, 0),
-    sub_total: `${(price_sum - tax)}`,
-    total_tagihan: `${(price_sum || 0)}`,
-    tax: `${(tax || 0)}`,
+    sub_total: `${price_sum - tax}`,
+    total_tagihan: `${price_sum || 0}`,
+    tax: `${tax || 0}`,
     tax_percent: tax_percent || 0,
-    cash: `${(price_sum || 0)}`,
-    total_bayar: `${(price_sum || 0)}`,
+    cash: `${price_sum || 0}`,
+    total_bayar: `${price_sum || 0}`,
   };
 };
 
@@ -97,10 +97,10 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
   transaksi,
   diskon,
   kembalian,
-  cashTotal
+  cashTotal,
 }) => {
   const data = transformDataReceiptToData(dataReceipt);
-  console.log("data=", data)
+  console.log("data=", data);
   const price = Number(data?.sub_total ?? 0);
   const discount = price * ((diskon ?? 0) / 100);
   const priceAfterDiscount = price - discount;
@@ -196,16 +196,18 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         </span>
         <span className="flex justify-between">
           <p>Total</p>
-          <p>Rp. 
+          <p>
+            Rp.
             {(
-              (Number(data.sub_total ?? 0) -
-                Number(data.sub_total ?? 0) * ((diskon ?? 0) / 100))
+              Number(data.sub_total ?? 0) -
+              Number(data.sub_total ?? 0) * ((diskon ?? 0) / 100)
             ).toLocaleString()}
           </p>
         </span>
         <span className="flex justify-between">
           <p>Pajak({data.tax_percent}%)</p>
-          <p>Rp. 
+          <p>
+            Rp.
             {(
               (Number(data.sub_total ?? 0) -
                 Number(data.sub_total ?? 0) * ((diskon ?? 0) / 100)) *
@@ -219,12 +221,24 @@ const PaymentReceipt: React.FC<PaymentReceiptProps> = ({
         </span>
       </div>
 
-      <div className={`text-left ${printStatus === "detail" ? "hidden" : ""} space-y-[1%] py-4 border-b border-dashed border-black`}>
+      <div
+        className={`text-left ${
+          printStatus === "detail" ? "hidden" : ""
+        } space-y-[1%] py-4 border-b border-dashed border-black`}
+      >
         <span className="flex justify-between">
           <p className="capitalize">{transaksi}</p>
-          <p>{transaksi !== "cash" ? `Rp. ${totalPrice.toLocaleString()}` : cashTotal}</p>
+          <p>
+            {transaksi !== "cash"
+              ? `Rp. ${totalPrice.toLocaleString()}`
+              : cashTotal}
+          </p>
         </span>
-        <span className={`flex ${transaksi !== "cash" ? "hidden" : ""} justify-between`}>
+        <span
+          className={`flex ${
+            transaksi !== "cash" ? "hidden" : ""
+          } justify-between`}
+        >
           <p>Kembalian</p>
           <p>{kembalian}</p>
         </span>
