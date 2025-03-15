@@ -6,6 +6,7 @@ interface Order {
   customer: string;
   price_sum: number;
   created_at: string;
+  tables: string[];
 }
 
 export interface HistoryListApiResponse {

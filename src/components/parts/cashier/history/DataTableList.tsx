@@ -18,7 +18,7 @@ const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) =>
         return (
             <div className="col-span-4 flex justify-center items-center mt-8">
                 <p className="text-sm text-gray-500">
-                Riwayat Tidak Ditemukan
+                    Riwayat Tidak Ditemukan
                 </p>
             </div>
         );
@@ -41,8 +41,13 @@ const DataTableList: React.FC<DataTableListProps> = ({ data, onDetailModal }) =>
                             </button>
                             <div className="flex-grow min-w-0 space-y-2">
                                 <p className="truncate font-semibold">{item?.code}</p>
-                                <div>                
-                                    {item?.created_at? new Date(item?.created_at).toLocaleDateString("id-ID", {hour: "2-digit",minute: "2-digit",}) + " WIB": "-"}</div>
+                                <div>
+                                    {item?.created_at ? new Date(item?.created_at).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit", }) + " WIB" : "-"}</div>
+                                <div>
+                                    Meja: {item?.tables
+                                        ?.map((code: any) => `${code}`)
+                                        .join(", ")}
+                                </div>
                                 <p className="font-medium">
                                     {formatRupiah(item?.price_sum.toLocaleString())}
                                 </p>
